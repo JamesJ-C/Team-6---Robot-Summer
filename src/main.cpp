@@ -69,7 +69,7 @@ for (int i=0; i< 100000; i++){
 
 }
 
-// /*
+/*
 
   //pwm_stop( MOTOR_A);
 
