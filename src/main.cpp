@@ -58,74 +58,8 @@ void loop() {
   display_handler.display();
 
 
-  // put your main code here, to run repeatedly:
 
-  int potVal = analogRead(POT_PIN);
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("Pot val:");
-  display_handler.println(potVal);
   
-for (int i=0; i< 100000; i++){
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 3000, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);  
-
-}
-
-for (int i=0; i< 100000; i++){
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 3000, RESOLUTION_12B_COMPARE_FORMAT);  
-
-}
-
-// /*
-
-  //pwm_stop( MOTOR_A);
-
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, map(potVal, 0, 1024, 0, 4095), RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-
-
-  int intermediateVal = map(potVal, 0, 1024, -500, 500);
-  display_handler.print("int-val:");
-  display_handler.println(intermediateVal);
-
-  if (intermediateVal < -20){
-   
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, -1*intermediateVal, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT); 
-
-  display_handler.print("Motor A:");
-  display_handler.println(-1*intermediateVal);
-
-  display_handler.println("Motor B: 0");
-
-  }
-
-  else if (intermediateVal > 20) {
-
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, intermediateVal, RESOLUTION_12B_COMPARE_FORMAT);
-
-  display_handler.println("Motor A: 0");
-
-  display_handler.print("Motor B:");
-  display_handler.println(intermediateVal);
-
-  }
-
-  else {
-    pwm_stop(MOTOR_A);
-    pwm_stop(MOTOR_B);
-    display_handler.print("motors off");
-  }
-
-  display_handler.display();    
-
-// */
-
 }
 
