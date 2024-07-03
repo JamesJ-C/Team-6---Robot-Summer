@@ -16,7 +16,7 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 
-HardwareSerial SerialPort(1)  //if using UART1
+HardwareSerial SerialPort(1);  //if using UART1
 
 void setup() {
 
@@ -38,7 +38,7 @@ void setup() {
   
 
 
-SerialPort.begin (15200, SERIAL_8N1, GPIO1, GPIO3);
+SerialPort.begin (15200, SERIAL_8N1, 1, 3);
 
 }
 
