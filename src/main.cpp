@@ -1,9 +1,11 @@
 #include <Arduino.h>
 
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
 
 #include <HardwareSerial.h>
+
+#include <Adafruit_SSD1306.h>
+
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -11,16 +13,10 @@
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 /*  analog inputs */
-#define POT_PIN A1
-
-#define MOTOR_FREQUENCY 1000
-
-/*  Motors  */
-
-#define MOTOR_A PB_0
-#define MOTOR_B PB_1
 
 
+
+HardwareSerial SerialPort(1)  //if using UART1
 
 void setup() {
 
@@ -39,17 +35,57 @@ void setup() {
   display_handler.display();
 
 
-  pinMode(POT_PIN, INPUT_ANALOG);
+  
 
-  pinMode(MOTOR_A, OUTPUT);
-  pinMode(MOTOR_B, OUTPUT);
 
+SerialPort.begin (15200, SERIAL_8N1, GPIO1, GPIO3);
 
 }
 
 void loop() {
 
 
+//Master Code /*
+  SerialPort.print(1);
+  delay(5000);
+  SerialPort.print(0);
+  delay(5000);
+// */
+
+//Slave Code /*
+
+{
+
+if (SerialPort.available()) {
+
+  char number = SerialPort.read();
+
+  if (number == '0') {
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("Low");
+    display_handler.display();
+  }
+  if (number == '1') {
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("HIGH");
+    display_handler.display();
+
+  }
+
+}
+
+}
+// */
+
+/*
   display_handler.clearDisplay();
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
@@ -57,7 +93,7 @@ void loop() {
   display_handler.println("done");
   display_handler.display();
 
-
+*/
 
 
   
