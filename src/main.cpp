@@ -33,7 +33,7 @@ void setup() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("Setting up...");
+  display_handler.println("Setting up...vroom");
   display_handler.display();
 
 
@@ -46,6 +46,16 @@ void setup() {
 }
 
 void loop() {
+
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("done");
+  display_handler.display();
+
+
   // put your main code here, to run repeatedly:
 
   int potVal = analogRead(POT_PIN);
