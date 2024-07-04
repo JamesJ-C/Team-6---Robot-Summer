@@ -17,8 +17,8 @@
 
 /*  BP pin defs  */
 //#ifdef BP
-#define RX PB_11
-#define TX PB_10
+#define RX PA10
+#define TX PA9
 //#endif
 
 /*  ESP pin defs  * /
@@ -58,7 +58,7 @@ void setup() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("Setting up...vroom");
+  display_handler.println("Setting UP...vroom");
   display_handler.display();
 
 
@@ -95,26 +95,39 @@ void loop() {
 
 
     if (SerialPort.available()) {
-      //int fake = Serial.parseInt();
+      int fake = Serial.parseInt();
     }
 
-    //if (SerialPort.available() > 0) {
+   // if (SerialPort.available() > 0) {
+    //delay(10);
+
     if (true) {  
-      String received = "";
-      received = SerialPort.readString();
-      
       toggled = true;
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.print("Received: ");
-      display_handler.println(received);
-      display_handler.display();
-      
 
-    }
-  
+      char number = SerialPort.read();
+
+      if (number == '0') {
+
+        display_handler.clearDisplay();
+        display_handler.setTextSize(1);
+        display_handler.setTextColor(SSD1306_WHITE);
+        display_handler.setCursor(0,0);
+        display_handler.println("Low");
+        display_handler.display();
+      }
+      if (number == '1') {
+
+        display_handler.clearDisplay();
+        display_handler.setTextSize(1);
+        display_handler.setTextColor(SSD1306_WHITE);
+        display_handler.setCursor(0,0);
+        display_handler.println("HIGH");
+        display_handler.display();
+
+      }
+
+    } 
+    
 
     else {
 
@@ -128,7 +141,6 @@ void loop() {
       display_handler.display();
 
       } else{
-
 
         display_handler.clearDisplay();
         display_handler.setTextSize(1);
