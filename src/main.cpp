@@ -27,8 +27,15 @@ esp_now_peer_info_t peerInfo;
 
 // callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.print("\r\nLast Packet Send Status:\t");
+  display_handler.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  display_handler.display();
 }
  
 void setup() {
@@ -40,7 +47,13 @@ void setup() {
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    Serial.println("Error initializing ESP-NOW");
+    
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("Error initializing ESP-NOW");
+    display_handler.display();
     return;
   }
 
@@ -55,7 +68,13 @@ void setup() {
   
   // Add peer        
   if (esp_now_add_peer(&peerInfo) != ESP_OK){
-    Serial.println("Failed to add peer");
+
+      display_handler.clearDisplay();
+      display_handler.setTextSize(1);
+      display_handler.setTextColor(SSD1306_WHITE);
+      display_handler.setCursor(0,0);
+      display_handler.println("Failed to add peer");
+      display_handler.display();
     return;
   }
 }
@@ -71,10 +90,23 @@ void loop() {
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
    
   if (result == ESP_OK) {
-    Serial.println("Sent with success");
+
+      display_handler.clearDisplay();
+      display_handler.setTextSize(1);
+      display_handler.setTextColor(SSD1306_WHITE);
+      display_handler.setCursor(0,0);
+      display_handler.println("Sent with success");
+      display_handler.display();
   }
   else {
-    Serial.println("Error sending the data");
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("Error sending the data");
+    display_handler.display();
+
   }
   delay(2000);
 }
