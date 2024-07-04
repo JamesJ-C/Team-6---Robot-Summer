@@ -98,8 +98,8 @@ void loop() {
       //int fake = Serial.parseInt();
     }
 
-    if (SerialPort.available() > 0) {
-      
+    //if (SerialPort.available() > 0) {
+    if (true) {  
       String received = "";
       received = SerialPort.readString();
       
@@ -134,7 +134,7 @@ void loop() {
         display_handler.setTextSize(1);
         display_handler.setTextColor(SSD1306_WHITE);
         display_handler.setCursor(0,0);
-        display_handler.println(SerialPort.available());
+        display_handler.println("no connection");
         display_handler.display();
         
       }
