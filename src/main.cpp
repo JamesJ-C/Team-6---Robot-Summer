@@ -9,7 +9,7 @@
 #define MASTER 1
 #define SLAVE 0
 
-#define STATUS SLAVE
+#define STATUS MASTER
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -59,27 +59,18 @@ void loop() {
 //Master Code /*
 if (STATUS == MASTER){
   
-  SerialPort.print(1);
+  SerialPort.println("A");
 
   display_handler.clearDisplay();
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("HIGH");
+  display_handler.println("sent");
   display_handler.display();
 
   delay(1000);
 
-  SerialPort.print(0);
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Low");
-  display_handler.display();
-
-  delay(1000);
 }
 // */
 
@@ -87,51 +78,41 @@ if (STATUS == MASTER){
 
 if (STATUS == SLAVE) {
 
+
   if (SerialPort.available()) {
     //int fake = Serial.parseInt();
   }
 
   if (SerialPort.available() > 0) {
-    //delay(10);
-    //if (true) {
+    
+    String received = "";
+    received = SerialPort.readString();
+    
     toggled = true;
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.print("Received: ");
+    display_handler.println(received);
+    display_handler.display();
+    
 
-    char number = SerialPort.read();
-
-    if (number == '0') {
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Low");
-      display_handler.display();
-    }
-    if (number == '1') {
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("HIGH");
-      display_handler.display();
-
-    }
-
-  } 
+  }
+ 
 
   else {
 
-      if (toggled) {
+    if (toggled) {
 
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Toggled");
-      display_handler.display();
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("Toggled");
+    display_handler.display();
 
-      } else{
+    } else{
 
 
       display_handler.clearDisplay();
@@ -140,23 +121,10 @@ if (STATUS == SLAVE) {
       display_handler.setCursor(0,0);
       display_handler.println(SerialPort.available());
       display_handler.display();
-      }
+      
+    }
   }
 
 }
-// */
 
-/*
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("done");
-  display_handler.display();
-
-*/
-
-
-  
-}
 
