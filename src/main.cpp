@@ -37,8 +37,8 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 
-//HardwareSerial SerialPort(USART2);  //if using UART1
-HardwareSerial SerialPort(PB11, PB10);
+HardwareSerial SerialPort(USART3);
+//HardwareSerial SerialPort(PB11, PB10);
 
 //char number = '';
 
@@ -59,7 +59,7 @@ void setup() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("Setting UP...vroom");
+  display_handler.println("Setting Up...");
   display_handler.display();
 
 
@@ -75,7 +75,7 @@ void loop() {
 //Master Code /*
   if (STATUS == MASTER){
       
-    SerialPort.print("A");
+    SerialPort.println("A");
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
