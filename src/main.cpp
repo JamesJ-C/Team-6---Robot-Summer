@@ -3,6 +3,11 @@
 #include <esp_now.h>
 #include <WiFi.h>
 
+#include <Arduino.h>
+#include <Wire.h>
+#include <HardwareSerial.h>
+#include <Adafruit_SSD1306.h>
+
 // REPLACE WITH YOUR RECEIVER MAC Address
 uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
 
