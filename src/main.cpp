@@ -9,22 +9,24 @@
 #define MASTER 1
 #define SLAVE 0
 
+
+/*  UPDATE THESE FOR EACH BOARD   */
 #define BOARD_TYPE BP
-#define STATUS MASTER
+#define STATUS SLAVE
 
 
 /*  BP pin defs  */
-#ifdef BOARD_TYPE BP
+//#ifdef BP
 #define RX PB_11
 #define TX PB_10
-#endif
+//#endif
 
-/*  ESP pin defs  */
-#ifdef BOARD_TYPE ESP
+/*  ESP pin defs  * /
+#ifdef ESP
 #define RX 1
 #define TX 3
 #endif
-
+*/
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -35,7 +37,7 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 
-HardwareSerial SerialPort(1);  //if using UART1
+HardwareSerial SerialPort(RX, TX);  //if using UART1
 
 //char number = '';
 
@@ -61,7 +63,8 @@ void setup() {
 
 
 
-SerialPort.begin(15200, SERIAL_8N1, RX, TX);
+//SerialPort.begin(15200, SERIAL_8N1, RX, TX);
+SerialPort.begin(15200);
 
 }
 
