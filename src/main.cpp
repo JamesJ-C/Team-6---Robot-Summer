@@ -10,20 +10,12 @@
 #define SLAVE 0
 
 #define BOARD_TYPE BP
-#define STATUS MASTER
+#define STATUS SLAVE
 
 
-/*  BP pin defs  */
-#ifdef BOARD_TYPE BP
-#define RX PB_11
-#define TX PB_10
-#endif
-
-/*  ESP pin defs  */
-#ifdef BOARD_TYPE ESP
 #define RX 1
 #define TX 3
-#endif
+
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -36,8 +28,6 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 HardwareSerial SerialPort(1);  //if using UART1
-
-//char number = '';
 
 bool toggled = false;
 
@@ -56,7 +46,7 @@ void setup() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("Setting up...vroom");
+  display_handler.println("Setting up...");
   display_handler.display();
 
 
@@ -92,11 +82,11 @@ void loop() {
 
 
     if (SerialPort.available()) {
-      //int fake = Serial.parseInt();
+      //int fake = Serial.parseInt(); //taken out for reading strings
     }
 
     if (SerialPort.available() > 0) {
-      
+  
       String received = "";
       received = SerialPort.readString();
       
@@ -110,31 +100,16 @@ void loop() {
       display_handler.display();
       
 
-    }
-  
-
-    else {
-
-      if (toggled) {
+    } else {
 
       display_handler.clearDisplay();
       display_handler.setTextSize(1);
       display_handler.setTextColor(SSD1306_WHITE);
       display_handler.setCursor(0,0);
-      display_handler.println("Toggled");
+      display_handler.println("Serial port unavailable");
       display_handler.display();
-
-      } else{
-
-
-        display_handler.clearDisplay();
-        display_handler.setTextSize(1);
-        display_handler.setTextColor(SSD1306_WHITE);
-        display_handler.setCursor(0,0);
-        display_handler.println(SerialPort.available());
-        display_handler.display();
         
-      }
+      
     }
 
   }
