@@ -17,8 +17,8 @@
 
 /*  BP pin defs  */
 //#ifdef BP
-#define RX PA10
-#define TX PA9
+#define RX PB11
+#define TX PB10
 //#endif
 
 /*  ESP pin defs  * /
@@ -37,7 +37,8 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 
-HardwareSerial SerialPort(USART3);  //if using UART1
+//HardwareSerial SerialPort(USART2);  //if using UART1
+HardwareSerial SerialPort(PB11, PB10);
 
 //char number = '';
 
@@ -74,24 +75,13 @@ void loop() {
 //Master Code /*
   if (STATUS == MASTER){
       
-    SerialPort.print(1);
+    SerialPort.print("A");
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
-    display_handler.println("HIGH");
-    display_handler.display();
-
-    delay(1000);
-
-    SerialPort.print(0);
-
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.println("Low");
+    display_handler.println("Sent");
     display_handler.display();
 
     delay(1000);
