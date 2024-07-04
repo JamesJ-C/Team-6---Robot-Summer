@@ -1,15 +1,29 @@
 #include <Arduino.h>
-
 #include <Wire.h>
-
 #include <HardwareSerial.h>
-
 #include <Adafruit_SSD1306.h>
+
+#define BP 0
+#define ESP 1
 
 #define MASTER 1
 #define SLAVE 0
 
+#define BOARD_TYPE BP
 #define STATUS MASTER
+
+
+/*  BP pin defs  */
+#ifdef BOARD_TYPE BP
+#define RX B11
+#define TX B10
+#endif
+
+/*  ESP pin defs  */
+#ifdef BOARD_TYPE ESP
+#define RX 1
+#define TX 3
+#endif
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -47,7 +61,7 @@ void setup() {
 
 
   
-
+SerialPort.begin(15200, SERIAL_5E1, RX, TX);
 
 SerialPort.begin(15200, SERIAL_8N1, 1, 3);
 
@@ -57,74 +71,74 @@ void loop() {
 
 
 //Master Code /*
-if (STATUS == MASTER){
-  
-  SerialPort.println("A");
+  if (STATUS == MASTER){
+    
+    SerialPort.println("FLip the burger!");
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("sent");
-  display_handler.display();
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("sent");
+    display_handler.display();
 
-  delay(1000);
+    delay(1000);
 
 
-}
+  }
 // */
 
 //Slave Code /*
 
-if (STATUS == SLAVE) {
+  if (STATUS == SLAVE) {
 
 
-  if (SerialPort.available()) {
-    //int fake = Serial.parseInt();
-  }
+    if (SerialPort.available()) {
+      //int fake = Serial.parseInt();
+    }
 
-  if (SerialPort.available() > 0) {
-    
-    String received = "";
-    received = SerialPort.readString();
-    
-    toggled = true;
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.print("Received: ");
-    display_handler.println(received);
-    display_handler.display();
-    
+    if (SerialPort.available() > 0) {
+      
+      String received = "";
+      received = SerialPort.readString();
+      
+      toggled = true;
+      display_handler.clearDisplay();
+      display_handler.setTextSize(1);
+      display_handler.setTextColor(SSD1306_WHITE);
+      display_handler.setCursor(0,0);
+      display_handler.print("Received: ");
+      display_handler.println(received);
+      display_handler.display();
+      
 
-  }
- 
+    }
+  
 
-  else {
+    else {
 
-    if (toggled) {
-
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.println("Toggled");
-    display_handler.display();
-
-    } else{
-
+      if (toggled) {
 
       display_handler.clearDisplay();
       display_handler.setTextSize(1);
       display_handler.setTextColor(SSD1306_WHITE);
       display_handler.setCursor(0,0);
-      display_handler.println(SerialPort.available());
+      display_handler.println("Toggled");
       display_handler.display();
-      
+
+      } else{
+
+
+        display_handler.clearDisplay();
+        display_handler.setTextSize(1);
+        display_handler.setTextColor(SSD1306_WHITE);
+        display_handler.setCursor(0,0);
+        display_handler.println(SerialPort.available());
+        display_handler.display();
+        
+      }
     }
+
   }
 
 }
-
-
