@@ -15,8 +15,8 @@
 
 /*  BP pin defs  */
 #ifdef BOARD_TYPE BP
-#define RX B11
-#define TX B10
+#define RX PB_11
+#define TX PB_10
 #endif
 
 /*  ESP pin defs  */
@@ -60,10 +60,8 @@ void setup() {
   display_handler.display();
 
 
-  
-SerialPort.begin(15200, SERIAL_5E1, RX, TX);
 
-SerialPort.begin(15200, SERIAL_8N1, 1, 3);
+SerialPort.begin(15200, SERIAL_8N1, RX, TX);
 
 }
 
@@ -73,7 +71,7 @@ void loop() {
 //Master Code /*
   if (STATUS == MASTER){
     
-    SerialPort.println("FLip the burger!");
+    SerialPort.println("Flip the burger!");
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
