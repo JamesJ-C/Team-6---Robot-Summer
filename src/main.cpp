@@ -6,13 +6,13 @@
 #define BP 0
 #define ESP 1
 
-#define MASTER 1
-#define SLAVE 0
+#define TRANSMIT 1
+#define RECEIVE 0
 
 
 /*  UPDATE THESE FOR EACH BOARD   */
 #define BOARD_TYPE BP
-#define STATUS MASTER
+#define STATUS TRANSMIT
 
 
 /*  BP pin defs  */
@@ -73,7 +73,7 @@ void loop() {
 
 
 //Master Code /*
-  if (STATUS == MASTER){
+  if (STATUS == TRANSMIT){
       
     SerialPort.println("A");
 
@@ -92,7 +92,7 @@ void loop() {
 
 //Slave Code /*
 
-  if (STATUS == SLAVE) {
+  if (STATUS == RECEIVE) {
 
 
     if (SerialPort.available()) {
