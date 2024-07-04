@@ -65,7 +65,7 @@ void setup() {
 
 
 //SerialPort.begin(15200, SERIAL_8N1, RX, TX);
-SerialPort.begin(15200);
+SerialPort.begin(115200);
 
 }
 
@@ -74,6 +74,7 @@ void loop() {
 
 //Master Code /*
   if (STATUS == TRANSMIT){
+    
       
     SerialPort.println("A");
 
