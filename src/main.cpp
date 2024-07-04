@@ -1,117 +1,75 @@
-#include <Arduino.h>
-#include <Wire.h>
-#include <HardwareSerial.h>
-#include <Adafruit_SSD1306.h>
-
-#define BP 0
-#define ESP 1
-
-#define MASTER 1
-#define SLAVE 0
-
-#define BOARD_TYPE BP
-#define STATUS SLAVE
 
 
-#define RX 9
-#define TX 10
+#include <esp_now.h>
+#include <WiFi.h>
 
+// REPLACE WITH YOUR RECEIVER MAC Address
+uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
 
+// Structure example to send data
+// Must match the receiver structure
+typedef struct struct_message {
+  char a[32];
+  int b;
+  float c;
+  bool d;
+} struct_message;
 
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET 	-1 // This display does not have a reset pin accessible
-Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// Create a struct_message called myData
+struct_message myData;
 
-/*  analog inputs */
+esp_now_peer_info_t peerInfo;
 
-
-
-HardwareSerial SerialPort(1);  //if using UART1
-
-bool toggled = false;
-
-void setup() {
-
-  
-
-  display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
- 
-  // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
-  display_handler.display();
-  delay(2000);
-
-  // Displays "Hello world!" on the screen
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Setting up...");
-  display_handler.display();
-
-
-
-SerialPort.begin(115200, SERIAL_8N1, RX, TX);
-
+// callback when data is sent
+void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
 }
+ 
+void setup() {
+  // Init Serial Monitor
+  Serial.begin(115200);
+ 
+  // Set device as a Wi-Fi Station
+  WiFi.mode(WIFI_STA);
 
-void loop() {
-
-
-//Master Code /*
-  if (STATUS == MASTER){
-    
-    SerialPort.println("Flip the burger!");
-
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.println("sent");
-    display_handler.display();
-
-    delay(1000);
-
-
+  // Init ESP-NOW
+  if (esp_now_init() != ESP_OK) {
+    Serial.println("Error initializing ESP-NOW");
+    return;
   }
-// */
 
-//Slave Code /*
-
-  if (STATUS == SLAVE) {
-
-
-    if (SerialPort.available()) {
-      //int fake = Serial.parseInt(); //taken out for reading strings
-    }
-
-    if (SerialPort.available() > 0) {
+  // Once ESPNow is successfully Init, we will register for Send CB to
+  // get the status of Transmitted packet
+  esp_now_register_send_cb(OnDataSent);
   
-      String received = "";
-      received = SerialPort.readString();
-      
-      toggled = true;
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.print("Received: ");
-      display_handler.println(received);
-      display_handler.display();
-      
-
-    } else {
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Serial port unavailable");
-      display_handler.display();
-        
-      
-    }
-
+  // Register peer
+  memcpy(peerInfo.peer_addr, broadcastAddress, 6);
+  peerInfo.channel = 0;  
+  peerInfo.encrypt = false;
+  
+  // Add peer        
+  if (esp_now_add_peer(&peerInfo) != ESP_OK){
+    Serial.println("Failed to add peer");
+    return;
   }
-
+}
+ 
+void loop() {
+  // Set values to send
+  strcpy(myData.a, "THIS IS A CHAR");
+  myData.b = random(1,20);
+  myData.c = 1.2;
+  myData.d = false;
+  
+  // Send message via ESP-NOW
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+   
+  if (result == ESP_OK) {
+    Serial.println("Sent with success");
+  }
+  else {
+    Serial.println("Error sending the data");
+  }
+  delay(2000);
 }
