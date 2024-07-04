@@ -9,7 +9,7 @@
 #define MASTER 1
 #define SLAVE 0
 
-#define STATUS MASTER
+#define STATUS SLAVE
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -87,9 +87,13 @@ if (STATUS == MASTER){
 
 if (STATUS == SLAVE) {
 
-  //if (SerialPort.available() > 0) {
+  if (SerialPort.available()) {
+    //int fake = Serial.parseInt();
+  }
 
-  if (true) {
+  if (SerialPort.available() > 0) {
+    //delay(10);
+    //if (true) {
     toggled = true;
 
     char number = SerialPort.read();
