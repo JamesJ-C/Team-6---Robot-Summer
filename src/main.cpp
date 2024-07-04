@@ -13,8 +13,8 @@
 #define STATUS SLAVE
 
 
-#define RX 1
-#define TX 3
+#define RX 9
+#define TX 10
 
 
 
@@ -51,7 +51,7 @@ void setup() {
 
 
 
-SerialPort.begin(15200, SERIAL_8N1, RX, TX);
+SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
 }
 
