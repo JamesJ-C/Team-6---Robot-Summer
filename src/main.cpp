@@ -1,64 +1,105 @@
-
-
+/*
+  Rui Santos & Sara Santos - Random Nerd Tutorials
+  Complete project details at https://RandomNerdTutorials.com/esp-now-two-way-communication-esp32/
+  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
+  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+*/
 #include <esp_now.h>
 #include <WiFi.h>
 
-#include <Arduino.h>
 #include <Wire.h>
-#include <HardwareSerial.h>
+
+#include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
-// REPLACE WITH YOUR RECEIVER MAC Address
-uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
+#define SCREEN_WIDTH 128  // OLED display width, in pixels
+#define SCREEN_HEIGHT 64  // OLED display height, in pixels
 
-// Structure example to send data
-// Must match the receiver structure
+// Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+
+// REPLACE WITH THE MAC Address of your receiver 
+//uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
+uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
+
+// Define variables to store BME280 readings to be sent
+float temperature;
+float humidity;
+float pressure;
+
+// Define variables to store incoming readings
+float incomingTemp;
+float incomingHum;
+float incomingPres;
+
+// Variable to store if sending data was successful
+String success;
+
+//Structure example to send data
+//Must match the receiver structure
 typedef struct struct_message {
-  char a[32];
-  int b;
-  float c;
-  bool d;
+    float temp;
+    float hum;
+    float pres;
 } struct_message;
 
-// Create a struct_message called myData
-struct_message myData;
+// Create a struct_message called BME280Readings to hold sensor readings
+struct_message msg;
+
+// Create a struct_message to hold incoming sensor readings
+struct_message incomingReadings;
 
 esp_now_peer_info_t peerInfo;
 
-// callback when data is sent
+// Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-
-
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("\r\nLast Packet Send Status:\t");
-  display_handler.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
-  display_handler.display();
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  if (status ==0){
+    success = "Delivery Success :)";
+  }
+  else{
+    success = "Delivery Fail :(";
+  }
 }
- 
+
+// Callback when data is received
+void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
+  memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
+  Serial.print("Bytes received: ");
+  Serial.println(len);
+  incomingTemp = incomingReadings.temp;
+  incomingHum = incomingReadings.hum;
+  incomingPres = incomingReadings.pres;
+}
+
+
+void updateDisplay();
+void getReadings();
+
 void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
- 
+
+
+  // Init OLED display
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
+
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
-    
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.println("Error initializing ESP-NOW");
-    display_handler.display();
+    Serial.println("Error initializing ESP-NOW");
     return;
   }
 
   // Once ESPNow is successfully Init, we will register for Send CB to
-  // get the status of Transmitted packet
+  // get the status of Trasnmitted packet
   esp_now_register_send_cb(OnDataSent);
   
   // Register peer
@@ -68,45 +109,75 @@ void setup() {
   
   // Add peer        
   if (esp_now_add_peer(&peerInfo) != ESP_OK){
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Failed to add peer");
-      display_handler.display();
+    Serial.println("Failed to add peer");
     return;
   }
+  // Register for a callback function that will be called when data is received
+  esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
  
 void loop() {
-  // Set values to send
-  strcpy(myData.a, "THIS IS A CHAR");
-  myData.b = random(1,20);
-  myData.c = 1.2;
-  myData.d = false;
   
+  getReadings();
+ 
+  // Set values to send
+  msg.temp = temperature;
+  msg.hum = humidity;
+  msg.pres = pressure;
+
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &myData, sizeof(myData));
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
    
   if (result == ESP_OK) {
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Sent with success");
-      display_handler.display();
+    Serial.println("Sent with success");
   }
   else {
-
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.println("Error sending the data");
-    display_handler.display();
-
+    Serial.println("Error sending the data");
   }
-  delay(2000);
+  updateDisplay();
+  delay(10000);
+}
+void getReadings(){
+  temperature = -9273;
+  humidity = 910.1;
+  pressure = 9100000;
+}
+
+void updateDisplay(){
+  // Display Readings on OLED Display
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(WHITE);
+  display.setCursor(0, 0);
+  display.println("INCOMING READINGS");
+  display.setCursor(0, 15);
+  display.print("Temperature: ");
+  display.print(incomingTemp);
+  display.cp437(true);
+  display.write(248);
+  display.print("C");
+  display.setCursor(0, 25);
+  display.print("Humidity: ");
+  display.print(incomingHum);
+  display.print("%");
+  display.setCursor(0, 35);
+  display.print("Pressure: ");
+  display.print(incomingPres);
+  display.print("hPa");
+  display.setCursor(0, 56);
+  display.print(success);
+  display.display();
+  
+  // Display Readings in Serial Monitor
+  Serial.println("INCOMING READINGS");
+  Serial.print("Temperature: ");
+  Serial.print(incomingReadings.temp);
+  Serial.println(" ºC");
+  Serial.print("Humidity: ");
+  Serial.print(incomingReadings.hum);
+  Serial.println(" %");
+  Serial.print("Pressure: ");
+  Serial.print(incomingReadings.pres);
+  Serial.println(" hPa");
+  Serial.println();
 }
