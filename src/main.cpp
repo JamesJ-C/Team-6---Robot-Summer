@@ -138,9 +138,9 @@ void loop() {
   delay(10000);
 }
 void getReadings(){
-  temperature = -9273;
-  humidity = 910.1;
-  pressure = 9100000;
+  temperature = -273;
+  humidity = 10.1;
+  pressure = 100000;
 }
 
 void updateDisplay(){
