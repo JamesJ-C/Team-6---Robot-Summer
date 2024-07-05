@@ -18,52 +18,111 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 #define MOTOR_A PB_0
 #define MOTOR_B PB_1
 
-
+/**
+* assumes forwardDirection and backward direction are never both true
+* PWM_pinA and PWM_pinB should not be mutable
+* 
+* Uses the #define motor frequency
+*
+ */
 
 class Motor {
 
-    private:
-    PinName PWM_pinA;
-    PinName PWM_pinB;
+  private:
+  PinName PWM_pinA;
+  PinName PWM_pinB;
+
+  int motorSpeed = 0;
+
+  bool forwardDirection = false;
+  bool backwardDirection = false;
 
 
-    public:
+  public:
 
-    Motor() = default;
+  /**
+   * @brief Construct a new Motor object with no PWM pins
+   * 
+   */
+  Motor() = default;
+
+  /**
+   * @brief Construct a new Motor object
+   * 
+   * @param PWM_pinA first PWM pin controlling the motor
+   * @param L_PWM_pinB Second PWM pin controlling the motor
+   */
+  Motor(PinName PWM_pinA, PinName L_PWM_pinB) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
+
+  /** 
+   * @brief Returns the first of 2 PWM pins
+   */
+  PinName getPinA(){
+    return PWM_pinA;
+  }
+
+  /**
+   * @brief Returns the second of the 2 PWM pins
+   */
+  PinName getPinB(){
+
+    return PWM_pinB;
+  }
+
+  /**
+   * @brief moves the motor forward at a given pwm signal
+   * 
+   * @param PWM_Val PWM to send to the motor 
+   */
+  void forward(int PWM_Val){
+    forwardDirection = true;
+    backwardDirection = false;
+
+    this->motorSpeed = PWM_Val;
+
+    pwm_start(PWM_pinA, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+
+  }
+
+  /**
+   * @brief moves the motor backward at a given pwm signal
+   * 
+   * @param PWM_Val PWM to send to the motor 
+   */
+  void backward(int PWM_Val){
+    forwardDirection = false;
+    backwardDirection = true;
+    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start(PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
+  }
 
 
-    PinName getPinA(){
+  /**
+   * @brief Stops the motor from turning. If the motor is spinning, it pulses quickly in the opposite direction
+   * before sending nothing to the motors
+   * 
+   */
+  void stop(){
+  
+    if (forwardDirection){
+      pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+      pwm_start(PWM_pinB, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
 
-      return PWM_pinA;
+      delay(100);
     }
-
-    PinName getPinB(){
-
-      return PWM_pinB;
-    }
-
-    Motor(PinName PWM_pinA, PinName L_PWM_pinB) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
-
-    void forward(int val){
-
-      pwm_start(PWM_pinA, MOTOR_FREQUENCY, val, RESOLUTION_12B_COMPARE_FORMAT);
+    else if (backwardDirection){
+      pwm_start(PWM_pinA, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
       pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
 
+      delay(100);    
     }
 
-    void backward(int val){
+    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    
+  }
 
-      pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-      pwm_start(PWM_pinB, MOTOR_FREQUENCY, val, RESOLUTION_12B_COMPARE_FORMAT);
-
-    }
-
-     void stop(){
-
-      pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-      pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-
-    }
 
 };
 
@@ -89,7 +148,7 @@ void setup() {
 
   pinMode(POT_PIN, INPUT_ANALOG);
 
-//  pinMode(MOTOR_A, OUTPUT);
+  //pinMode(MOTOR_A, OUTPUT);
   //pinMode(MOTOR_B, OUTPUT);
 
 
@@ -102,28 +161,34 @@ void setup() {
 
 void loop() {
 
+  int potVal = analogRead(POT_PIN);
+  //int potVal = 3000;
+
+
+  int motorVal = map(potVal, 0, 1100, 0, 4096);
+
   display_handler.clearDisplay();
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.println("loop");
+  display_handler.print("Pot val: ");
+  display_handler.println(potVal);
+
+  display_handler.print("Motor val: ");
+  display_handler.println(motorVal);
   display_handler.display();
 
   motor1.stop();
-  delay(100);
+  delay(1000);
 
-  motor1.forward(800);
+  motor1.forward(motorVal);
   delay(3000);
 
   motor1.stop();
-  delay(100);
+  delay(1000);
 
-  motor1.backward(800);
-  delay(300);
-
-
-
-  // put your main code here, to run repeatedly:
+  motor1.backward(motorVal);
+  delay(3000);
 
 
   /*
