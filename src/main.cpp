@@ -3,6 +3,9 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 
+#include <Servo.h>
+
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
@@ -127,10 +130,21 @@ class Motor {
 };
 
 
+Servo servo1;
+
+
+
 Motor motor1(PB_0, PB_1);
 
 void setup() {
 
+
+  /*  Servo setup  */
+  pinMode(PA8, OUTPUT);
+  servo1.attach(PA8);
+
+
+  /*  Display setup  */
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
   // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
@@ -146,15 +160,27 @@ void setup() {
   display_handler.display();
 
 
-  pinMode(POT_PIN, INPUT_ANALOG);
+
 
   //pinMode(MOTOR_A, OUTPUT);
   //pinMode(MOTOR_B, OUTPUT);
 
-
+  /*  Motor Pins  */
   pinMode(motor1.getPinA(), OUTPUT);
   pinMode(motor1.getPinB(), OUTPUT);
 
+  /*  Other pins  */
+  pinMode(POT_PIN, INPUT_ANALOG);
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.print("Zero degrees");
+  display_handler.display();
+
+  servo1.write(0);
+  delay(1000);
 
 
 }
@@ -162,8 +188,37 @@ void setup() {
 void loop() {
 
   int potVal = analogRead(POT_PIN);
-  //int potVal = 3000;
 
+
+  /*  Servo control  */
+
+  servo1.write(210);
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("210 degrees");
+  display_handler.display();
+  delay(1000);
+
+  servo1.write(90);
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("90 degrees");
+  display_handler.display();
+  delay(1000);
+
+  servo1.write(0);
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("0 degrees");
+  display_handler.display();
+  delay(1000);
+ /* {//DC motor Section
 
   int motorVal = map(potVal, 0, 1100, 0, 4096);
 
@@ -190,6 +245,7 @@ void loop() {
   motor1.backward(motorVal);
   delay(3000);
 
+  }//DC motor section
 
   /*
 
