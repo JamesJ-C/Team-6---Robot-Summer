@@ -27,11 +27,14 @@ double irAmplitude (int* measuredArray, int measuredArraySize, int timeStep);
 
 int findMax(int* array, int arraySize);
 int findMin(int* array, int arraySize);
-
+double crossCorelate(double* measuredWave, int measuredWaveSize, int deltaT, int numSamples);
 
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
+
+  Serial.begin(115200);
+
   // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
   display_handler.display();
   delay(2000);
@@ -42,6 +45,7 @@ void setup() {
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
   display_handler.println("Setup");
+    //display_handler.println(sin(PI/2));
   display_handler.display();
 
   // Set up PA1 as input
@@ -53,6 +57,41 @@ void setup() {
 
 void loop() {
 
+  int numSamples = 1000;
+  double measuredWave[3*numSamples];
+
+  int time0 = millis(); 
+  for(int i=0; i<numSamples; i++){
+
+    measuredWave[i] = analogRead(REFLECTANCE);
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("i: ");
+    display_handler.println(i);
+    display_handler.display();
+
+  }
+
+  int timeF = millis();
+
+  int deltaT = numSamples / (timeF - time0);
+
+  double CC = crossCorelate(measuredWave, 3*numSamples, deltaT, numSamples);
+
+
+  
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("cross correlation: ");
+  display_handler.println(CC);
+  display_handler.display();
+
+/*
 loopNum++;
 sample = -1;
 
@@ -137,6 +176,117 @@ sample = -1;
 */
 }
 
+
+/**
+ * @brief Returns the max double in an array
+ * 
+ * @param array 
+ * @param arraySize 
+ * @return double 
+ */
+double findMax(double* array, int arraySize) {
+
+  double max = array[0];
+  for (int i = 1; i <arraySize; i++) {
+
+    if (array[i] > max){
+      max = array[i];
+    }
+
+  }
+
+  return max;
+
+}
+
+/**
+ * @brief returns the min double in an array
+ * 
+ * @param array 
+ * @param arraySize 
+ * @return int 
+ */
+double findMin(double* array, int arraySize) {
+
+  double min = array[0];
+  for (int i = 1; i <arraySize; i++) {
+
+    if (array[i] < min){
+      min = array[i];
+    }
+
+  }
+
+  return min;
+
+}
+
+
+/**
+ * @brief Creates a sin wave
+ * 
+ * @param sineWave 
+ * @param period 
+ * @param sampleSize the size of the sineWave array sent
+ */
+void sinWave(double* sineWave, int period, int arraySize){
+
+  for (int i=0; i<=arraySize; i++){
+    
+    sineWave[i] = sin( (double) ( i * 2*PI / (double) period ) );
+
+  }
+
+}
+
+/**
+ * @brief 
+ * 
+ * @param measuredWave wave measured
+ * @param measuredWaveSize size of the measured wave
+ * @param numSamples 
+ * @return double 
+ */
+double crossCorelate(double* measuredWave, int measuredWaveSize, int deltaT, int numSamples){
+
+
+  int correlate[numSamples];
+  double sinWaveArray[measuredWaveSize*2];
+
+  /*  Create sin wave  */
+  sinWave(sinWaveArray, deltaT, measuredWaveSize*2);
+
+  /*  Do correlation  */
+  for (int k=0; k < numSamples; k++){
+
+    correlate[k]=0;
+
+    for (int i=0; i < numSamples; i++){
+
+      correlate[k] += measuredWave[k]*sinWaveArray[i+k];
+    }
+  }  
+
+  //double max = findMax(correlate, measuredWaveSize);
+  //double min = findMin(correlate, measuredWaveSize);
+
+
+
+  double max = correlate[0];
+  for (int i = 1; i <numSamples; i++) {
+
+    if (correlate[i] > max){
+      max = correlate[i];
+    }
+
+  }
+
+  return max;
+}
+
+
+
+
 void handle_state_change() {
   display_handler.clearDisplay();
   display_handler.setCursor(0,0);
@@ -173,6 +323,7 @@ double irAmplitude (int* measuredArray, int measuredArraySize, int timeStep){
   for (int x = 0; x < sineArraySize; x++) {
 
     sineArray[x] = sin(2*PI*frequency*x*timeStep);
+    Serial.println(sineArray[x]);
 
   }
 
@@ -187,37 +338,6 @@ double irAmplitude (int* measuredArray, int measuredArraySize, int timeStep){
 
 }
 
-
-int findMax(int* array, int arraySize) {
-
-  int max = array[0];
-  for (int i = 1; i <arraySize; i++) {
-
-    if (array[i] > max){
-      max = array[i];
-    }
-
-  }
-
-  return max;
-
-}
-
-
-int findMin(int* array, int arraySize) {
-
-  int min = array[0];
-  for (int i = 1; i <arraySize; i++) {
-
-    if (array[i] < min){
-      min = array[i];
-    }
-
-  }
-
-  return min;
-
-}
 
 void convolution (int* measuredArray, int measuredArraySize, int* sineArray, 
                     int sineArraySize, int* convolvedArray, int convolvedArraySize) {
