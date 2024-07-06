@@ -14,6 +14,9 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 #define NUM_SAMPLES 200
 
 int loopCount = 0;
+double minTot = 9999999;
+double maxTot = 0;
+double avg = 0;
 
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -206,6 +209,17 @@ loopCount++;
   }
 
 
+  
+
+  if (max < minTot){
+    minTot = max;
+  }
+  if (max > maxTot){
+    maxTot = max;
+  }
+
+  avg = ( (loopCount - 1) * avg + max ) / loopCount;
+
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
@@ -216,17 +230,28 @@ loopCount++;
     // display_handler.print("finishTime: ");
     // display_handler.println(finishTime);
 
-    display_handler.print("dt: ");
-    display_handler.println(dt);
 
-    display_handler.print("numSamples: ");
-    display_handler.println(numSamples);
 
-    display_handler.print("oneKT: ");
-    display_handler.println(oneKT);
+    // display_handler.print("dt: ");
+    // display_handler.println(dt);
 
-    display_handler.println("cc max: ");
+    // display_handler.print("numSamples: ");
+    // display_handler.println(numSamples);
+
+    // display_handler.print("oneKT: ");
+    // display_handler.println(oneKT);
+
+    display_handler.print("cc max: ");
     display_handler.println(max,0);
+
+    display_handler.print("minTot: ");
+    display_handler.println(minTot,0);
+
+    display_handler.print("maxTot: ");
+    display_handler.println(maxTot,0);
+
+    display_handler.print("avg: ");
+    display_handler.println(avg,0);
 
     display_handler.display();
 
