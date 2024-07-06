@@ -34,27 +34,17 @@ void setup() {
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
   display_handler.println("Setup");
-    //display_handler.println(sin(PI/2));
   display_handler.display();
 
   // Set up PA1 as input
   pinMode(REFLECTANCE, INPUT);
 
-  pinMode(PB11, OUTPUT);
-  digitalWrite(PB11, LOW);
-  delay(100);
-
-  digitalWrite(PB11, HIGH);
-  delay(100);
-  // Set up interrupt function
-  //attachInterrupt(digitalPinToInterrupt(REFLECTANCE), handle_state_change, CHANGE);
 
 }
 
 void loop() {
 
 loopCount++;
-//double measuredWave[3*numSamples];
 
   std::vector<double> IRsignal;
 
@@ -62,102 +52,16 @@ loopCount++;
   unsigned long finishTime = 0;
   unsigned long startTime = millis(); 
 
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-    // display_handler.print("before while ");
-    // //display_handler.print();
-    // display_handler.println();
-    // display_handler.display();
-    // delay(500);
-
-
-
-/*
-  Serial.println("outside loop");
-
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("startTime: ");
-  display_handler.print(startTime);
-  display_handler.println();
-  display_handler.display();  
-
-
-  while(millis() - startTime < 10) {
-
-    digitalWrite(PB11, LOW);
-
-
-
-
-  } */
-
-  //digitalWrite(PB11, HIGH);
-
- // /*
   while (millis() - startTime < 10){
-    //digitalWrite(PB11, LOW);
+
     IRsignal.push_back(analogRead(IRSENSOR));
     numSamples++;
     finishTime = millis();
-
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-    // display_handler.print("numSamples: ");
-    // display_handler.println(numSamples);
-
-    // // display_handler.print("loop count: ");
-    // // display_handler.println(loopCount);
-    // display_handler.display();
-
   }
-
-  //   display_handler.clearDisplay();
-  //   display_handler.setTextSize(1);
-  //   display_handler.setTextColor(SSD1306_WHITE);
-  //   display_handler.setCursor(0,0);
-  //   display_handler.print("numSamples: ");
-  //   display_handler.println(numSamples);
-
-
-  //   display_handler.display();
-
-  // delay(500);
-
-
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-    // display_handler.print("after while");
-    // display_handler.println(micros());
-
-    // display_handler.print(startTime);
-    // display_handler.print(" ");
-    // display_handler.println(finishTime);
-
-    // display_handler.print(startTime - finishTime);
-
-    // display_handler.println();
-    // display_handler.display();
-    //delay(500);
-
-  //digitalWrite(PB11, HIGH);
-
-
 
 
   double oneK[2* numSamples] = {0};
   double oneKCorr[numSamples] = {0};
-
-  //double oneKT = (double) numSamples / (double) (startTime - finishTime);
-
 
   int dt = ( finishTime - startTime );
   double oneKT = (double) numSamples / ( (double) dt );
@@ -168,32 +72,11 @@ loopCount++;
   
   }
 
-    // display_handler.clearDisplay();
-    // display_handler.println("here");
-
-    // display_handler.display();
-
-
-  // for (int i = 0; i < IRsignal.size(); i++){
-
-  //   display_handler.clearDisplay();
-  //   display_handler.setCursor(0,0);
-  //   display_handler.print(i);
-  //   display_handler.print(", ");
-  //   display_handler.println(IRsignal.at(i));
-  //   display_handler.display();
-  //   delay(500);
-
-  // }
-
   for (int k = 0; k < numSamples; k++){
 
     oneKCorr[k] = 0;
 
-    for (int i = 0; i < numSamples; i++){
-      
-      //oneKCorr[k] = IRsignal.at(i);
-      
+    for (int i = 0; i < numSamples; i++){      
       oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
     }
 
@@ -208,8 +91,6 @@ loopCount++;
     }
   }
 
-
-  
 
   if (max < minTot){
     minTot = max;
@@ -229,8 +110,6 @@ loopCount++;
 
     // display_handler.print("finishTime: ");
     // display_handler.println(finishTime);
-
-
 
     // display_handler.print("dt: ");
     // display_handler.println(dt);
@@ -254,12 +133,6 @@ loopCount++;
     display_handler.println(avg,0);
 
     display_handler.display();
-
-
-   // if (max < -0.00)
-      //delay(2500);
-
-   // */
 
 }
 
