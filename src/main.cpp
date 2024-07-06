@@ -1,12 +1,15 @@
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
 
+#include <vector>
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define REFLECTANCE PA0 // Input pin
+#define IRSENSOR PA0
 #define THRESHOLD 100 // Black line detection threshold
 #define NUM_SAMPLES 200
 int sampleWave[NUM_SAMPLES];
@@ -27,7 +30,8 @@ double irAmplitude (int* measuredArray, int measuredArraySize, int timeStep);
 
 int findMax(int* array, int arraySize);
 int findMin(int* array, int arraySize);
-double crossCorelate(double* measuredWave, int measuredWaveSize, int deltaT, int numSamples);
+double crossCorelate(double* measuredWave, int measuredWaveSize, double deltaT, int numSamples);
+
 
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -50,6 +54,9 @@ void setup() {
 
   // Set up PA1 as input
   pinMode(REFLECTANCE, INPUT);
+
+  pinMode(PB11, OUTPUT);
+  digitalWrite(PB11, LOW);
   // Set up interrupt function
   //attachInterrupt(digitalPinToInterrupt(REFLECTANCE), handle_state_change, CHANGE);
   sample = 0;
@@ -57,11 +64,79 @@ void setup() {
 
 void loop() {
 
-  int numSamples = 1000;
-  double measuredWave[3*numSamples];
 
-  int time0 = millis(); 
-  for(int i=0; i<numSamples; i++){
+//double measuredWave[3*numSamples];
+
+  std::vector<double> IRsignal;
+
+  int numSamples = 0;
+  int finishTime = 0;
+  int StartTime = millis();
+  while (millis() - startTime < 10){
+
+    IRsignal.push_back(analogRead(IRSENSOR));
+    numSamples++;
+    finishTime = millis();
+  }
+
+
+  double oneK[2* numSamples] = {0};
+  double oneKCorr[numSamples] = {0};
+
+  double oneKT = (double) numSamples / (double) (startTime - finishTime);
+
+  for(int i = 0; i < 2 * numSamples;  i++) {
+  
+    oneK[i] = sin(i * TWO_PI * oneKT);
+  
+  }
+
+  for (int k = 0; k < numSamples; k++){
+
+    oneKCorr[k] = 0;
+
+    for (int i = 0; i < numSamples; i++){
+      oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
+    }
+  }
+
+  double max = oneKCorr[0];
+
+  for (int i=0; i< numSamples; i++) {
+
+    if (oneKCorr[i]>max){
+      max = oneKCorr[i];
+    }
+  }
+
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.print("startTime: ");
+    display_handler.println(startTime);
+
+    display_handler.print("finishTime: ");
+    display_handler.println(finishTime);
+
+    display_handler.print("numSamples: ");
+    display_handler.println(numSamples);
+
+    display_handler.print("oneKT: ");
+    display_handler.println(oneKT);
+
+    display_handler.println("cross correlation max: ");
+    display_handler.println(max);
+
+    display_handler.display();
+
+
+  /*for(int i=0; i<numSamples; i++){
+
+  
+    digitalWrite(PB11, LOW);
+    //delay(100);
 
     measuredWave[i] = analogRead(REFLECTANCE);
 
@@ -71,25 +146,38 @@ void loop() {
     display_handler.setCursor(0,0);
     display_handler.println("i: ");
     display_handler.println(i);
-    display_handler.display();
+    //display_handler.display();
 
-  }
+  } */
+
+/*
 
   int timeF = millis();
 
-  int deltaT = numSamples / (timeF - time0);
+  double deltaT = (double) numSamples / (double) (timeF - time0);
 
   double CC = crossCorelate(measuredWave, 3*numSamples, deltaT, numSamples);
 
 
-  
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("cross correlation: ");
-  display_handler.println(CC);
-  display_handler.display();
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.print("time0: ");
+    display_handler.println(time0);
+
+    display_handler.print("timeF: ");
+    display_handler.println(timeF);
+
+    display_handler.print("deltaT: ");
+    display_handler.println(deltaT);
+
+    display_handler.println("cross correlation: ");
+    display_handler.println(CC);
+
+    display_handler.display();
+
+
 
 /*
 loopNum++;
@@ -229,7 +317,7 @@ double findMin(double* array, int arraySize) {
  * @param period 
  * @param sampleSize the size of the sineWave array sent
  */
-void sinWave(double* sineWave, int period, int arraySize){
+void sinWave(double* sineWave, double period, int arraySize){
 
   for (int i=0; i<=arraySize; i++){
     
@@ -247,7 +335,7 @@ void sinWave(double* sineWave, int period, int arraySize){
  * @param numSamples 
  * @return double 
  */
-double crossCorelate(double* measuredWave, int measuredWaveSize, int deltaT, int numSamples){
+double crossCorelate(double* measuredWave, int measuredWaveSize, double deltaT, int numSamples){
 
 
   int correlate[numSamples];
@@ -272,7 +360,7 @@ double crossCorelate(double* measuredWave, int measuredWaveSize, int deltaT, int
 
 
 
-  double max = correlate[0];
+  double max = 0.00;//correlate[0];
   for (int i = 1; i <numSamples; i++) {
 
     if (correlate[i] > max){
