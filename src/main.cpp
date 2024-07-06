@@ -77,6 +77,15 @@ void loop() {
     IRsignal.push_back(analogRead(IRSENSOR));
     numSamples++;
     finishTime = millis();
+
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.print("numSamples: ");
+    display_handler.println(numSamples);
+    display_handler.display();
+
   }
 
 
