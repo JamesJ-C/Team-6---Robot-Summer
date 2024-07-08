@@ -18,8 +18,11 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 /*  Motors  */
 
-#define MOTOR_A PB_0
-#define MOTOR_B PB_1
+
+/*  Dont need these definitions anymore   */
+//#define MOTOR_A PB_0
+//#define MOTOR_B PB_1
+
 
 /**
 * assumes forwardDirection and backward direction are never both true
@@ -130,11 +133,12 @@ class Motor {
 };
 
 
+/*  create servo object  */
 Servo servo1;
 
-
-
+/*  create motor object   */
 Motor motor1(PB_0, PB_1);
+
 
 void setup() {
 
@@ -161,7 +165,7 @@ void setup() {
 
 
 
-
+  //old code 
   //pinMode(MOTOR_A, OUTPUT);
   //pinMode(MOTOR_B, OUTPUT);
 
@@ -218,7 +222,10 @@ void loop() {
   display_handler.println("0 degrees");
   display_handler.display();
   delay(1000);
- /* {//DC motor Section
+
+
+
+  {//DC motor Section
 
   int motorVal = map(potVal, 0, 1100, 0, 4096);
 
@@ -245,7 +252,11 @@ void loop() {
   motor1.backward(motorVal);
   delay(3000);
 
-  }//DC motor section
+  }
+
+
+
+  // old code, not used anymore. kinda doesnt work
 
   /*
 
