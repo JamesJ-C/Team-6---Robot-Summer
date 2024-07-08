@@ -140,7 +140,17 @@ Servo servo1;
 Motor motor1(PB_0, PB_1);
 
 
+volatile u_int16_t rotations = 0;
+volatile u_int16_t steps = 0;
+
+
+void rotaryEncoder();
+
 void setup() {
+
+
+
+  attachInterrupt(digitalPinToInterrupt(PB8), rotaryEncoder, FALLING);
 
 
   /*  Servo setup  */
@@ -180,10 +190,10 @@ void setup() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-  display_handler.print("Zero degrees");
+  display_handler.print("150 degrees");
   display_handler.display();
 
-  servo1.write(0);
+  servo1.write(150);
   delay(1000);
 
 
@@ -191,37 +201,60 @@ void setup() {
 
 void loop() {
 
-  int potVal = analogRead(POT_PIN);
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.print("rotations: ");
+  display_handler.println(rotations);
+  display_handler.print("steps: ");
+  display_handler.print(steps);
+  display_handler.display();
+
+  
+  // int potVal = analogRead(POT_PIN);
 
 
   /*  Servo control  */
 
-  servo1.write(210);
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("210 degrees");
-  display_handler.display();
-  delay(1000);
+  
+  // for (int i = 150; i<=210; i++){
+  //   servo1.write(i);
+  //   delay(10);
+  // }
 
-  servo1.write(90);
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("90 degrees");
-  display_handler.display();
-  delay(1000);
 
-  servo1.write(0);
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("0 degrees");
-  display_handler.display();
-  delay(1000);
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.println("210 degrees");
+  // display_handler.display();
+
+
+  // //servo1.write(210);
+
+
+  // delay(2000);
+
+  // servo1.write(150);
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.println("150 degrees");
+  // display_handler.display();
+
+  // for (int i = 210; i >= 150; i--){
+  //   servo1.write(i);
+  //   delay(10);
+  // }
+
+
+  // delay(2000);
+
+
 
 
 
@@ -330,3 +363,12 @@ for (int i=0; i< 100000; i++){
 }
 
 
+void rotaryEncoder(){
+
+  steps++;
+  if (steps >= 24){
+    //steps = 0;
+    rotations++;
+  }
+
+}
