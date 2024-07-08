@@ -225,34 +225,34 @@ void loop() {
 
 
 
-  {//DC motor Section
+  // {//DC motor Section
 
-  int motorVal = map(potVal, 0, 1100, 0, 4096);
+  // int motorVal = map(potVal, 0, 1100, 0, 4096);
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("Pot val: ");
-  display_handler.println(potVal);
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.print("Pot val: ");
+  // display_handler.println(potVal);
 
-  display_handler.print("Motor val: ");
-  display_handler.println(motorVal);
-  display_handler.display();
+  // display_handler.print("Motor val: ");
+  // display_handler.println(motorVal);
+  // display_handler.display();
 
-  motor1.stop();
-  delay(1000);
+  // motor1.stop();
+  // delay(1000);
 
-  motor1.forward(motorVal);
-  delay(3000);
+  // motor1.forward(motorVal);
+  // delay(3000);
 
-  motor1.stop();
-  delay(1000);
+  // motor1.stop();
+  // delay(1000);
 
-  motor1.backward(motorVal);
-  delay(3000);
+  // motor1.backward(motorVal);
+  // delay(3000);
 
-  }
+  // }
 
 
 
