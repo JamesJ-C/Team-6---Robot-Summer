@@ -22,6 +22,101 @@ double avg = 0;
 /*  Function decs  */
 double crossCorrelation (std::vector<double> IRsignal);
 
+
+
+
+/**
+ * @brief Object of an IR sensor
+ * 
+ */
+class IrSensor {
+
+
+  private:
+  PinName sensorPin; //pin sensor is attached to
+  double lastCorrelationVal = -1; //result of the most recent correlation
+
+  public:
+
+  /**
+   * @brief Construct a new Ir Sensor object
+   * 
+   * @param pin the pin which the ir detector is connected to
+   */
+  IrSensor(PinName pin) : sensorPin(pin) {}
+
+  /**
+   * @brief Get the most recent result of this->crossCorrelation().
+   * 
+   * @return double most recent result of crossCorrelation.
+   * returns -1 if crossCorrelation() has not been called yet
+   */
+  double getLastCorrelationVal(){
+
+    return this->lastCorrelationVal;
+
+  }
+
+
+  /**
+   * @brief measures a signal and cross correlates it with 
+   * a 1kHz sine wave. 
+   * 
+   * @return 'amount' of 1kHz IR signal detected
+   */
+  double crossCorrelation() {
+
+    std::vector<double> IRsignal;
+    int numSamples = 0;
+    unsigned long finishTime = 0;
+    unsigned long startTime = millis(); 
+
+    /*  Read Values from sensor  */
+    while (millis() - startTime < 10){
+      IRsignal.push_back(analogRead(this->sensorPin));
+      numSamples++;
+      finishTime = millis();
+    }
+
+    double oneK[2* numSamples] = {0}; //computed sine wave
+    double oneKCorr[numSamples] = {0}; //array for convolved result
+
+    /*  calculate period of sine wave  */
+    int dt = ( finishTime - startTime );
+    double oneKT = (double) numSamples / ( (double) dt );
+
+    /*  Create sine wave  */
+    for(int i = 0; i < 2 * numSamples;  i++) {
+      oneK[i] = sin(i * TWO_PI / oneKT);
+    }
+
+    /*  Convolve measured IR signal with created sin wave  */
+    for (int k = 0; k < numSamples; k++){
+      oneKCorr[k] = 0;
+      for (int i = 0; i < numSamples; i++){      
+        oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
+      }
+    }
+
+    /*  Find max in array  */
+    double max = oneKCorr[0];
+    for (int i=0; i< numSamples; i++) {
+
+      if (oneKCorr[i]>max){
+        max = oneKCorr[i];
+      }
+    }
+
+    this->lastCorrelationVal = max;
+    return max;
+
+  }
+
+
+};
+
+
+
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
@@ -282,5 +377,6 @@ double crossCorrelation (std::vector<double> IRsignal){
     return max;
 
 }
+
 
 
