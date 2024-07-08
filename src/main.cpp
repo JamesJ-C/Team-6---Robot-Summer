@@ -18,6 +18,10 @@ double minTot = 9999999;
 double maxTot = 0;
 double avg = 0;
 
+
+/*  Function decs  */
+double crossCorrelation (std::vector<double> IRsignal);
+
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
@@ -44,13 +48,154 @@ void setup() {
 
 void loop() {
 
-loopCount++;
+// loopCount++;
 
   std::vector<double> IRsignal;
 
   int numSamples = 0;
   unsigned long finishTime = 0;
   unsigned long startTime = millis(); 
+
+  while (millis() - startTime < 10){
+
+    IRsignal.push_back(analogRead(IRSENSOR));
+    numSamples++;
+    finishTime = millis();
+  }
+
+  
+//   display_handler.clearDisplay();
+//   display_handler.setTextSize(1);
+//   display_handler.setTextColor(SSD1306_WHITE);
+//   display_handler.setCursor(0,0);
+//   display_handler.print("size: ");
+//   display_handler.println(IRsignal.size());
+//   display_handler.display();
+
+// delay(500);
+
+
+//   double oneK[2* numSamples] = {0};
+//   double oneKCorr[numSamples] = {0};
+
+//   int dt = ( finishTime - startTime );
+//   double oneKT = (double) numSamples / ( (double) dt );
+
+//   for(int i = 0; i < 2 * numSamples;  i++) {
+  
+//     oneK[i] = sin(i * TWO_PI / oneKT);
+  
+//   }
+
+//   for (int k = 0; k < numSamples; k++){
+
+//     oneKCorr[k] = 0;
+
+//     for (int i = 0; i < numSamples; i++){      
+//       oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
+//     }
+
+//   }
+
+//   double max = oneKCorr[0];
+
+//   for (int i=0; i< numSamples; i++) {
+
+//     if (oneKCorr[i]>max){
+//       max = oneKCorr[i];
+//     }
+//   }
+
+
+//   if (max < minTot){
+//     minTot = max;
+//   }
+//   if (max > maxTot){
+//     maxTot = max;
+//   }
+
+//   avg = ( (loopCount - 1) * avg + max ) / loopCount;
+
+    // display_handler.clearDisplay();
+    // display_handler.setTextSize(1);
+    // display_handler.setTextColor(SSD1306_WHITE);
+    // display_handler.setCursor(0,0);
+    // display_handler.print("startTime: ");
+    // display_handler.println(startTime);
+
+    // display_handler.print("finishTime: ");
+    // display_handler.println(finishTime);
+
+    // display_handler.print("dt: ");
+    // display_handler.println(dt);
+
+    // display_handler.print("numSamples: ");
+    // display_handler.println(numSamples);
+
+    // display_handler.print("oneKT: ");
+    // display_handler.println(oneKT);
+
+    // display_handler.print("cc max: ");
+    // display_handler.println(max,0);
+
+    // display_handler.print("minTot: ");
+    // display_handler.println(minTot,0);
+
+    // display_handler.print("maxTot: ");
+    // display_handler.println(maxTot,0);
+
+    // display_handler.print("avg: ");
+    // display_handler.println(avg,0);
+
+
+  double x = crossCorrelation(IRsignal);
+
+    delay(1000);
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.print("ret max: ");
+    display_handler.println(x,0);
+
+
+
+    display_handler.display();
+
+delay(1000);
+}
+
+
+
+double crossCorrelation (std::vector<double> IRsignal){
+
+
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.print("size2: ");
+  // display_handler.println(IRsignal->size());
+  // display_handler.display();
+  // delay(2000);
+  // for (int i = 0; i < IRsignal->size(); i++){  
+  //   display_handler.clearDisplay();
+  //   display_handler.setTextSize(1);
+  //   display_handler.setTextColor(SSD1306_WHITE);
+  //   display_handler.setCursor(0,0);    
+  //   display_handler.print("val ");
+  //   display_handler.print(i);
+  //   display_handler.print(": ");
+  //   display_handler.println(IRsignal->at(i));
+  //   display_handler.display();
+  //   delay(75);
+  // }
+  //   return 0.0;
+
+
+  int numSamples = 0;
+  unsigned long finishTime = 0;
+  unsigned long startTime = millis();
 
   while (millis() - startTime < 10){
 
@@ -129,10 +274,13 @@ loopCount++;
     display_handler.print("maxTot: ");
     display_handler.println(maxTot,0);
 
-    display_handler.print("avg: ");
-    display_handler.println(avg,0);
+    // display_handler.print("avg: ");
+    // display_handler.println(avg,0);
 
     display_handler.display();
 
+    return max;
+
 }
+
 
