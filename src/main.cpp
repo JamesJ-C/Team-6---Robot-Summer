@@ -11,6 +11,13 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+
+/*  Rotary  */
+
+#define ROTARY_A PB8
+#define ROTARY_B PB9
+
+
 /*  analog inputs */
 #define POT_PIN A1
 
@@ -150,9 +157,8 @@ void setup() {
 
   /*  Encoder setup  */
   //attachInterrupt(digitalPinToInterrupt(PB8), rotaryEncoder, FALLING);
-  pinMode(INPUT_PULLUP, PB8);
-  pinMode(INPUT_PULLUP, PB9);
-
+  pinMode(INPUT, ROTARY_A);
+  pinMode(INPUT, ROTARY_B);
 
 
   /*  Servo setup  */
@@ -163,7 +169,7 @@ void setup() {
   /*  Display setup  */
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
-  // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
+
   display_handler.display();
   delay(2000);
 
@@ -175,11 +181,6 @@ void setup() {
   display_handler.println("Setting up...");
   display_handler.display();
 
-
-
-  //old code 
-  //pinMode(MOTOR_A, OUTPUT);
-  //pinMode(MOTOR_B, OUTPUT);
 
   /*  Motor Pins  */
   pinMode(motor1.getPinA(), OUTPUT);
@@ -201,8 +202,63 @@ void setup() {
 
 }
 
+bool previousRotaryAState = true;
+bool previousRotaryBState = false;
+int counter = 0;
+String dir = "";
+bool currentAState = 1;
+bool currentBState = 1;
+
+
 void loop() {
 
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+
+  currentAState = digitalRead(ROTARY_A);
+  currentBState = digitalRead(ROTARY_B);
+
+  display_handler.print("digital read: ");
+  display_handler.println(currentAState);
+
+
+
+  if( currentAState == LOW && previousRotaryAState == HIGH) {
+
+    if (digitalRead(ROTARY_B) == currentAState){
+      counter++;
+      dir = "direction 1";
+    }
+    else {
+      counter--;
+      dir = "direction 2";
+    }
+  }
+
+  previousRotaryAState = currentAState;
+
+
+
+
+
+  display_handler.print("current A state: ");
+  display_handler.println(currentAState);
+
+  display_handler.print("previous A state: ");
+  display_handler.println(previousRotaryAState);
+
+
+
+  display_handler.print("steps: ");
+  display_handler.println(counter);
+  display_handler.println(dir);
+  display_handler.display();
+
+
+  delay(500);
 
   // display_handler.clearDisplay();
   // display_handler.setTextSize(1);
@@ -261,8 +317,8 @@ void loop() {
 
 
 
-
-  // {//DC motor Section
+  /*  DC motor Section  */
+  // {
 
 
   
@@ -294,89 +350,19 @@ void loop() {
 
   // }
 
-
-
-  // old code, not used anymore. kinda doesnt work
-
-  /*
-
-  int potVal = analogRead(POT_PIN);
-
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("Pot val:");
-  display_handler.println(potVal);
-  
-for (int i=0; i< 100000; i++){
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 3000, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);  
-
-}
-
-for (int i=0; i< 100000; i++){
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 3000, RESOLUTION_12B_COMPARE_FORMAT);  
-
-}
-
-/*
-
-  //pwm_stop( MOTOR_A);
-
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, map(potVal, 0, 1024, 0, 4095), RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-
-
-  int intermediateVal = map(potVal, 0, 1024, -500, 500);
-  display_handler.print("int-val:");
-  display_handler.println(intermediateVal);
-
-  if (intermediateVal < -20){
-   
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, -1*intermediateVal, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT); 
-
-  display_handler.print("Motor A:");
-  display_handler.println(-1*intermediateVal);
-
-  display_handler.println("Motor B: 0");
-
-  }
-
-  else if (intermediateVal > 20) {
-
-  pwm_start(MOTOR_A, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-  pwm_start(MOTOR_B, MOTOR_FREQUENCY, intermediateVal, RESOLUTION_12B_COMPARE_FORMAT);
-
-  display_handler.println("Motor A: 0");
-
-  display_handler.print("Motor B:");
-  display_handler.println(intermediateVal);
-
-  }
-
-  else {
-    pwm_stop(MOTOR_A);
-    pwm_stop(MOTOR_B);
-    display_handler.print("motors off");
-  }
-
-  display_handler.display();    
-
-// */
-
 }
 
 
 void rotaryEncoder(){
 
-  steps++;
-  delay(1.5);
-  // if (steps >= 24){
-  //   //steps = 0;
-  //   //rotations++;
-  // }
+  bool A = digitalRead(ROTARY_A);
+  bool B = digitalRead(ROTARY_B);
+
+  if (A=B){
+    rotations++;
+  }
+  else {
+    rotations--;
+  }
 
 }
