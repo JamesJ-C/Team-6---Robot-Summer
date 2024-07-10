@@ -1,8 +1,6 @@
 #include <Arduino.h>
-
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
-
 #include <Servo.h>
 
 
@@ -12,24 +10,12 @@
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
-/*  Rotary  */
-
-#define ROTARY_A PB8
-#define ROTARY_B PB9
-
-
 /*  analog inputs */
 #define POT_PIN A1
 
 #define MOTOR_FREQUENCY 1000
 
 /*  Motors  */
-
-
-/*  Dont need these definitions anymore   */
-//#define MOTOR_A PB_0
-//#define MOTOR_B PB_1
-
 
 /**
 * assumes forwardDirection and backward direction are never both true
@@ -147,18 +133,7 @@ Servo servo1;
 Motor motor1(PB_0, PB_1);
 
 
-volatile u_int16_t rotations = 0;
-volatile u_int16_t steps = 0;
-
-
-void rotaryEncoder();
-
 void setup() {
-
-  /*  Encoder setup  */
-  //attachInterrupt(digitalPinToInterrupt(PB8), rotaryEncoder, FALLING);
-  pinMode(INPUT, ROTARY_A);
-  pinMode(INPUT, ROTARY_B);
 
 
   /*  Servo setup  */
@@ -202,79 +177,8 @@ void setup() {
 
 }
 
-bool previousRotaryAState = true;
-bool previousRotaryBState = false;
-int counter = 0;
-String dir = "";
-bool currentAState = 1;
-bool currentBState = 1;
-
 
 void loop() {
-
-
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-
-  currentAState = digitalRead(ROTARY_A);
-  currentBState = digitalRead(ROTARY_B);
-
-  display_handler.print("digital read: ");
-  display_handler.println(currentAState);
-
-
-
-  if( currentAState == LOW && previousRotaryAState == HIGH) {
-
-    if (digitalRead(ROTARY_B) == currentAState){
-      counter++;
-      dir = "direction 1";
-    }
-    else {
-      counter--;
-      dir = "direction 2";
-    }
-  }
-
-  previousRotaryAState = currentAState;
-
-
-
-
-
-  display_handler.print("current A state: ");
-  display_handler.println(currentAState);
-
-  display_handler.print("previous A state: ");
-  display_handler.println(previousRotaryAState);
-
-
-
-  display_handler.print("steps: ");
-  display_handler.println(counter);
-  display_handler.println(dir);
-  display_handler.display();
-
-
-  delay(500);
-
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("rotations: ");
-  // display_handler.println(rotations);
-  // display_handler.print("steps: ");
-  // display_handler.print(steps);
-  // display_handler.display();
-
-
-  
-
-  
-
 
   /*  Servo control  */
 
@@ -349,20 +253,5 @@ void loop() {
   // delay(3000);
 
   // }
-
-}
-
-
-void rotaryEncoder(){
-
-  bool A = digitalRead(ROTARY_A);
-  bool B = digitalRead(ROTARY_B);
-
-  if (A=B){
-    rotations++;
-  }
-  else {
-    rotations--;
-  }
 
 }
