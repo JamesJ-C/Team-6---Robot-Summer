@@ -245,19 +245,19 @@ void loop() {
 
   double x = crossCorrelation(IRsignal);
 
-    delay(1000);
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    display_handler.print("ret max: ");
-    display_handler.println(x,0);
+    //delay(1000);
+    // display_handler.clearDisplay();
+    // display_handler.setTextSize(1);
+    // display_handler.setTextColor(SSD1306_WHITE);
+    // display_handler.setCursor(0,0);
+    // display_handler.print("ret max: ");
+    // display_handler.println(x,0);
 
 
 
     display_handler.display();
 
-delay(1000);
+// delay(1000);
 }
 
 
