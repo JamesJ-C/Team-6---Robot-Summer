@@ -1,13 +1,14 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
+//#include <Adafruit_SSD1306.h>
 #include <Servo.h>
+#include <SPI.h>
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
-Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 /*  analog inputs */
@@ -129,13 +130,13 @@ class Motor {
 /*  create servo object  */
 Servo servo1;
 
-/*  create motor object   */
+/*  create motor objects   */
 #define Motor1_P1 PB_0
 #define Motor1_P2 PB_1
 Motor motor1(Motor1_P1, Motor1_P2);
 
-#define Motor2_P1 PA_8
-#define Motor2_P2 PA_9
+#define Motor2_P1 PB_6
+#define Motor2_P2 PB_7
 Motor motor2(Motor2_P1, Motor2_P2);
 
 
@@ -147,32 +148,35 @@ void setup() {
 
 
   /*  Servo setup  */
-  pinMode(PA8, OUTPUT);
-  servo1.attach(PA8);
+//   pinMode(PA8, OUTPUT);
+//   servo1.attach(PA8);
 
 
   /*  Display setup  */
-  display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+//   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
 
-  display_handler.display();
-  delay(2000);
+//   display_handler.display();
+//   delay(2000);
 
-  // Displays "Hello world!" on the screen
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Setting up...");
-  display_handler.display();
+//   // Displays "Hello world!" on the screen
+//   display_handler.clearDisplay();
+//   display_handler.setTextSize(1);
+//   display_handler.setTextColor(SSD1306_WHITE);
+//   display_handler.setCursor(0,0);
+//   display_handler.println("Setting up...");
+//   display_handler.display();
 
 
   /*  Motor Pins  */
-  pinMode(motor1.getPinA(), OUTPUT);
-  pinMode(motor1.getPinB(), OUTPUT);
+  	pinMode(motor1.getPinA(), OUTPUT);
+  	pinMode(motor1.getPinB(), OUTPUT);
+
+	pinMode(motor2.getPinA(), OUTPUT);
+  	pinMode(motor2.getPinB(), OUTPUT);
 
   /*  Other pins  */
-  pinMode(POT_PIN, INPUT_ANALOG);
+  	pinMode(POT_PIN, INPUT_ANALOG);
 
 //   display_handler.clearDisplay();
 //   display_handler.setTextSize(1);
@@ -193,33 +197,33 @@ void setup() {
 
 
 void loop() {
-  	const int driveSpeed = 4095;
+  	const int driveSpeed = 2000;
 
 	//if (analogRead(TAPE_SENSOR_PIN) >= TAPE_THRESHOLD){
 
-		display_handler.clearDisplay();
-		display_handler.setTextSize(1);
-		display_handler.setTextColor(SSD1306_WHITE);
-		display_handler.setCursor(0,0);
-		display_handler.println("Driving...");
-		display_handler.display();
+	// 	display_handler.clearDisplay();
+	// 	display_handler.setTextSize(1);
+	// 	display_handler.setTextColor(SSD1306_WHITE);
+	// 	display_handler.setCursor(0,0);
+	// 	display_handler.println("Driving...");
+	// 	display_handler.display();
 
-		motor1.forward(driveSpeed);
-		motor2.forward(driveSpeed);
-		delay(1000);
+	// 	motor1.forward(driveSpeed);
+	// 	motor2.forward(driveSpeed);
+	// 	delay(1000);
 
-	//} else{
+	// //} else{
 
 
-		display_handler.clearDisplay();
-		display_handler.setTextSize(1);
-		display_handler.setTextColor(SSD1306_WHITE);
-		display_handler.setCursor(0,0);
-		display_handler.println("Driving...");
-		display_handler.display();
+	// 	display_handler.clearDisplay();
+	// 	display_handler.setTextSize(1);
+	// 	display_handler.setTextColor(SSD1306_WHITE);
+	// 	display_handler.setCursor(0,0);
+	// 	display_handler.println("Driving...");
+	// 	display_handler.display();
 
 		motor1.stop();
-		motor2.stop();
+		//motor2.stop();
 		delay(200);
 	//}
 
