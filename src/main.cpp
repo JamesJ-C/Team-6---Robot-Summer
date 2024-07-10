@@ -179,79 +179,16 @@ void setup() {
 
 
 void loop() {
-
-  /*  Servo control  */
-
   
-  for (int i = 150; i<=210; i++){
-    servo1.write(i);
-    delay(15);
-  }
+	motor1.stop();
+	delay(1000);
+
+	motor1.forward(4095);
+	delay(1000);
+
+	motor1.stop();
+	delay(1500);
 
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("210 degrees");
-  display_handler.display();
-
-
-  //servo1.write(210);
-
-
-  delay(2000);
-
-  //servo1.write(150);
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("150 degrees");
-  display_handler.display();
-
-  for (int i = 210; i >= 150; i--){
-    servo1.write(i);
-    delay(15);
-  }
-
-
-  delay(2000);
-
-
-
-
-  /*  DC motor Section  */
-  // {
-
-
-  
-  // int potVal = analogRead(POT_PIN);
-  // int motorVal = map(potVal, 0, 1100, 0, 4096);
-
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("Pot val: ");
-  // display_handler.println(potVal);
-
-  // display_handler.print("Motor val: ");
-  // display_handler.println(motorVal);
-  // display_handler.display();
-
-  // motor1.stop();
-  // delay(1000);
-
-  // motor1.forward(motorVal);
-  // delay(3000);
-
-  // motor1.stop();
-  // delay(1000);
-
-  // motor1.backward(motorVal);
-  // delay(3000);
-
-  // }
-
+	
 }
