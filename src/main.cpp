@@ -44,6 +44,10 @@ HardwareSerial SerialPort(USART3);
 
 bool toggled = false;
 
+
+String msg;
+
+
 void setup() {
 
   
@@ -94,7 +98,6 @@ void loop() {
     //if (true) {
 		toggled = true;
 
-		String msg;
 		msg = SerialPort.readString();
         display_handler.print("msg: ");
 		display_handler.println(msg);
@@ -107,6 +110,9 @@ void loop() {
     else {
 
         display_handler.println("no connection");
+		display_handler.println("most recent msg");
+		display_handler.println(msg);
+		
 
     }
 
