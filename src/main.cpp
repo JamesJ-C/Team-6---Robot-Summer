@@ -88,10 +88,10 @@ void loop() {
     //   int fake = Serial.parseInt();
     // }
 
-	//if (SerialPort.available() > 0) {
+	if (SerialPort.available() > 0) {
     //delay(10);
 
-    if (true) {
+    //if (true) {
 		toggled = true;
 
 		String msg;
