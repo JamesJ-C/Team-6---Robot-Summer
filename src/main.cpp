@@ -1,8 +1,6 @@
 #include <Arduino.h>
-
 #include <Wire.h>
 #include <Adafruit_SSD1306.h>
-
 #include <Servo.h>
 
 
@@ -14,36 +12,18 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 /*  Rotary  */
-
 #define ROTARY_A PB8
 #define ROTARY_B PB9
 
 
 // Rotary Encoder Inputs
-#define CLK PB8
-#define DT PB9
-
-#define outputA PB8
-#define outputB PB9
-
 int counter = 0;
-int currentStateCLK;
-int currentStateDT;
-int lastStateCLK;
-String currentDir ="";
 
-int count = 0;
-
-
-bool currentStateA, currentStateB, 
-	lastStateA, lastStateB;
-
+bool currentStateA, currentStateB;
+int lastEncoded = 0;
 
 void updateEncoder();
-void updateEncoder2();
 
-
-int lastEncoded = 0;
 
 void setup() {
 
@@ -54,17 +34,12 @@ void setup() {
   delay(2000);
 
   // Displays "Hello world!" on the screen
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Setting up...");
-  display_handler.display();
-
-
-	// Set encoder pins as inputs
-	// pinMode(CLK,INPUT);
-	// pinMode(DT,INPUT);
+	display_handler.clearDisplay();
+	display_handler.setTextSize(1);
+	display_handler.setTextColor(SSD1306_WHITE);
+	display_handler.setCursor(0,0);
+	display_handler.println("Setting up...");
+	display_handler.display();
 
 	pinMode(ROTARY_A, INPUT);
 	pinMode(ROTARY_B, INPUT);
@@ -72,39 +47,14 @@ void setup() {
 	// Setup Serial Monitor
 	Serial.begin(9600);
 
-	// Read the initial state of CLK
-	//lastStateCLK = digitalRead(CLK);
-
-
-	lastStateA = digitalRead(ROTARY_A);
-	lastStateB = digitalRead(ROTARY_B);
-
-
-  attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder2, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder2, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder, CHANGE);
 
 
 }
 
 
 void loop() {
-
-
-	// display_handler.clearDisplay();
-	// display_handler.setTextSize(1);
-	// display_handler.setTextColor(SSD1306_WHITE);
-	// display_handler.setCursor(0,0);
-	// display_handler.print("call: ");
-	// display_handler.println(count);
-	// display_handler.println("AB, current");
-
-	// display_handler.print(currentStateA);
-	// display_handler.println(currentStateB);
-
-	// display_handler.display();
-
-
-
 
 
 /*	---------------  */
@@ -129,10 +79,7 @@ void loop() {
  * so a total of 4 increments per click. 
  * 
  */
-void updateEncoder2(){
-
-
-	count++;
+void updateEncoder(){
 
 	currentStateA = digitalRead(ROTARY_A);
  	currentStateB = digitalRead(ROTARY_B);
@@ -152,37 +99,4 @@ void updateEncoder2(){
 	/*	the current states bits become the next states previous state bits  */
 	lastEncoded = encoded;
 	
-}
-
-
-void updateEncoder(){
-	// Read the current state of CLK
-	currentStateCLK = digitalRead(CLK);
- 	currentStateDT = digitalRead(DT);
-
-	// If last and current state of CLK are different, then pulse occurred
-	// React to only 1 state change to avoid double count
-	if (currentStateCLK != lastStateCLK && currentStateCLK == 1){
-
-
-		// If the DT state is different than the CLK state then
-		// the encoder is rotating CCW so decrement
-		if (currentStateDT != currentStateCLK) {
-			counter--;
-			currentDir ="CCW";
-		} else if(currentStateDT == currentStateCLK) {
-			// Encoder is rotating CW so increment
-			counter++;
-			currentDir ="CW";
-		}
-
-		else {
-
-		currentDir = "broken";
-		}
-
-	}
-
-	// Remember last CLK state
-	lastStateCLK = currentStateCLK;
 }
