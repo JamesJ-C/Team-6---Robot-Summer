@@ -34,6 +34,8 @@ bool toggled = false;
 
 String received;
 
+int loopedCount = 0;
+
 void setup() {
 
   
@@ -61,13 +63,22 @@ SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 void loop() {
    
    
-    SerialPort.println("from the esp");
+
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
-    display_handler.println("sent");
+
+	loopedCount++;
+	if(loopedCount = 0){
+		loopedCount = 0;
+	    SerialPort.println("from the esp");
+		display_handler.println("sent");
+	}
+
+
+
     //display_handler.display();
 
 
