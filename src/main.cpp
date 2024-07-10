@@ -15,8 +15,8 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 /*  Rotary  */
 
-#define ROTARY_A A6//PB8
-#define ROTARY_B A7//PB9
+#define ROTARY_A PB8
+#define ROTARY_B PB9
 
 
 // Rotary Encoder Inputs
@@ -32,6 +32,8 @@ int currentStateDT;
 int lastStateCLK;
 String currentDir ="";
 
+int count = 0;
+
 
 bool currentStateA, currentStateB, 
 	lastStateA, lastStateB;
@@ -39,6 +41,9 @@ bool currentStateA, currentStateB,
 
 void updateEncoder();
 void updateEncoder2();
+
+
+int lastEncoded = 0;
 
 void setup() {
 
@@ -76,7 +81,7 @@ void setup() {
 
 
   attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder2, CHANGE);
-  //attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder2, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder2, CHANGE);
 
 
 }
@@ -85,167 +90,45 @@ void setup() {
 void loop() {
 
 
-	display_handler.clearDisplay();
-	display_handler.setTextSize(1);
-	display_handler.setTextColor(SSD1306_WHITE);
-	display_handler.setCursor(0,0);
-	display_handler.print("call: ");
-	display_handler.println(count);
-	display_handler.println("AB, Last - current");
-
-	display_handler.print(lastStateA);
-	display_handler.println(lastStateB);
-
-	display_handler.print(currentStateA);
-	display_handler.println(currentStateB);
-
-	display_handler.display();
-
-
-	// aCurrentAnalogState = analogRead(ROTARY_A);
-	// bCurrentAnalogState = analogRead(ROTARY_B);
-
-	// if (aCurrentAnalogState > analogThreshold){
-	// 	aCurrentState = HIGH;
-	// }
-	// else {
-	// 	aCurrentState = LOW;
-	// }
-
-	// if (bCurrentAnalogState > analogThreshold) {
-	// 	bCurrentState = HIGH;
-	// } else {
-	// 	bCurrentState = LOW;
-	// }
-
-	// if (aCurrentState != aLastState){
-	// 	if (aCurrentState == HIGH && bCurrentState == LOW){
-	// 		count++;
-	// 		dir = "direction 1";
-	// 	} else if (aCurrentState == LOW && bCurrentState == LOW) {
-	// 		count--;
-	// 		dir = "direction 2";
-	// 	}
-	// }
-
-	// aLastState = aCurrentState;
-
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-	// display_handler.print("Direction: ");
-	// display_handler.println(dir);
-	// display_handler.print("Count: ");
+	// display_handler.clearDisplay();
+	// display_handler.setTextSize(1);
+	// display_handler.setTextColor(SSD1306_WHITE);
+	// display_handler.setCursor(0,0);
+	// display_handler.print("call: ");
 	// display_handler.println(count);
+	// display_handler.println("AB, current");
 
-	// display_handler.print("aCurrAnalog: ");
-	// display_handler.println(aCurrentAnalogState);
-	// display_handler.print("bCurrentAnalog: ");
-	// display_handler.println(bCurrentAnalogState);
+	// display_handler.print(currentStateA);
+	// display_handler.println(currentStateB);
 
-
-    // display_handler.display();
+	// display_handler.display();
 
 
-/*	---------------  */
-
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-	// display_handler.print("Direction: ");
-	// display_handler.println(currentDir);
-	// display_handler.print("Counter: ");
-	// display_handler.println(counter);
-    // display_handler.display();
-
-/*	---------------  */
-
-// 	 aState = digitalRead(outputA); // Reads the "current" state of the outputA
-//    // If the previous and the current state of the outputA are different, that means a Pulse has occured
-//    if (aState != aLastState && aState == 1){     
-//      // If the outputB state is different to the outputA state, that means the encoder is rotating clockwise
-//      if (digitalRead(outputB) != aState) { 
-//        counter ++;
-//      } else {
-//        counter --;
-//      }
-// 	display_handler.clearDisplay();
-// 	display_handler.setTextSize(1);
-// 	display_handler.setTextColor(SSD1306_WHITE);
-// 	display_handler.setCursor(0,0);
-// 	display_handler.println("Position: ");
-// 	display_handler.println(counter);
-// 	display_handler.display();
-//    } 
-//    aLastState = aState; // Updates the previous state of the outputA with the current state
 
 
 
 /*	---------------  */
 
-  // //For the non-interupt code      
-	// // Read the current state of CLK
-	// currentStateCLK = digitalRead(CLK);
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+	//display_handler.print("Direction: ");
+	//display_handler.println(currentDir);
+	display_handler.print("Counter: ");
+	display_handler.println(counter);
+    display_handler.display();
 
-	// // If last and current state of CLK are different, then pulse occurred
-	// // React to only 1 state change to avoid double count
-	// if (currentStateCLK != lastStateCLK  && currentStateCLK == 1){
+/*	---------------  */
 
-
-
-  //   display_handler.clearDisplay();
-  //   display_handler.setTextSize(1);
-  //   display_handler.setTextColor(SSD1306_WHITE);
-  //   display_handler.setCursor(0,0);
-	// 	display_handler.print("In if function ");
-	// 	display_handler.println();
-	// 	display_handler.println("");
-	// 	display_handler.println();
-
-  //   display_handler.display();
-
-
-	// 	// If the DT state is different than the CLK state then
-	// 	// the encoder is rotating CCW so decrement
-	// 	if (digitalRead(DT) != currentStateCLK) {
-	// 		counter --;
-	// 		currentDir ="CCW";
-	// 	} else {
-	// 		// Encoder is rotating CW so increment
-	// 		counter ++;
-	// 		currentDir ="CW";
-	// 	}
-
-
-    
-	// }
-
-  //   display_handler.clearDisplay();
-  //   display_handler.setTextSize(1);
-  //   display_handler.setTextColor(SSD1306_WHITE);
-  //   display_handler.setCursor(0,0);
-	// 	display_handler.print("Direction: ");
-	// 	display_handler.println(currentDir);
-	// 	display_handler.print("Counter: ");
-	// 	display_handler.println(counter);
-
-	// 	display_handler.print("currentStateCLK: ");
-	// 	display_handler.println(currentStateCLK);
-	// 	display_handler.print("lastStateCLK: ");
-	// 	display_handler.println(lastStateCLK);
-
-  //   display_handler.display();
-
-	// // Remember last CLK state
-	// lastStateCLK = currentStateCLK;
-
-	// // Put in a slight delay to help debounce the reading
-	// delay(10);
 }
 
 
+/**
+ * @brief updates counter for each edge. for one click of the encoder, each output will have 2 clicks,
+ * so a total of 4 increments per click. 
+ * 
+ */
 void updateEncoder2(){
 
 
@@ -254,8 +137,20 @@ void updateEncoder2(){
 	currentStateA = digitalRead(ROTARY_A);
  	currentStateB = digitalRead(ROTARY_B);
 
-	lastStateA = currentStateA;
-	lastStateB = currentStateB;
+	/*	encodes 2 bit current state  */
+	int encoded = ( currentStateA << 1 ) | currentStateB;
+	/*	encodes the last states bits, concat the current states bits  */
+	int concat = ( lastEncoded << 2 ) | encoded;
+
+	/*	hard codes all the possibilities of encoded data  */
+	if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+		counter++;
+	}
+	if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+		counter--;
+	}
+	/*	the current states bits become the next states previous state bits  */
+	lastEncoded = encoded;
 	
 }
 
