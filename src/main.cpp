@@ -56,29 +56,16 @@ SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 }
 
 void loop() {
-
-
-//Master Code /*
-  if (STATUS == MASTER){
-    
-    SerialPort.println("Flip the burger!");
+   
+   
+    SerialPort.println("from the esp");
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
     display_handler.println("sent");
-    display_handler.display();
-
-    delay(1000);
-
-
-  }
-// */
-
-//Slave Code /*
-
-  if (STATUS == SLAVE) {
+    //display_handler.display();
 
 
     if (SerialPort.available()) {
@@ -91,27 +78,25 @@ void loop() {
       received = SerialPort.readString();
       
       toggled = true;
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
+    //   display_handler.clearDisplay();
+    //   display_handler.setTextSize(1);
+    //   display_handler.setTextColor(SSD1306_WHITE);
+    //   display_handler.setCursor(0,0);
       display_handler.print("Received: ");
       display_handler.println(received);
-      display_handler.display();
+    //   display_handler.display();
       
 
     } else {
 
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
+    //   display_handler.clearDisplay();
+    //   display_handler.setTextSize(1);
+    //   display_handler.setTextColor(SSD1306_WHITE);
+    //   display_handler.setCursor(0,0);
       display_handler.println("Serial port unavailable");
-      display_handler.display();
-        
-      
+
     }
 
-  }
+    display_handler.display();
 
 }
