@@ -131,11 +131,11 @@ Servo servo1;
 
 /*  create motor object   */
 #define Motor1_P1 PB_0
-#define Motor1_P2 PB_2
+#define Motor1_P2 PB_1
 Motor motor1(Motor1_P1, Motor1_P2);
 
-#define Motor2_P1 PB_0
-#define Motor2_P2 PB_2
+#define Motor2_P1 PA_8
+#define Motor2_P2 PA_9
 Motor motor2(Motor2_P1, Motor2_P2);
 
 
@@ -195,7 +195,7 @@ void setup() {
 void loop() {
   	const int driveSpeed = 4095;
 
-	if (analogRead(TAPE_SENSOR_PIN) >= TAPE_THRESHOLD){
+	//if (analogRead(TAPE_SENSOR_PIN) >= TAPE_THRESHOLD){
 
 		display_handler.clearDisplay();
 		display_handler.setTextSize(1);
@@ -206,9 +206,9 @@ void loop() {
 
 		motor1.forward(driveSpeed);
 		motor2.forward(driveSpeed);
-		//delay(1000);
+		delay(1000);
 
-	} else{
+	//} else{
 
 
 		display_handler.clearDisplay();
@@ -220,7 +220,8 @@ void loop() {
 
 		motor1.stop();
 		motor2.stop();
-	}
+		delay(200);
+	//}
 
 
 
