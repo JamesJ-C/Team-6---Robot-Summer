@@ -84,23 +84,19 @@ void loop() {
     //delay(1000);
 
 
-    if (SerialPort.available()) {
-      int fake = Serial.parseInt();
-    }
+    // if (SerialPort.available()) {
+    //   int fake = Serial.parseInt();
+    // }
 
-	if (SerialPort.available() > 0) {
+	//if (SerialPort.available() > 0) {
     //delay(10);
 
-    //if (true) {
+    if (true) {
 		toggled = true;
 
-		String msg = SerialPort.readString();
-
-        // display_handler.clearDisplay();
-        // display_handler.setTextSize(1);
-        // display_handler.setTextColor(SSD1306_WHITE);
-        // display_handler.setCursor(0,0);
-        display_handler.println("msg: ");
+		String msg;
+		msg = SerialPort.readString();
+        display_handler.print("msg: ");
 		display_handler.println(msg);
         display_handler.display();
 
@@ -110,14 +106,8 @@ void loop() {
 
     else {
 
-        //display_handler.clearDisplay();
-        //display_handler.setTextSize(1);
-        //display_handler.setTextColor(SSD1306_WHITE);
-        //display_handler.setCursor(0,0);
         display_handler.println("no connection");
 
-        
-    
     }
 
 
