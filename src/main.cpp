@@ -71,89 +71,56 @@ SerialPort.begin(115200);
 
 void loop() {
 
-
-//Master Code /*
-  if (STATUS == TRANSMIT){
-    
-      
-    SerialPort.println("A");
+  
+    SerialPort.println("FROM BP");
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
-    display_handler.println("Sent");
-    display_handler.display();
+    display_handler.println("sent");
+//    display_handler.display();
 
-    delay(1000);
-
-
-  }
-// */
-
-//Slave Code /*
-
-  if (STATUS == RECEIVE) {
+    //delay(1000);
 
 
     if (SerialPort.available()) {
       int fake = Serial.parseInt();
     }
 
-   // if (SerialPort.available() > 0) {
+	if (SerialPort.available() > 0) {
     //delay(10);
 
-    if (true) {  
-      toggled = true;
+    //if (true) {
+		toggled = true;
 
-      char number = SerialPort.read();
+		String msg = SerialPort.readString();
 
-      if (number == '0') {
-
-        display_handler.clearDisplay();
-        display_handler.setTextSize(1);
-        display_handler.setTextColor(SSD1306_WHITE);
-        display_handler.setCursor(0,0);
-        display_handler.println("Low");
-        display_handler.display();
-      }
-      if (number == '1') {
-
-        display_handler.clearDisplay();
-        display_handler.setTextSize(1);
-        display_handler.setTextColor(SSD1306_WHITE);
-        display_handler.setCursor(0,0);
-        display_handler.println("HIGH");
+        // display_handler.clearDisplay();
+        // display_handler.setTextSize(1);
+        // display_handler.setTextColor(SSD1306_WHITE);
+        // display_handler.setCursor(0,0);
+        display_handler.println("msg: ");
+		display_handler.println(msg);
         display_handler.display();
 
-      }
 
     } 
     
 
     else {
 
-      if (toggled) {
-
-      display_handler.clearDisplay();
-      display_handler.setTextSize(1);
-      display_handler.setTextColor(SSD1306_WHITE);
-      display_handler.setCursor(0,0);
-      display_handler.println("Toggled");
-      display_handler.display();
-
-      } else{
-
-        display_handler.clearDisplay();
-        display_handler.setTextSize(1);
-        display_handler.setTextColor(SSD1306_WHITE);
-        display_handler.setCursor(0,0);
+        //display_handler.clearDisplay();
+        //display_handler.setTextSize(1);
+        //display_handler.setTextColor(SSD1306_WHITE);
+        //display_handler.setCursor(0,0);
         display_handler.println("no connection");
-        display_handler.display();
+
         
-      }
+    
     }
 
-  }
+
+	display_handler.display();
 
 }
