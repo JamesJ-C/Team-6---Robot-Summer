@@ -31,6 +31,9 @@ HardwareSerial SerialPort(1);  //if using UART1
 
 bool toggled = false;
 
+
+String received;
+
 void setup() {
 
   
@@ -68,13 +71,13 @@ void loop() {
     //display_handler.display();
 
 
-    if (SerialPort.available()) {
-      //int fake = Serial.parseInt(); //taken out for reading strings
-    }
+    // if (SerialPort.available()) {
+    //   //int fake = Serial.parseInt(); //taken out for reading strings
+    // }
 
     if (SerialPort.available() > 0) {
-  
-      String received = "";
+	//if (true){
+      received = "";
       received = SerialPort.readString();
       
       toggled = true;
@@ -89,14 +92,11 @@ void loop() {
 
     } else {
 
-    //   display_handler.clearDisplay();
-    //   display_handler.setTextSize(1);
-    //   display_handler.setTextColor(SSD1306_WHITE);
-    //   display_handler.setCursor(0,0);
-      display_handler.println("Serial port unavailable");
-
+    	display_handler.println("Serial port unavailable");
+		display_handler.print("most recent msg: ");
+		display_handler.println(received);
     }
 
-    display_handler.display();
+	display_handler.display();
 
 }
