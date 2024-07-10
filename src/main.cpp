@@ -71,8 +71,8 @@ void loop() {
     display_handler.setCursor(0,0);
 
 	loopedCount++;
-	if(loopedCount = 0){
-		loopedCount = 0;
+	if(loopedCount = 1){
+		//loopedCount = 0;
 	    SerialPort.println("from the esp");
 		display_handler.println("sent");
 	}
