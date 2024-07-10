@@ -130,7 +130,17 @@ class Motor {
 Servo servo1;
 
 /*  create motor object   */
-Motor motor1(PB_0, PB_1);
+#define Motor1_P1 PB_0
+#define Motor1_P2 PB_2
+Motor motor1(Motor1_P1, Motor1_P2);
+
+#define Motor2_P1 PB_0
+#define Motor2_P2 PB_2
+Motor motor2(Motor2_P1, Motor2_P2);
+
+
+#define TAPE_THRESHOLD 500
+#define TAPE_SENSOR_PIN PA0
 
 
 void setup() {
@@ -164,31 +174,64 @@ void setup() {
   /*  Other pins  */
   pinMode(POT_PIN, INPUT_ANALOG);
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("150 degrees");
-  display_handler.display();
+//   display_handler.clearDisplay();
+//   display_handler.setTextSize(1);
+//   display_handler.setTextColor(SSD1306_WHITE);
+//   display_handler.setCursor(0,0);
+//   display_handler.print("150 degrees");
+//   display_handler.display();
 
-  servo1.write(150);
-  delay(1000);
+//   servo1.write(150);
+//   delay(1000);
+
+	motor1.stop();
+	motor2.stop();
+	delay(1500);
 
 
 }
 
 
 void loop() {
-  
-	motor1.stop();
-	delay(1000);
+  	const int driveSpeed = 4095;
 
-	motor1.forward(4095);
-	delay(1000);
+	if (analogRead(TAPE_SENSOR_PIN) >= TAPE_THRESHOLD){
 
-	motor1.stop();
-	delay(1500);
+		display_handler.clearDisplay();
+		display_handler.setTextSize(1);
+		display_handler.setTextColor(SSD1306_WHITE);
+		display_handler.setCursor(0,0);
+		display_handler.println("Driving...");
+		display_handler.display();
+
+		motor1.forward(driveSpeed);
+		motor2.forward(driveSpeed);
+		//delay(1000);
+
+	} else{
 
 
-	
+		display_handler.clearDisplay();
+		display_handler.setTextSize(1);
+		display_handler.setTextColor(SSD1306_WHITE);
+		display_handler.setCursor(0,0);
+		display_handler.println("Driving...");
+		display_handler.display();
+
+		motor1.stop();
+		motor2.stop();
+	}
+
+
+
+
+
+
+
+
+
+
+
+
+
 }
