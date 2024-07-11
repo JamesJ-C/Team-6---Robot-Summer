@@ -8,20 +8,8 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define REFLECTANCE PA0 // Input pin
-#define IRSENSOR PA0
-#define THRESHOLD 100 // Black line detection threshold
-#define NUM_SAMPLES 200
-
-int loopCount = 0;
-double minTot = 9999999;
-double maxTot = 0;
-double avg = 0;
-
-
-/*  Function decs  */
-double crossCorrelation (std::vector<double> IRsignal);
-
+#define REFLECTANCE_0 PA8 
+#define REFLECTANCE_1 PA9
 
 
 
@@ -137,7 +125,8 @@ void setup() {
 
   
   // Set up PA1 as input
-  pinMode(REFLECTANCE, INPUT);
+  pinMode(REFLECTANCE_0, INPUT);
+  pinMode(REFLECTANCE_1, INPUT);
 
 
 }
