@@ -197,7 +197,7 @@ void setup() {
 
 
 void loop() {
-  	const int driveSpeed = 2000;
+  	const int driveSpeed = 4096;
 
 	//if (analogRead(TAPE_SENSOR_PIN) >= TAPE_THRESHOLD){
 
@@ -208,9 +208,9 @@ void loop() {
 	// 	display_handler.println("Driving...");
 	// 	display_handler.display();
 
-	// 	motor1.forward(driveSpeed);
-	// 	motor2.forward(driveSpeed);
-	// 	delay(1000);
+		motor1.forward(driveSpeed);
+		motor2.forward(driveSpeed);
+	 	delay(1000);
 
 	// //} else{
 
@@ -223,20 +223,8 @@ void loop() {
 	// 	display_handler.display();
 
 		motor1.stop();
-		//motor2.stop();
+		motor2.stop();
 		delay(200);
 	//}
-
-
-
-
-
-
-
-
-
-
-
-
 
 }
