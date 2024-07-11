@@ -8,8 +8,8 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define REFLECTANCE_0 PA8 
-#define REFLECTANCE_1 PA9
+#define REFLECTANCE_0 PA_2 
+#define REFLECTANCE_1 PA_3
 
 
 
@@ -124,7 +124,7 @@ void setup() {
   display_handler.display();
 
   
-  // Set up PA1 as input
+  // Set up reflectance inputs
   pinMode(REFLECTANCE_0, INPUT);
   pinMode(REFLECTANCE_1, INPUT);
 
@@ -134,125 +134,24 @@ void setup() {
 void loop() {
 
 
-}
+	int reflectanceReading0 = analogRead(REFLECTANCE_0);
+	int reflectanceReading1 = analogRead(REFLECTANCE_1);
 
 
+	// Displays "Hello world!" on the screen
+	display_handler.clearDisplay();
+	display_handler.setTextSize(1);
+	display_handler.setTextColor(SSD1306_WHITE);
+	display_handler.setCursor(0,0);
+	display_handler.println("reflectance 0: ");
+	display_handler.println(reflectanceReading0);
+	display_handler.println("reflectance 1: ");
+	display_handler.println(reflectanceReading1);
+	display_handler.display();
 
-double crossCorrelation (std::vector<double> IRsignal){
-
-
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("size2: ");
-  // display_handler.println(IRsignal->size());
-  // display_handler.display();
-  // delay(2000);
-  // for (int i = 0; i < IRsignal->size(); i++){  
-  //   display_handler.clearDisplay();
-  //   display_handler.setTextSize(1);
-  //   display_handler.setTextColor(SSD1306_WHITE);
-  //   display_handler.setCursor(0,0);    
-  //   display_handler.print("val ");
-  //   display_handler.print(i);
-  //   display_handler.print(": ");
-  //   display_handler.println(IRsignal->at(i));
-  //   display_handler.display();
-  //   delay(75);
-  // }
-  //   return 0.0;
+	delay(100);
 
 
-  int numSamples = 0;
-  unsigned long finishTime = 0;
-  unsigned long startTime = millis();
-
-  while (millis() - startTime < 10){
-
-    IRsignal.push_back(analogRead(IRSENSOR));
-    numSamples++;
-    finishTime = millis();
-  }
-
-
-  double oneK[2* numSamples] = {0};
-  double oneKCorr[numSamples] = {0};
-
-  int dt = ( finishTime - startTime );
-  double oneKT = (double) numSamples / ( (double) dt );
-
-  for(int i = 0; i < 2 * numSamples;  i++) {
-  
-    oneK[i] = sin(i * TWO_PI / oneKT);
-  
-  }
-
-  for (int k = 0; k < numSamples; k++){
-
-    oneKCorr[k] = 0;
-
-    for (int i = 0; i < numSamples; i++){      
-      oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
-    }
-
-  }
-
-  double max = oneKCorr[0];
-
-  for (int i=0; i< numSamples; i++) {
-
-    if (oneKCorr[i]>max){
-      max = oneKCorr[i];
-    }
-  }
-
-
-  if (max < minTot){
-    minTot = max;
-  }
-  if (max > maxTot){
-    maxTot = max;
-  }
-
-  avg = ( (loopCount - 1) * avg + max ) / loopCount;
-
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
-    // display_handler.print("startTime: ");
-    // display_handler.println(startTime);
-
-    // display_handler.print("finishTime: ");
-    // display_handler.println(finishTime);
-
-    // display_handler.print("dt: ");
-    // display_handler.println(dt);
-
-    // display_handler.print("numSamples: ");
-    // display_handler.println(numSamples);
-
-    // display_handler.print("oneKT: ");
-    // display_handler.println(oneKT);
-
-    display_handler.print("cc max: ");
-    display_handler.println(max,0);
-
-    display_handler.print("minTot: ");
-    display_handler.println(minTot,0);
-
-    display_handler.print("maxTot: ");
-    display_handler.println(maxTot,0);
-
-    // display_handler.print("avg: ");
-    // display_handler.println(avg,0);
-
-    display_handler.display();
-
-    return max;
 
 }
-
-
 
