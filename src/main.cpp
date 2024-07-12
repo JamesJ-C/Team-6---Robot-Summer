@@ -18,6 +18,8 @@
 
 
 
+
+
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
@@ -38,7 +40,6 @@ int loopedCount = 0;
 
 void setup() {
 
-  
 
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
