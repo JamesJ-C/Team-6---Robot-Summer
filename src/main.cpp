@@ -1,23 +1,28 @@
 #include <Arduino.h>
 #include <Wire.h>
-#include <HardwareSerial.h>
 #include <Adafruit_SSD1306.h>
 
-#define BP 0
-#define ESP 1
+// Inputs for local programming
+#define TAB 39
+#define SET_VAL 36
+#define MENU 20
 
-#define MASTER 1
-#define SLAVE 0
+// Set mode of OLED
+bool programMode = 0; // low means parameters cannot be updated (competition mode)
 
-#define BOARD_TYPE BP
-#define STATUS SLAVE
+// Parameter initialization
+bool tabState = 0;
+bool menuState = 0;
+int setValState = 0;
+uint32_t tabTimer = millis(); // time tab state last changed
+uint32_t menuTimer = millis(); // time menu state last changed
+int buttonMinTime = 500; // minimum milliseconds between allowed state changes 
 
-
-#define RX 9
-#define TX 10
-
-
-
+// Menu items
+const int menuMax = 1; // maximum entries in each menu
+String menu1[menuMax]; // entries in menu1
+String menu2[menuMax]; // entries in menu2
+int currentMenu = 0; // current menu selected
 
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -25,90 +30,56 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-/*  analog inputs */
-
-
-
-HardwareSerial SerialPort(1);  //if using UART1
-
-bool toggled = false;
-
-
-String received;
-
-int loopedCount = 0;
+void displayMenu(int menu);
 
 void setup() {
 
+  // Initialize button inputs with pull-up resistors
+  pinMode(TAB, INPUT_PULLUP);
+  pinMode(MENU, INPUT_PULLUP);
+
+  if (!digitalRead(TAB) && !digitalRead(MENU)) {
+    programMode = 1;
+  }
 
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
- 
+
   // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
   display_handler.display();
-  delay(2000);
+  delay(1000);
 
-  // Displays "Hello world!" on the screen
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Setting up...");
-  display_handler.display();
-
-
-
-SerialPort.begin(115200, SERIAL_8N1, RX, TX);
-
-}
-
-void loop() {
-   
-   
-
-
+  if (programMode) {
+    // Setup menu selection
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
+    display_handler.println("MENU DISPLAY");
+    display_handler.display();
+  }
+  else {
+    // Set up competition mode display
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("CAN'T TALK RN...");
+    display_handler.println("TOO BUSY COOKING!!!");
+    display_handler.display();
+  }
 
-	loopedCount++;
-	if(loopedCount = 1){
-		//loopedCount = 0;
-	    SerialPort.println("from the esp");
-		display_handler.println("sent");
-	}
+}
 
+void loop() {
 
+}
 
-    //display_handler.display();
-
-
-    // if (SerialPort.available()) {
-    //   //int fake = Serial.parseInt(); //taken out for reading strings
-    // }
-
-    if (SerialPort.available() > 0) {
-	//if (true){
-      received = "";
-      received = SerialPort.readString();
-      
-      toggled = true;
-    //   display_handler.clearDisplay();
-    //   display_handler.setTextSize(1);
-    //   display_handler.setTextColor(SSD1306_WHITE);
-    //   display_handler.setCursor(0,0);
-      display_handler.print("Received: ");
-      display_handler.println(received);
-    //   display_handler.display();
-      
-
-    } else {
-
-    	display_handler.println("Serial port unavailable");
-		display_handler.print("most recent msg: ");
-		display_handler.println(received);
-    }
-
-	display_handler.display();
-
+void displayMenu(int menu) {
+  // Setup menu selection
+    display_handler.clearDisplay();
+    display_handler.setTextSize(1);
+    display_handler.setTextColor(SSD1306_WHITE);
+    display_handler.setCursor(0,0);
+    display_handler.println("MENU DISPLAY");
+    display_handler.display();
 }
