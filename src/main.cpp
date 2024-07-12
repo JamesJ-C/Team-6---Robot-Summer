@@ -242,16 +242,16 @@ void loop() {
 int motorVal = 2000;
 
   motor1.stop();
-  delay(1000);
+  delay(500);
 
   motor1.forward(motorVal);
-  delay(3000);
+  delay(2000);
 
   motor1.stop();
-  delay(1000);
+  delay(500);
 
   motor1.backward(motorVal);
-  delay(3000);
+  delay(2000);
 
   }
 
