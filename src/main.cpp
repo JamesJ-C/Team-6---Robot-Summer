@@ -47,6 +47,8 @@ bool toggled = false;
 
 String msg;
 
+bool flag = false;
+
 
 void setup() {
 
@@ -76,7 +78,12 @@ SerialPort.begin(115200);
 void loop() {
 
   
-    SerialPort.println("FROM BP");
+
+	if (flag){    
+		SerialPort.println("FLAG");
+	} else {
+    	SerialPort.println("FROM BP");
+	}
 
     display_handler.clearDisplay();
     display_handler.setTextSize(1);
@@ -102,6 +109,8 @@ void loop() {
         display_handler.print("msg: ");
 		display_handler.println(msg);
         display_handler.display();
+
+		flag = true;
 
 
     } 
