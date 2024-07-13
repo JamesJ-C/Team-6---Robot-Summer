@@ -17,7 +17,7 @@ int setValState = 0;
 int currentTab = 0; // current menu option selected
 
 // Menu items
-const int menuMax = 2; // maximum entries in each menu
+const int numTabs = 3; // number of tab options in menu
 bool startScreen = 0; // starts up with start screen
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
@@ -25,6 +25,7 @@ bool startScreen = 0; // starts up with start screen
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
+void pushTab();
 
 void setup() {
 
@@ -51,7 +52,7 @@ void setup() {
     display_handler.println("WELCOME :)");
     display_handler.println("PRESS TAB TO SCROLL THROUGH PARAMETERS!!!");
     display_handler.display();
-
+    attachInterrupt(digitalPinToInterrupt(TAB), pushTab, CHANGE);
   }
   else {
     // Set up competition mode display
@@ -71,5 +72,31 @@ void loop() {
 }
 
 void displayMenu(int menuNum) {
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  if (menuNum == 0) {
+    display_handler.println("WELCOME :)");
+    display_handler.println("PRESS TAB TO SCROLL THROUGH PARAMETERS!!!");
+  }
+  else if (menuNum == 1) {
+    display_handler.println("--> Value1");
+    display_handler.println(analogRead(SET_VAL));
+  }
+  else if (menuNum == 2) {
+    display_handler.println("--> Value2");
+    display_handler.println(analogRead(SET_VAL));
+  }
+  display_handler.display();
+}
 
+void pushTab() {
+  if (currentTab == numTabs) {
+    currentTab = 0;
+  }
+  else {
+    currentTab++;
+  }
+  displayMenu(currentTab);
 }
