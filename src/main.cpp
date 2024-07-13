@@ -27,7 +27,7 @@ void updateEncoder();
 
 /*  Motors  */
 
-#define MOTOR_FREQUNECY 1000
+#define MOTOR_FREQUENCY 1000
 
 /**
 * assumes forwardDirection and backward direction are never both true
@@ -137,6 +137,121 @@ class Motor {
 
 };
 
+
+
+
+class RotaryEncoder {
+
+
+  private:
+
+  PinName pinA;
+  PinName pinB;
+
+
+  const int clicksPerRotation = 24; //depending on each encoder
+
+  int lastEncoded = 0b11; //for calculating direction
+  int increments = 0; //increments in a direction
+  int previousIncrement;//for calculating velocity
+  int angularVelocity; 
+
+  unsigned long lastUpdateTime = 0;//for velocity
+  int deltaT; //for velocity
+  
+  
+  public:
+
+  RotaryEncoder(PinName pinA, PinName pinB) : pinA(pinA), pinB(pinB) {}
+
+  /**
+   * @brief Get the Pin A object
+   * 
+   * @return PinName pin attached to the first terminal
+   */
+  PinName getPinA(){
+    return pinA;
+  }
+  /**
+   * @brief Get the Pin B object
+   * 
+   * @return PinName pin attached to the second terminal
+   */
+  PinName getPinB(){
+    return pinB;
+  }
+  /**
+   * @brief Get the number of increments offset the encoder has
+   * 
+   * @return int number of increments from zero position
+   */
+  int getIncrements(){
+    return increments;
+  }
+  int getSpeed(){
+    return angularVelocity;
+  }
+
+  void updateTime(unsigned long time){
+
+    deltaT = time - this->lastUpdateTime;
+    this->lastUpdateTime = time;
+  }
+
+  void updateSpeed(){
+
+    angularVelocity = ( (this->increments - this->previousIncrement) / deltaT ) / clicksPerRotation;
+
+  }
+
+  void updateEncoder(bool A, bool B){
+
+
+    // display_handler.clearDisplay();
+    // display_handler.setTextSize(1);
+    // display_handler.setTextColor(SSD1306_WHITE);
+    // display_handler.setCursor(0,0);
+    // display_handler.print("A: ");
+    // display_handler.println(A);
+    // display_handler.print("B: ");
+    // display_handler.println(B);
+
+    // display_handler.print("lastEcnoded: ");
+    // display_handler.println(this->lastEncoded, BIN);
+
+
+
+    // display_handler.display();
+
+    // delay(1000);
+
+    /*	encodes 2 bit current state  */
+    int encoded = ( A << 1 ) | B;
+    /*	encodes the last states bits, concat the current states bits  */
+    int concat = ( lastEncoded << 2 ) | encoded;
+
+    /*	hard codes all the possibilities of encoded data  */
+    if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+      this->increments++;
+    }
+    if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+      this->increments--;
+    }
+
+    /*	the current states bits become the next states previous bits  */
+    this->lastEncoded = encoded;
+
+
+  }
+
+
+
+};
+
+
+RotaryEncoder encoder1(PB_8, PB_9);
+
+
 #define Motor1_P1 PB_0
 #define Motor1_P2 PB_1
 Motor motor1(Motor1_P1, Motor1_P2);
@@ -168,11 +283,18 @@ void setup() {
 	pinMode(ROTARY_A, INPUT);
 	pinMode(ROTARY_B, INPUT);
 
+  // pinMode(encoder1.getPinA(), INPUT);
+	// pinMode(encoder1.getPinB(), INPUT);
+
 	// Setup Serial Monitor
 	Serial.begin(9600);
 
 	attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder, CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder, CHANGE);
+
+  // attachInterrupt(digitalPinToInterrupt(encoder1.getPinA()), updateEncoder, CHANGE);
+	// attachInterrupt(digitalPinToInterrupt(encoder1.getPinB()), updateEncoder, CHANGE);
+
 
 
 }
@@ -181,17 +303,41 @@ void setup() {
 void loop() {
 
 
+
 /*	---------------  */
 
-    display_handler.clearDisplay();
-    display_handler.setTextSize(1);
-    display_handler.setTextColor(SSD1306_WHITE);
-    display_handler.setCursor(0,0);
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
 	//display_handler.print("Direction: ");
 	//display_handler.println(currentDir);
 	display_handler.print("Counter: ");
 	display_handler.println(counter);
-    display_handler.display();
+
+  // display_handler.display();
+
+  // // delay(1000);
+
+  display_handler.print("Obj Counter: ");
+	display_handler.println(encoder1.getIncrements() );
+
+  // // encoder1.updateEncoder(1,0);
+  // // encoder1.updateEncoder(0,0);
+  
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.print("Obj Counter: ");
+	// display_handler.println(encoder1.getIncrements() );
+  
+  display_handler.display();
+
+
+
+  //delay(1000);
+
 
 /*	---------------  */
 
@@ -208,6 +354,10 @@ void updateEncoder(){
 	currentStateA = digitalRead(ROTARY_A);
  	currentStateB = digitalRead(ROTARY_B);
 
+  encoder1.updateEncoder(currentStateA, currentStateB);
+
+  //encoder1.updateTime( millis() );
+
 	/*	encodes 2 bit current state  */
 	int encoded = ( currentStateA << 1 ) | currentStateB;
 	/*	encodes the last states bits, concat the current states bits  */
@@ -216,11 +366,22 @@ void updateEncoder(){
 	/*	hard codes all the possibilities of encoded data  */
 	if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
 		counter++;
+    //encoder1.changeCount(1);
 	}
 	if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
 		counter--;
+    //encoder1.changeCount(-1);
 	}
-	/*	the current states bits become the next states previous state bits  */
+	/*	the current states bits become the next states previous bits  */
 	lastEncoded = encoded;
 	
+}
+
+void updateEncoder2(){
+
+
+  //encoder1.
+  encoder1.updateTime( millis() );
+
+
 }
