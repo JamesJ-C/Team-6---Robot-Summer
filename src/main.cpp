@@ -20,10 +20,10 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 int counter = 0;
 
 bool currentStateA, currentStateB;
-int lastEncoded = 0;
+int lastEncoded = 0b11;
 
 void updateEncoder();
-
+void ISRUpdateEncoder();
 
 /*  Motors  */
 
@@ -149,9 +149,10 @@ class RotaryEncoder {
   PinName pinB;
 
 
-  const int clicksPerRotation = 24; //depending on each encoder
+  const int clicksPerRotation = 20; //depending on each encoder
 
-  int lastEncoded = 0b11; //for calculating direction
+  int lastEncoded = 0b11; //for calculating direction. This value seems to make 0 position work on startup
+                          // otherwise there would be an offset on increment by 2
   int increments = 0; //increments in a direction
   int previousIncrement;//for calculating velocity
   int angularVelocity; 
@@ -204,26 +205,34 @@ class RotaryEncoder {
 
   }
 
-  void updateEncoder(bool A, bool B){
+  void updateEncoder(bool Aa, bool Bb){
+
+    // bool A = digitalRead(ROTARY_A);
+    // bool B = digitalRead(ROTARY_B);
+
+    // /*	encodes 2 bit current state  */
+    // int encoded = ( A << 1 ) | B;
+    // /*	encodes the last states bits, concat the current states bits  */
+    // int concat = ( lastEncoded << 2 ) | encoded;
+
+    // /*	hard codes all the possibilities of encoded data  */
+    // if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+    //   this->increments++;
+    // }
+    // if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+    //   this->increments--;
+    // }
+
+    // /*	the current states bits become the next states previous bits  */
+    // this->lastEncoded = encoded;
 
 
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-    // display_handler.print("A: ");
-    // display_handler.println(A);
-    // display_handler.print("B: ");
-    // display_handler.println(B);
+  }
 
-    // display_handler.print("lastEcnoded: ");
-    // display_handler.println(this->lastEncoded, BIN);
+  void updateEncoder(){
 
-
-
-    // display_handler.display();
-
-    // delay(1000);
+    bool A = digitalRead(ROTARY_A);
+    bool B = digitalRead(ROTARY_B);
 
     /*	encodes 2 bit current state  */
     int encoded = ( A << 1 ) | B;
@@ -241,10 +250,7 @@ class RotaryEncoder {
     /*	the current states bits become the next states previous bits  */
     this->lastEncoded = encoded;
 
-
   }
-
-
 
 };
 
@@ -289,8 +295,8 @@ void setup() {
 	// Setup Serial Monitor
 	Serial.begin(9600);
 
-	attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
 
   // attachInterrupt(digitalPinToInterrupt(encoder1.getPinA()), updateEncoder, CHANGE);
 	// attachInterrupt(digitalPinToInterrupt(encoder1.getPinB()), updateEncoder, CHANGE);
@@ -310,33 +316,14 @@ void loop() {
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-	//display_handler.print("Direction: ");
-	//display_handler.println(currentDir);
 	display_handler.print("Counter: ");
 	display_handler.println(counter);
-
-  // display_handler.display();
-
-  // // delay(1000);
-
   display_handler.print("Obj Counter: ");
 	display_handler.println(encoder1.getIncrements() );
 
-  // // encoder1.updateEncoder(1,0);
-  // // encoder1.updateEncoder(0,0);
-  
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("Obj Counter: ");
-	// display_handler.println(encoder1.getIncrements() );
+
   
   display_handler.display();
-
-
-
-  //delay(1000);
 
 
 /*	---------------  */
@@ -356,7 +343,7 @@ void updateEncoder(){
 
   encoder1.updateEncoder(currentStateA, currentStateB);
 
-  //encoder1.updateTime( millis() );
+  encoder1.updateTime( millis() );
 
 	/*	encodes 2 bit current state  */
 	int encoded = ( currentStateA << 1 ) | currentStateB;
@@ -377,11 +364,9 @@ void updateEncoder(){
 	
 }
 
-void updateEncoder2(){
+void ISRUpdateEncoder(){
 
-
-  //encoder1.
+  encoder1.updateEncoder();
   encoder1.updateTime( millis() );
-
 
 }
