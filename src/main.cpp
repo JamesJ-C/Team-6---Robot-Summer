@@ -3,6 +3,8 @@
 #include <Adafruit_SSD1306.h>
 #include <Servo.h>
 
+#include <RotaryEncoder.h>
+
 
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
@@ -29,157 +31,6 @@ void ISRUpdateEncoder();
 
 #define MOTOR_FREQUENCY 1000
 
-class RotaryEncoder {
-
-  private:
-
-
-  const int clicksPerRotation = 20; //depending on each encoder
-
-  PinName pinA;
-  PinName pinB;
-
-
-  /*  for calculating direction. This value seems to make 0 position work on startup 
-  otherwise there would be an offset on increment by 2 */
-  int lastEncoded = 0b11; 
-  int increments = 0; //net clicks offset from 0
-  int previousIncrement; //net clicks at the previous time stamp
-  double angularVelocity = 0; 
-
-  unsigned long lastUpdateTime = 0; //time at which the ISR was last called
-  int deltaT; //ftime between the most recent ISR calls
-  
-  
-  public:
-
-  /**
-   * @brief Construct a new Rotary Encoder object
-   * 
-   * @param pinA pin attached to one terminal of the encoder
-   * @param pinB pin attached to the other terminal of the encoder
-   */
-  RotaryEncoder(PinName pinA, PinName pinB) : pinA(pinA), pinB(pinB) {}
-
-  /**
-   * @brief Get the Pin A object
-   * 
-   * @return PinName pin attached to the first terminal
-   */
-  PinName getPinA(){
-    return pinA;
-  }
-  /**
-   * @brief Get the Pin B object
-   * 
-   * @return PinName pin attached to the second terminal
-   */
-  PinName getPinB(){
-    return pinB;
-  }
-  /**
-   * @brief Get the number of increments offset the encoder has
-   * 
-   * @return int number of increments from zero position
-   */
-  int getIncrements(){
-    return increments;
-  }
-  /**
-   * @brief Get the Speed measured by the encoder
-   * 
-   * @return int speed
-   */
-  double getSpeed(){
-    this->updateSpeed();
-    return angularVelocity;
-  }
-
-  
-  /**
-   * @brief Updates the time of the most recent ISR call 
-   * and the time between the 3 most recent calls
-   * 
-   * @param time current time
-   */
-  void updateTime(unsigned long time){
-
-    deltaT = time - this->lastUpdateTime;
-    this->lastUpdateTime = time;
-  }
-
-  
-  /**
-   * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
-   * 
-   */
-  void updateSpeed(){
-
-
-    //THIS FUNCTION DOES NOT WORK
-    angularVelocity =  ( (double) (this->increments - this->previousIncrement) / deltaT ) / (double) clicksPerRotation;
-
-  }
-
-  /**
-   * @brief old function not needed. Still would like to keep for the time being
-   * 
-   * @param Aa 
-   * @param Bb 
-   */
-  void updateEncoder(bool Aa, bool Bb){
-
-    // bool A = digitalRead(ROTARY_A);
-    // bool B = digitalRead(ROTARY_B);
-
-    // /*	encodes 2 bit current state  */
-    // int encoded = ( A << 1 ) | B;
-    // /*	encodes the last states bits, concat the current states bits  */
-    // int concat = ( lastEncoded << 2 ) | encoded;
-
-    // /*	hard codes all the possibilities of encoded data  */
-    // if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
-    //   this->increments++;
-    // }
-    // if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
-    //   this->increments--;
-    // }
-
-    // /*	the current states bits become the next states previous bits  */
-    // this->lastEncoded = encoded;
-
-
-  }
-
-  
-  /**
-   * @brief Updates the encoder object. Should be called from an ISR
-   * 
-   */
-  void updateEncoder(){
-
-    bool A = digitalRead(ROTARY_A);
-    bool B = digitalRead(ROTARY_B);
-
-    /*	encodes 2 bit current state  */
-    int encoded = ( A << 1 ) | B;
-    /*	encodes the last states bits, concat the current states bits  */
-    int concat = ( lastEncoded << 2 ) | encoded;
-
-    /*	hard codes all the possibilities of encoded data  */
-    if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
-      this->increments++;
-    }
-    if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
-      this->increments--;
-    }
-
-    /*	the current states bits become the next states previous bits  */
-    this->lastEncoded = encoded;
-
-  }
-
-};
 
 
 /**
@@ -318,12 +169,12 @@ class Motor {
 
 
 
-RotaryEncoder encoder1(PB_8, PB_9);
+//RotaryEncoder encoder1(PB_8, PB_9);
 
 
 #define Motor1_P1 PB_0
 #define Motor1_P2 PB_1
-Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
+Motor motor1(Motor1_P1, Motor1_P2); //, &encoder1);
 
 
 /*  Pot pin  */
@@ -409,11 +260,11 @@ void loop() {
 	display_handler.print("Counter: ");
 	display_handler.println(counter);
   display_handler.print("Obj Counter: ");
-	display_handler.println(encoder1.getIncrements() );
+	//display_handler.println(encoder1.getIncrements() );
 
 
   display_handler.print("motor.Obj Counter: ");
-	display_handler.println(motor1.encoder->getIncrements() );
+	//display_handler.println(motor1.encoder->getIncrements() );
 
 
   display_handler.print("g: ");
@@ -439,7 +290,7 @@ void loop() {
 
   // setVal = map(readVal, 0, 1023, -500, 500);
 
-  measuredVal = motor1.encoder->getIncrements();
+  //measuredVal = motor1.encoder->getIncrements();
 
   error = setVal - measuredVal;
 
@@ -479,9 +330,9 @@ void updateEncoder(){
 	currentStateA = digitalRead(ROTARY_A);
  	currentStateB = digitalRead(ROTARY_B);
 
-  encoder1.updateEncoder(currentStateA, currentStateB);
+  //encoder1.updateEncoder(currentStateA, currentStateB);
 
-  encoder1.updateTime( millis() );
+  //encoder1.updateTime( millis() );
 
 	/*	encodes 2 bit current state  */
 	int encoded = ( currentStateA << 1 ) | currentStateB;
@@ -504,7 +355,7 @@ void updateEncoder(){
 
 void ISRUpdateEncoder(){
 
-  encoder1.updateEncoder();
-  encoder1.updateTime( millis() );
+  //encoder1.updateEncoder();
+  //encoder1.updateTime( millis() );
 
 }
