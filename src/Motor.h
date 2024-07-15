@@ -1,7 +1,8 @@
+#pragma once
 #include <Arduino.h>
 
-#pragma once
-#include <RotaryEncoder.h>
+
+#include "RotaryEncoder.h"
 
 #define MOTOR_FREQUENCY 1000
 
