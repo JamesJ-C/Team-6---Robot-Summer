@@ -46,10 +46,10 @@ namespace movement {
          * @param PWM_pinA first PWM pin controlling the motor
          * @param L_PWM_pinB Second PWM pin controlling the motor
          */
-        Motor(PinName PWM_pinA, PinName L_PWM_pinB);// : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB)
+        Motor(PinName PWM_pinA, PinName L_PWM_pinB): PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
 
         
-        Motor(PinName PWM_pinA, PinName L_PWM_pinB, RotaryEncoder* Encoder);// : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB);
+        Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder* Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
 
         /** 
         * @brief Returns the first of 2 PWM pins

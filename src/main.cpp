@@ -31,15 +31,14 @@ void updateEncoder();
 void ISRUpdateEncoder();
 
 
-RotaryEncoder encoder1(PB_8, PB_9);
+encoder::RotaryEncoder encoder1(PB_8, PB_9);
 
 
 #define Motor1_P1 PB_0
 #define Motor1_P2 PB_1
 
 
-
-Motor motor1(Motor1_P1, Motor1_P2); //, &encoder1);////
+movement::Motor motor1(Motor1_P1, Motor1_P2);//, &encoder1);////
 
 
 /*  Pot pin  */
