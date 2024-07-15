@@ -243,6 +243,21 @@ class Motor {
     return PWM_pinB;
   }
 
+
+  void setMotor(int motorSpeed){
+
+    if (motorSpeed > 0){
+      forward(motorSpeed);
+    }
+    else if (motorSpeed < 0){
+      backward(-motorSpeed);
+    }
+    else {
+      stop();
+    }
+
+  }
+
   /**
    * @brief moves the motor forward at a given pwm signal
    * 
@@ -310,7 +325,15 @@ RotaryEncoder encoder1(PB_8, PB_9);
 #define Motor1_P2 PB_1
 Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
 
+
+/*  Pot pin  */
+
+#define POT_PIN A1
+
 void setup() {
+
+  /*  Pot Pin  */
+  pinMode(POT_PIN, INPUT);
 
   /*  Display setup  */
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -354,13 +377,30 @@ void setup() {
 }
 
 
+int LOOP_GAIN = 0;
+int P_GAIN = 10;
+int I_GAIN = 0;
+int D_GAIN = 0;
+
+//use lecture slide to tune
+int setVal = 0;
+
+int measuredVal;
+
+int error = 0;
+int lastError = 0;
+
+int max_I = 10;
+
+int p,d,i;
+
+int g;
+
 void loop() {
 
-
-
-
-
-/*	---------------  */
+  /*  print statements  */
+  {
+  /*	---------------  */
 
   display_handler.clearDisplay();
   display_handler.setTextSize(1);
@@ -383,7 +423,40 @@ void loop() {
   display_handler.display();
 
 
-/*	---------------  */
+  /*	---------------  */
+
+  }
+
+  int readVal = analogRead(POT_PIN);
+
+  setVal = map(readVal, 0, 1023, -500, 500);
+
+  measuredVal = motor1.encoder->getIncrements();
+
+  error = setVal - measuredVal;
+
+
+  p = P_GAIN * error;
+  d = D_GAIN * (error - lastError);
+  i = I_GAIN * error + i; //const * error + previous int value
+  if (i > max_I) {i = max_I;}
+  if (i < -max_I) {i = -max_I;}
+
+
+  g = p+i+d;
+
+  motor1.setMotor(g);
+
+  lastError = error;
+
+
+  //do motor code now
+
+
+
+
+
+
 
 }
 
