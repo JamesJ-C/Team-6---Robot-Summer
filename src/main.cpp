@@ -170,11 +170,43 @@ void setup() {
 }
 
 
+int LOOP_GAIN = 0;
+int P_GAIN = 0;
+int I_GAIN = 0;
+int D_GAIN = 0;
+
+//use lecture slide to tune
+
+int setVal = 0;
+
+int measuredVal;
+
+int error = 0;
+int lastError = 0;
+
+int max_I = 10;
+
+int p,d,i;
+
+int g;
+
 void loop() {
 
 
+  error = setVal - measuredVal;
 
 
+  p = P_GAIN * error;
+  d = D_GAIN * (error - lastError);
+  i = I_GAIN * error + i; //const * error + previous int value
+  if (i > max_I) {i = max_I;}
+  if (i < -max_I) {i = -max_I;}
+
+
+
+  g = p+i+d;
+
+  lastError = error;
 
 
 
