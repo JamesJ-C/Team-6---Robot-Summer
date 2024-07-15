@@ -377,20 +377,20 @@ void setup() {
 }
 
 
-int LOOP_GAIN = 0;
-int P_GAIN = 10;
+int LOOP_GAIN = 1;
+int P_GAIN = 30;
 int I_GAIN = 0;
-int D_GAIN = 0;
+int D_GAIN = 10;
 
 //use lecture slide to tune
-int setVal = 0;
+int setVal = 32;
 
 int measuredVal;
 
 int error = 0;
 int lastError = 0;
 
-int max_I = 10;
+int max_I = 140;
 
 int p,d,i;
 
@@ -416,6 +416,14 @@ void loop() {
 	display_handler.println(motor1.encoder->getIncrements() );
 
 
+  display_handler.print("g: ");
+	display_handler.println(g);
+
+
+  display_handler.print("error: ");
+	display_handler.println(error );
+
+
   // display_handler.print("Obj speed: ");
 	// display_handler.println(encoder1.getSpeed() );
 
@@ -427,9 +435,9 @@ void loop() {
 
   }
 
-  int readVal = analogRead(POT_PIN);
+  // int readVal = analogRead(POT_PIN);
 
-  setVal = map(readVal, 0, 1023, -500, 500);
+  // setVal = map(readVal, 0, 1023, -500, 500);
 
   measuredVal = motor1.encoder->getIncrements();
 
@@ -443,7 +451,7 @@ void loop() {
   if (i < -max_I) {i = -max_I;}
 
 
-  g = p+i+d;
+  g = LOOP_GAIN * ( p + i + d );
 
   motor1.setMotor(g);
 
