@@ -439,10 +439,6 @@ void loop() {
 
   // setVal = map(readVal, 0, 1023, -500, 500);
 
-
-
-
-
   measuredVal = motor1.encoder->getIncrements();
 
   error = setVal - measuredVal;
