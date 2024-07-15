@@ -125,11 +125,9 @@ class Motor {
 };
 
 
-/*  create servo object  */
-Servo servo1;
-
 /*  create motor object   */
-Motor motor1(PB_0, PB_1);
+Motor motorL(PB_0, PB_1);
+Motor motorR(PB_0, PB_1);
 
 
 void setup() {
@@ -157,21 +155,16 @@ void setup() {
 
 
   /*  Motor Pins  */
-  pinMode(motor1.getPinA(), OUTPUT);
-  pinMode(motor1.getPinB(), OUTPUT);
+
+  pinMode(motorL.getPinA(), OUTPUT);
+  pinMode(motorL.getPinB(), OUTPUT);
+
+  pinMode(motorR.getPinA(), OUTPUT);
+  pinMode(motorR.getPinB(), OUTPUT);
+
 
   /*  Other pins  */
   pinMode(POT_PIN, INPUT_ANALOG);
-
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("150 degrees");
-  display_handler.display();
-
-  servo1.write(150);
-  delay(1000);
 
 
 }
@@ -179,80 +172,11 @@ void setup() {
 
 void loop() {
 
-  /*  Servo control  */
-
-  
-  // for (int i = 150; i<=210; i++){
-  //   servo1.write(i);
-  //   delay(15);
-  // }
-
-
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.println("210 degrees");
-  // display_handler.display();
-
-
-  // //servo1.write(210);
-
-
-  // delay(2000);
-
-  // //servo1.write(150);
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.println("150 degrees");
-  // display_handler.display();
-
-  // for (int i = 210; i >= 150; i--){
-  //   servo1.write(i);
-  //   delay(15);
-  // }
-
-
-  // delay(2000);
 
 
 
 
-  /*  DC motor Section  */
-  {
 
 
-  
-  // int potVal = analogRead(POT_PIN);
-  // int motorVal = map(potVal, 0, 1100, 0, 4096);
-
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("Pot val: ");
-  // display_handler.println(potVal);
-
-  // display_handler.print("Motor val: ");
-  // display_handler.println(motorVal);
-  // display_handler.display();
-
-int motorVal = 2000;
-
-  motor1.stop();
-  delay(500);
-
-  motor1.forward(motorVal);
-  delay(2000);
-
-  motor1.stop();
-  delay(500);
-
-  motor1.backward(motorVal);
-  delay(2000);
-
-  }
 
 }
