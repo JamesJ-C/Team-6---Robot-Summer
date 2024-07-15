@@ -135,7 +135,6 @@ void setup() {
 
   /*  Servo setup  */
   pinMode(PA8, OUTPUT);
-  servo1.attach(PA8);
 
 
   /*  Display setup  */
