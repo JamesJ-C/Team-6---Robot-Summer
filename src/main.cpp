@@ -3,9 +3,8 @@
 #include <Adafruit_SSD1306.h>
 #include <Servo.h>
 
-#include <RotaryEncoder.h>
-#include <Motor.h>
-
+#include "RotaryEncoder.h"
+#include "Motor.h"
 
 //using namespace movement;
 
