@@ -181,6 +181,12 @@ void loop() {
 
   /*  Servo control  */
 
+
+  int pos = analogRead(POT_PIN);
+
+  int servoPos = map(pos, 0, 1023, 0, 184);
+
+  servo1.write( servoPos );
   
   // for (int i = 150; i<=210; i++){
   //   servo1.write(i);
@@ -188,12 +194,13 @@ void loop() {
   // }
 
 
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.println("210 degrees");
-  // display_handler.display();
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.println("degrees pos: ");
+  display_handler.println( servoPos );
+  display_handler.display();
 
 
   // //servo1.write(210);
@@ -221,38 +228,38 @@ void loop() {
 
 
   /*  DC motor Section  */
-  {
+//   {
 
 
   
-  // int potVal = analogRead(POT_PIN);
-  // int motorVal = map(potVal, 0, 1100, 0, 4096);
+//   // int potVal = analogRead(POT_PIN);
+//   // int motorVal = map(potVal, 0, 1100, 0, 4096);
 
-  // display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-  // display_handler.print("Pot val: ");
-  // display_handler.println(potVal);
+//   // display_handler.clearDisplay();
+//   // display_handler.setTextSize(1);
+//   // display_handler.setTextColor(SSD1306_WHITE);
+//   // display_handler.setCursor(0,0);
+//   // display_handler.print("Pot val: ");
+//   // display_handler.println(potVal);
 
-  // display_handler.print("Motor val: ");
-  // display_handler.println(motorVal);
-  // display_handler.display();
+//   // display_handler.print("Motor val: ");
+//   // display_handler.println(motorVal);
+//   // display_handler.display();
 
-int motorVal = 2000;
+// int motorVal = 2000;
 
-  motor1.stop();
-  delay(500);
+//   motor1.stop();
+//   delay(500);
 
-  motor1.forward(motorVal);
-  delay(2000);
+//   motor1.forward(motorVal);
+//   delay(2000);
 
-  motor1.stop();
-  delay(500);
+//   motor1.stop();
+//   delay(500);
 
-  motor1.backward(motorVal);
-  delay(2000);
+//   motor1.backward(motorVal);
+//   delay(2000);
 
-  }
+//   }
 
 }
