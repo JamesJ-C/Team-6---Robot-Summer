@@ -246,10 +246,10 @@ class Motor {
 
   void setMotor(int motorSpeed){
 
-    if (motorSpeed > 0){
+    if (motorSpeed > 100){
       forward(motorSpeed);
     }
-    else if (motorSpeed < 0){
+    else if (motorSpeed < -100){
       backward(-motorSpeed);
     }
     else {
@@ -438,6 +438,10 @@ void loop() {
   // int readVal = analogRead(POT_PIN);
 
   // setVal = map(readVal, 0, 1023, -500, 500);
+
+
+
+
 
   measuredVal = motor1.encoder->getIncrements();
 
