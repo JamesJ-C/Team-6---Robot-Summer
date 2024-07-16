@@ -159,6 +159,10 @@ namespace encoder {
 
     }
 
+    int getNum(){
+        return -77;
+    }
+
     };
 
 }

@@ -30,7 +30,7 @@ namespace movement {
         public:
 
 
-        encoder::RotaryEncoder* encoder;
+        //encoder::RotaryEncoder* encoder;
 
         // /**
         //  * @brief Construct a new Motor object with no PWM pins
@@ -50,7 +50,7 @@ namespace movement {
         Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder* Encoder) 
         : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
 
-            this->encoder = Encoder;
+            //this->encoder = Encoder;
 
         }
 
