@@ -212,13 +212,11 @@ class Motor {
 };
 
 
-
-
 encoder::RotaryEncoder encoder1(PB_8, PB_9);
-
 
 #define Motor1_P1 PB_0
 #define Motor1_P2 PB_1
+
 Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
 
 
@@ -413,8 +411,13 @@ void updateEncoder(){
 
 void ISRUpdateEncoder(){
 
-  encoder1.updateEncoder();
+  bool A = digitalRead(ROTARY_A);
+  bool B = digitalRead(ROTARY_B);
+
+  encoder1.updateEncoder(A, B);
   encoder1.updateTime( millis() );
+
+
 
 }
 

@@ -90,6 +90,7 @@ namespace encoder {
      */
     void updateTime(unsigned long time);
 
+    void updateEncoder(bool A, bool B);
     
     /**
      * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
