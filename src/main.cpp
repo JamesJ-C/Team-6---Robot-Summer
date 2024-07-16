@@ -8,7 +8,7 @@
 #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-#define REFLECTANCE PA0 // Input pin
+#define REFLECTANCE PA_0 // Input pin
 #define IRSENSOR PA0
 #define THRESHOLD 100 // Black line detection threshold
 #define NUM_SAMPLES 200
@@ -20,8 +20,8 @@ double avg = 0;
 
 
 /*  Function decs  */
-double crossCorrelation (std::vector<double> IRsignal);
-
+double crossCorrelation (PinName analogPin);
+std:: vector<double> bothCrossCorrelation (PinName analogPin1, PinName analogPin2);
 
 
 
@@ -144,38 +144,18 @@ void setup() {
 }
 
 
-double findIR() {
-  std::vector<double> IRsignal;
-
-  int numSamples = 0;
-  unsigned long finishTime = 0;
-  unsigned long startTime = millis(); 
-
-  while (millis() - startTime < 10){
-
-    IRsignal.push_back(analogRead(IRSENSOR));
-    numSamples++;
-    finishTime = millis();
-  }
-
-  
-
-  double x = crossCorrelation(IRsignal);
-
-  return x;
-
-}
-
-
 void loop() {
 
-  Serial.println("x correlation: " + String(findIR()));
+  Serial.println("x correlation: " + String( crossCorrelation( REFLECTANCE ) ));
+
 
 }
 
 
 
-double crossCorrelation (std::vector<double> IRsignal){
+double crossCorrelation (PinName analogPin){
+
+  std::vector<double> IRsignal;
 
   int numSamples = 0;
   unsigned long finishTime = 0;
@@ -183,7 +163,7 @@ double crossCorrelation (std::vector<double> IRsignal){
 
   while (millis() - startTime < 10){
 
-    IRsignal.push_back(analogRead(IRSENSOR));
+    IRsignal.push_back(analogRead(analogPin));
     numSamples++;
     finishTime = millis();
   }
@@ -230,40 +210,76 @@ double crossCorrelation (std::vector<double> IRsignal){
 
   avg = ( (loopCount - 1) * avg + max ) / loopCount;
 
-    // display_handler.clearDisplay();
-    // display_handler.setTextSize(1);
-    // display_handler.setTextColor(SSD1306_WHITE);
-    // display_handler.setCursor(0,0);
-    // // display_handler.print("startTime: ");
-    // // display_handler.println(startTime);
-
-    // // display_handler.print("finishTime: ");
-    // // display_handler.println(finishTime);
-
-    // // display_handler.print("dt: ");
-    // // display_handler.println(dt);
-
-    // // display_handler.print("numSamples: ");
-    // // display_handler.println(numSamples);
-
-    // // display_handler.print("oneKT: ");
-    // // display_handler.println(oneKT);
-
-    // display_handler.print("cc max: ");
-    // display_handler.println(max,0);
-
-    // display_handler.print("minTot: ");
-    // display_handler.println(minTot,0);
-
-    // display_handler.print("maxTot: ");
-    // display_handler.println(maxTot,0);
-
-    // // display_handler.print("avg: ");
-    // // display_handler.println(avg,0);
-
-    // display_handler.display();
-
     return max;
+
+}
+
+
+
+std:: vector<double> bothCrossCorrelation (PinName analogPin1, PinName analogPin2){
+
+  std::vector<double> IRsignal1;
+  std::vector<double> IRsignal2;
+
+  int numSamples = 0;
+  unsigned long finishTime = 0;
+  unsigned long startTime = millis();
+
+  while (millis() - startTime < 10){
+
+    IRsignal1.push_back(analogRead(analogPin1));
+    IRsignal2.push_back(analogRead(analogPin2));
+
+    numSamples++;
+    finishTime = millis();
+  }
+
+
+  double oneK[2* numSamples] = {0};
+  double oneKCorr1[numSamples] = {0};
+  double oneKCorr2[numSamples] = {0};
+
+
+  int dt = ( finishTime - startTime );
+  double oneKT = (double) numSamples / ( (double) dt );
+
+  for(int i = 0; i < 2 * numSamples;  i++) {
+  
+    oneK[i] = sin(i * TWO_PI / oneKT);
+  
+  }
+
+  for (int k = 0; k < numSamples; k++){
+
+    oneKCorr1[k] = 0;
+
+    for (int i = 0; i < numSamples; i++){      
+      oneKCorr1[k] += IRsignal1.at(i) * oneK[k+i];
+      oneKCorr2[k] += IRsignal2.at(i) * oneK[k+i];
+    }
+
+  }
+
+  double max1 = oneKCorr1[0];
+  double max2 = oneKCorr2[0];
+
+  for (int i=0; i< numSamples; i++) {
+
+    if (oneKCorr1[i]>max1){
+      max1 = oneKCorr1[i];
+    }
+    if (oneKCorr2[i]>max2){
+      max2 = oneKCorr2[i];
+    }
+  }
+
+  std::vector<double> result;
+
+  result.push_back(max1);
+  result.push_back(max2);
+
+  return result;
+    //return max;
 
 }
 
