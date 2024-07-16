@@ -27,6 +27,8 @@ void updateEncoder();
 void ISRUpdateEncoder();
 void ISRButton();
 
+bool buttonPressed = false;
+
 /*  Motors  */
 
 #define MOTOR_FREQUENCY 1000
@@ -59,6 +61,9 @@ class RotaryEncoder {
   int deltaT; //ftime between the most recent ISR calls
   
   
+  int maxIncrement;
+
+
   public:
 
   /**
@@ -93,6 +98,16 @@ class RotaryEncoder {
   int getIncrements(){
     return increments;
   }
+
+
+  void setMaxIncrement(int max){
+    this->maxIncrement = max;
+  }
+
+  int getMaxIncrement(){
+    return this->maxIncrement;
+  }
+  
   /**
    * @brief Get the Speed measured by the encoder
    * 
@@ -195,6 +210,10 @@ class RotaryEncoder {
 
     this->increments = 0;
 
+  }
+
+  void setIncrement(int increment) {
+    this->increments = increment;
   }
 
 };
@@ -330,15 +349,43 @@ class Motor {
     
   }
 
+  void off(){
+    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+  }
 
+
+  /**
+   * @brief sets up the encoder by going to the limits of the switches 
+   * and saves the difference between the values. Sets one of the limit switches to 0 increments 
+   * 
+   */
   void setupEncoder (){
 
+    int firstStop;
+    int secondStop;
+
     //turn all the way one way until switch
+    this->backward(3000);
+    while (true) {
+      if (buttonPressed){
+        this->off();
+        firstStop = this->encoder->getIncrements();
+        this->encoder->resetIncrement();
+        break;
+      }
+    }
+    this->forward(3000);
+    while (true) {
+      if (buttonPressed){
+        this->off();
+        secondStop = this->encoder->getIncrements();
+        //this->encoder->resetIncrement();
+        break;
+      }
+    }
 
-    //turn all the way the other way until switch
-
-    //do math
-
+    this->encoder->setMaxIncrement(secondStop);
 
   }
 
@@ -560,6 +607,7 @@ void ISRButton() {
 	// display_handler.display();
   encoder1.resetIncrement();
   //delay(100);
+  buttonPressed = true;
 
 
 }
