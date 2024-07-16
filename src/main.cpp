@@ -28,6 +28,7 @@ int lastEncoded = 0b11;
 
 void updateEncoder();
 void ISRUpdateEncoder();
+void print();
 
 
 
@@ -160,8 +161,8 @@ class RotaryEncoder {
      * @brief Updates the encoder object. Should be called from an ISR
      * 
      */
-    void updateEncoder(){
-
+    int updateEncoder(){
+      return -444;
       bool A = digitalRead(pinA);
       bool B = digitalRead(pinB);
 
@@ -172,7 +173,14 @@ class RotaryEncoder {
       /*	encodes the last states bits, concat the current states bits  */
       int concat = ( lastEncoded << 2 ) | encoded;
 
-              delay(100);
+        display_handler.clearDisplay();
+        display_handler.setTextSize(1);
+        display_handler.setTextColor(SSD1306_WHITE);
+        display_handler.setCursor(0,0);
+        display_handler.print("concat: ");
+        display_handler.println(concat);
+        display_handler.display();
+        delay(100);
       /*	hard codes all the possibilities of encoded data  */
       if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
         this->increments++;
@@ -203,13 +211,13 @@ class RotaryEncoder {
 
     int getNum(){
 
-              display_handler.clearDisplay();
-        display_handler.setTextSize(1);
-        display_handler.setTextColor(SSD1306_WHITE);
-        display_handler.setCursor(0,0);
-        display_handler.print("getNum");
-        display_handler.println();
-        display_handler.display(); 
+        //       display_handler.clearDisplay();
+        // display_handler.setTextSize(1);
+        // display_handler.setTextColor(SSD1306_WHITE);
+        // display_handler.setCursor(0,0);
+        // display_handler.print("getNum");
+        // display_handler.println();
+        // display_handler.display(); 
       return -77;
     }
 
@@ -410,19 +418,33 @@ void updateEncoder(){
 
 void ISRUpdateEncoder(){
 
-  //   display_handler.clearDisplay();
-  // display_handler.setTextSize(1);
-  // display_handler.setTextColor(SSD1306_WHITE);
-  // display_handler.setCursor(0,0);
-	// display_handler.print("ISR update ");
-	// display_handler.println();
-  // display_handler.display();
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+	display_handler.print("ISR update: ");
+	display_handler.println( encoder1.updateEncoder() );
+  display_handler.display();
+  delay(100);
+
+
 
   // delay(100);
+  //encoder1.updateEncoder();
+  // encoder1.updateTime( millis() );
 
-  encoder1.getNum();
+}
+
+
+void print(){
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+	display_handler.print("print ");
+	display_handler.println();
+  display_handler.display();
   delay(100);
-  encoder1.updateEncoder();
-  encoder1.updateTime( millis() );
 
 }
