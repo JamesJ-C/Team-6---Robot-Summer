@@ -38,7 +38,7 @@ encoder::RotaryEncoder encoder1(PB_8, PB_9);
 #define Motor1_P2 PB_1
 
 
-movement::Motor motor1(Motor1_P1, Motor1_P2);//, &encoder1);////
+movement::Motor motor1(Motor1_P1, Motor1_P2, &encoder1);////
 
 
 /*  Pot pin  */
@@ -84,9 +84,11 @@ void setup() {
 	attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
 
+	// attachInterrupt(digitalPinToInterrupt(ROTARY_A), updateEncoder, CHANGE);
+	// attachInterrupt(digitalPinToInterrupt(ROTARY_B), updateEncoder, CHANGE);
+
   // attachInterrupt(digitalPinToInterrupt(encoder1.getPinA()), updateEncoder, CHANGE);
 	// attachInterrupt(digitalPinToInterrupt(encoder1.getPinB()), updateEncoder, CHANGE);
-
 
 
 }
@@ -124,19 +126,19 @@ void loop() {
 	display_handler.print("Counter: ");
 	display_handler.println(counter);
   display_handler.print("Obj Counter: ");
-	//display_handler.println(encoder1.getIncrements() );
+	display_handler.println(encoder1.getIncrements() );
 
 
   display_handler.print("motor.Obj Counter: ");
-	//display_handler.println(motor1.encoder->getIncrements() );
+	display_handler.println(motor1.encoder->getIncrements() );
 
 
-  display_handler.print("g: ");
-	display_handler.println(g);
+  // display_handler.print("g: ");
+	// display_handler.println(g);
 
 
-  display_handler.print("error: ");
-	display_handler.println(error );
+  // display_handler.print("error: ");
+	// display_handler.println(error );
 
 
   // display_handler.print("Obj speed: ");
@@ -150,30 +152,30 @@ void loop() {
 
   }
 
-  // int readVal = analogRead(POT_PIN);
+  // // int readVal = analogRead(POT_PIN);
 
-  // setVal = map(readVal, 0, 1023, -500, 500);
+  // // setVal = map(readVal, 0, 1023, -500, 500);
 
-  //measuredVal = motor1.encoder->getIncrements();
+  // //measuredVal = motor1.encoder->getIncrements();
 
-  error = setVal - measuredVal;
-
-
-  p = P_GAIN * error;
-  d = D_GAIN * (error - lastError);
-  i = I_GAIN * error + i; //const * error + previous int value
-  if (i > max_I) {i = max_I;}
-  if (i < -max_I) {i = -max_I;}
+  // error = setVal - measuredVal;
 
 
-  g = LOOP_GAIN * ( p + i + d );
+  // p = P_GAIN * error;
+  // d = D_GAIN * (error - lastError);
+  // i = I_GAIN * error + i; //const * error + previous int value
+  // if (i > max_I) {i = max_I;}
+  // if (i < -max_I) {i = -max_I;}
 
-  motor1.setMotor(g);
 
-  lastError = error;
+  // g = LOOP_GAIN * ( p + i + d );
+
+  // motor1.setMotor(g);
+
+  // lastError = error;
 
 
-  //do motor code now
+  // //do motor code now
 
 
 
@@ -219,7 +221,17 @@ void updateEncoder(){
 
 void ISRUpdateEncoder(){
 
-  //encoder1.updateEncoder();
-  //encoder1.updateTime( millis() );
+    display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+	display_handler.print("ISR update ");
+	display_handler.println();
+  display_handler.display();
+
+  delay(100);
+
+  encoder1.updateEncoder();
+  encoder1.updateTime( millis() );
 
 }

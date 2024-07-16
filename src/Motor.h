@@ -1,7 +1,5 @@
 #pragma once
 #include <Arduino.h>
-
-
 #include "RotaryEncoder.h"
 
 #define MOTOR_FREQUENCY 1000
@@ -32,7 +30,7 @@ namespace movement {
         public:
 
 
-        //RotaryEncoder* encoder;
+        encoder::RotaryEncoder* encoder;
 
         // /**
         //  * @brief Construct a new Motor object with no PWM pins
@@ -49,7 +47,12 @@ namespace movement {
         Motor(PinName PWM_pinA, PinName L_PWM_pinB): PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
 
         
-        Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder* Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
+        Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder* Encoder) 
+        : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
+
+            this->encoder = Encoder;
+
+        }
 
         /** 
         * @brief Returns the first of 2 PWM pins
