@@ -207,6 +207,7 @@ class RotaryEncoder {
 * Uses the #define motor frequency
 *
  */
+
 class Motor {
 
   private:
@@ -359,7 +360,7 @@ Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
 
 #define POT_PIN A1
 
-#define BUTTON_PIN PB_12
+#define BUTTON_PIN PB_12//PA_10
 
 void setup() {
 
@@ -394,7 +395,7 @@ void setup() {
   pinMode(BUTTON_PIN, INPUT);
 
 
-attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
+  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
   // pinMode(encoder1.getPinA(), INPUT);
 	// pinMode(encoder1.getPinB(), INPUT);
 
@@ -548,10 +549,17 @@ void ISRUpdateEncoder(){
 
 }
 
-void ISRButton () {
+void ISRButton() {
 
 
+  // display_handler.clearDisplay();
+	// display_handler.setTextSize(1);
+	// display_handler.setTextColor(SSD1306_WHITE);
+	// display_handler.setCursor(0,0);
+	// display_handler.println("reset");
+	// display_handler.display();
   encoder1.resetIncrement();
+  //delay(100);
 
 
 }
