@@ -9,7 +9,8 @@
 Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 #define REFLECTANCE PA_0 // Input pin
-#define IRSENSOR PA0
+#define IR_SENSOR1 PA_0
+#define IR_SENSOR2 PA_1
 #define THRESHOLD 100 // Black line detection threshold
 #define NUM_SAMPLES 200
 
@@ -146,8 +147,10 @@ void setup() {
 
 void loop() {
 
-  Serial.println("x correlation: " + String( crossCorrelation( REFLECTANCE ) ));
+  //Serial.println("x correlation: " + String( crossCorrelation( REFLECTANCE ) ));
+  std::vector result = bothCrossCorrelation(IR_SENSOR1, IR_SENSOR2);
 
+  Serial.println("result 1: " + String(result.at(0)) + "\n result 2: " + String(result.at(1)));
 
 }
 
