@@ -91,37 +91,37 @@ namespace encoder {
      * @brief Updates the encoder object. Should be called from an ISR
      * 
      */
-    void RotaryEncoder::updateEncoder(){
+    // void RotaryEncoder::updateEncoder(){
 
-        bool A = digitalRead(this->pinA);
-        bool B = digitalRead(this->pinB);
+    //     bool A = digitalRead(this->pinA);
+    //     bool B = digitalRead(this->pinB);
 
 
-        /*	encodes 2 bit current state  */
-        int encoded = ( A << 1 ) | B;
-        /*	encodes the last states bits, concat the current states bits  */
-        int concat = ( lastEncoded << 2 ) | encoded;
+    //     /*	encodes 2 bit current state  */
+    //     int encoded = ( A << 1 ) | B;
+    //     /*	encodes the last states bits, concat the current states bits  */
+    //     int concat = ( lastEncoded << 2 ) | encoded;
 
-        Serial.println("concat: " + String(concat, BIN));
+    //     Serial.println("concat: " + String(concat, BIN));
 
-        /*	hard codes all the possibilities of encoded data  */
-        if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
-        this->increments++;
-        }
-        if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
-        this->increments--;
-        }
+    //     /*	hard codes all the possibilities of encoded data  */
+    //     if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+    //     this->increments++;
+    //     }
+    //     if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+    //     this->increments--;
+    //     }
 
-        /*	the current states bits become the next states previous bits  */
-        this->lastEncoded = encoded;
+    //     /*	the current states bits become the next states previous bits  */
+    //     this->lastEncoded = encoded;
 
-    }
+    // }
 
      /**
      * @brief old function not needed. Still would like to keep for the time being
      * 
-     * @param Aa 
-     * @param Bb 
+     * @param A
+     * @param B 
      */
     void RotaryEncoder::updateEncoder(bool A, bool B){
 

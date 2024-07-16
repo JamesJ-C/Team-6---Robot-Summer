@@ -102,7 +102,7 @@ namespace encoder {
      * @brief Updates the encoder object. Should be called from an ISR
      * 
      */
-    void updateEncoder();
+    // void updateEncoder();
 
     /**
      * @brief resets the increment to 0
