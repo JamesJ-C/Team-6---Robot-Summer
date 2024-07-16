@@ -17,6 +17,7 @@ Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET)
 
 
 // Rotary Encoder Inputs
+
 int counter = 0;
 
 bool currentStateA, currentStateB;
@@ -24,11 +25,18 @@ int lastEncoded = 0b11;
 
 void updateEncoder();
 void ISRUpdateEncoder();
+void ISRButton();
 
 /*  Motors  */
 
 #define MOTOR_FREQUENCY 1000
 
+
+
+/**
+ * @brief 
+ * 
+ */
 class RotaryEncoder {
 
   private:
@@ -179,6 +187,16 @@ class RotaryEncoder {
 
   }
 
+  /**
+   * @brief resets the increment to 0
+   * 
+   */
+  void resetIncrement(){
+
+    this->increments = 0;
+
+  }
+
 };
 
 
@@ -189,7 +207,6 @@ class RotaryEncoder {
 * Uses the #define motor frequency
 *
  */
-
 class Motor {
 
   private:
@@ -313,6 +330,18 @@ class Motor {
   }
 
 
+  void setupEncoder (){
+
+    //turn all the way one way until switch
+
+    //turn all the way the other way until switch
+
+    //do math
+
+
+  }
+
+
 };
 
 
@@ -329,6 +358,8 @@ Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
 /*  Pot pin  */
 
 #define POT_PIN A1
+
+#define BUTTON_PIN PB_12
 
 void setup() {
 
@@ -360,6 +391,10 @@ void setup() {
 	pinMode(ROTARY_A, INPUT);
 	pinMode(ROTARY_B, INPUT);
 
+  pinMode(BUTTON_PIN, INPUT);
+
+
+attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
   // pinMode(encoder1.getPinA(), INPUT);
 	// pinMode(encoder1.getPinB(), INPUT);
 
@@ -510,5 +545,13 @@ void ISRUpdateEncoder(){
 
   encoder1.updateEncoder();
   encoder1.updateTime( millis() );
+
+}
+
+void ISRButton () {
+
+
+  encoder1.resetIncrement();
+
 
 }
