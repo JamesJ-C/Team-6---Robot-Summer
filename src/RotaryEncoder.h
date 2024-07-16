@@ -39,7 +39,7 @@ namespace encoder {
      * @param pinA pin attached to one terminal of the encoder
      * @param pinB pin attached to the other terminal of the encoder
      */
-    RotaryEncoder(PinName pinA, PinName pinB);// : pinA(pinA), pinB(pinB);
+    RotaryEncoder(PinName pinA, PinName pinB) : pinA(pinA), pinB(pinB) {}
 
     /**
      * @brief Get the Pin A object
