@@ -161,23 +161,23 @@ void loop() {
 
   // setVal = map(readVal, 0, 1023, -500, 500);
 
-  measuredVal = motor1.encoder->getIncrements();
+  // measuredVal = motor1.encoder->getIncrements();
 
-  error = setVal - measuredVal;
-
-
-  p = P_GAIN * error;
-  d = D_GAIN * (error - lastError);
-  i = I_GAIN * error + i; //const * error + previous int value
-  if (i > max_I) {i = max_I;}
-  if (i < -max_I) {i = -max_I;}
+  // error = setVal - measuredVal;
 
 
-  g = LOOP_GAIN * ( p + i + d );
+  // p = P_GAIN * error;
+  // d = D_GAIN * (error - lastError);
+  // i = I_GAIN * error + i; //const * error + previous int value
+  // if (i > max_I) {i = max_I;}
+  // if (i < -max_I) {i = -max_I;}
 
-  motor1.setMotor(g);
 
-  lastError = error;
+  // g = LOOP_GAIN * ( p + i + d );
+
+  // motor1.setMotor(g);
+
+  // lastError = error;
 
 
   //do motor code now
@@ -239,6 +239,7 @@ void ISRUpdateEncoder(){
 void ISRButton() {
 
 
+  Serial.print("inside the interrupt");
   // display_handler.clearDisplay();
 	// display_handler.setTextSize(1);
 	// display_handler.setTextColor(SSD1306_WHITE);
@@ -248,6 +249,8 @@ void ISRButton() {
   encoder1.resetIncrement();
   //delay(100);
   buttonPressed = true;
+
+  //motor1.buttonPressed = true;
 
 
 }
