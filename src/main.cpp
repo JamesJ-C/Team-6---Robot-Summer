@@ -152,8 +152,19 @@ void loop() {
 
   Serial.println("result 1: " + String(result.at(0)) + "\n result 2: " + String(result.at(1)));
 
+  delay(400);
+
 }
 
+
+
+int PID_IR_Beacon_Control(){
+  //do PID
+
+
+
+
+}
 
 
 double crossCorrelation (PinName analogPin){
