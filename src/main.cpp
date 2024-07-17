@@ -23,7 +23,7 @@ double avg = 0;
 /*  Function decs  */
 double crossCorrelation (PinName analogPin);
 std:: vector<double> bothCrossCorrelation (PinName analogPin1, PinName analogPin2);
-
+double PID_IR_Beacon_Control(double irVal1, double irVal2);
 
 
 /**
@@ -117,6 +117,21 @@ class IrSensor {
 };
 
 
+/*  Constants for IR  */
+
+const int IR_ERROR_THRESHOLD = 50;
+
+double LOOP_GAIN = 1/50.0;
+int P_GAIN = 30;
+int I_GAIN = 0;
+int D_GAIN = 0;
+
+/*  values used in IR PID  */
+int error = 0;
+int lastError = 0;
+int max_I = 140;
+
+
 
 void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
@@ -152,16 +167,53 @@ void loop() {
 
   Serial.println("result 1: " + String(result.at(0)) + "\n result 2: " + String(result.at(1)));
 
-  delay(400);
+  int g = PID_IR_Beacon_Control(result.at(0), result.at(1));
+
+  Serial.println("transfer function: " + String(g));
+
+  display_handler.clearDisplay();
+  display_handler.setTextSize(1);
+  display_handler.setTextColor(SSD1306_WHITE);
+  display_handler.setCursor(0,0);
+  display_handler.print("g: ");
+  display_handler.println( g );
+  display_handler.display();
+
+
+  delay(600);
 
 }
 
-
-
-int PID_IR_Beacon_Control(){
+/*  Tuning this is weird, bc as the sensors get farther from the signal, 
+the difference in readings approach 0. This will probably be different for sensors which are further away from the beacon,
+and angled better  */
+double PID_IR_Beacon_Control(double irVal1, double irVal2){
   //do PID
 
+  int g;
+  int p,d,i;
 
+  error = irVal1 - irVal2;
+
+
+  if ( abs(error) < IR_ERROR_THRESHOLD){
+    error = 0;
+  }
+
+
+
+  p = P_GAIN * error;
+  d = D_GAIN * (error - lastError);
+  i = I_GAIN * error + i; //const * error + previous int value
+  if (i > max_I) {i = max_I;}
+  if (i < -max_I) {i = -max_I;}
+
+
+  g = LOOP_GAIN * ( p + i + d );
+
+  lastError = error;
+
+  return g;
 
 
 }
