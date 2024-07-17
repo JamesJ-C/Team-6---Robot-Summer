@@ -5,51 +5,63 @@
 
 #include "RotaryEncoder.h"
 #include "Motor.h"
-
-
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET 	-1 // This display does not have a reset pin accessible
-Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+#include "robotConstants.h"
 
 
 
-/*  Rotary  */
-#define ROTARY_A PB8
-#define ROTARY_B PB9
+
+/*  Function Declerations  */
+void updateEncoder();
+void ISRUpdateEncoder();
+void ISRButton();
 
 
-// Rotary Encoder Inputs
+
+/*  Rotary Encoder valsues  */
 
 int counter = 0;
 
 bool currentStateA, currentStateB;
 int lastEncoded = 0b11;
 
-void updateEncoder();
-void ISRUpdateEncoder();
-void ISRButton();
 
+
+
+
+//NEED TO FIX THIS VARIABLE
 bool buttonPressed = false;
+//NEED TO FIX THIS VARIABLE
 
-/*  Motors  */
 
-#define MOTOR_FREQUENCY 1000
+/*  PID Control Values  */
+int LOOP_GAIN = 1;
+int P_GAIN = 30;
+int I_GAIN = 0;
+int D_GAIN = 10;
+
+//use lecture slide to tune
+int setVal = 32;
+
+int measuredVal;
+
+int error = 0;
+int lastError = 0;
+
+int max_I = 140;
+
+int p,d,i;
+
+int g;
+
+
+/*  Object declerations  */
+Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 encoder::RotaryEncoder encoder1(PB_8, PB_9);
-
-#define Motor1_P1 PB_0
-#define Motor1_P2 PB_1
-
 movement::Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
 
 
-/*  Pot pin  */
-
-#define POT_PIN A1
-
-#define BUTTON_PIN PB_12//PA_10
 
 void setup() {
 
@@ -105,25 +117,6 @@ void setup() {
 
 }
 
-
-int LOOP_GAIN = 1;
-int P_GAIN = 30;
-int I_GAIN = 0;
-int D_GAIN = 10;
-
-//use lecture slide to tune
-int setVal = 32;
-
-int measuredVal;
-
-int error = 0;
-int lastError = 0;
-
-int max_I = 140;
-
-int p,d,i;
-
-int g;
 
 void loop() {
 
