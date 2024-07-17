@@ -32,6 +32,15 @@ namespace encoder {
     int maxIncrement;
 
 
+    /*  Helper functions  */
+
+    /**
+     * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
+     * 
+     */
+    void updateSpeed();
+
+
     public:
 
     /**
@@ -72,6 +81,12 @@ namespace encoder {
 
     int getMaxIncrement();
 
+    /**
+     * @brief Set the Max Increment value which corresponds to the extreme value of the encoder. 
+     * This value is not enforced by the encoder object at all 
+     * 
+     * @param max value which corresponds to the max 
+     */
     void setMaxIncrement(int max);
     
     /**
@@ -81,7 +96,7 @@ namespace encoder {
      */
     double getSpeed();
 
-    
+
     /**
      * @brief Updates the time of the most recent ISR call 
      * and the time between the 3 most recent calls
@@ -90,19 +105,8 @@ namespace encoder {
      */
     void updateTime(unsigned long time);
 
+
     void updateEncoder(bool A, bool B);
-    
-    /**
-     * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
-     * 
-     */
-    void updateSpeed();
-    
-    /**
-     * @brief Updates the encoder object. Should be called from an ISR
-     * 
-     */
-    // void updateEncoder();
 
     /**
      * @brief resets the increment to 0
