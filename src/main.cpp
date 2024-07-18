@@ -12,6 +12,42 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+
+
+/*  imported  */
+#include <Arduino.h>
+#include <Wire.h>
+#include <HardwareSerial.h>
+#include <Adafruit_SSD1306.h>
+
+#define BP 0
+#define ESP 1
+
+#define MASTER 1
+#define SLAVE 0
+
+#define BOARD_TYPE BP
+#define STATUS SLAVE
+
+
+#define RX 9
+#define TX 10
+
+
+HardwareSerial SerialPort(1);  //if using UART1
+
+bool toggled = false;
+
+
+String received;
+
+int loopedCount = 0;
+
+
+/*  imported  */
+
+
+
 #define SCREEN_WIDTH 128  // OLED display width, in pixels
 #define SCREEN_HEIGHT 64  // OLED display height, in pixels
 
@@ -96,8 +132,11 @@ void updateDisplay();
 void getReadings();
 
 void setup() {
+
+  SerialPort.begin(115200, SERIAL_8N1, RX, TX);
+
   // Init Serial Monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
 
 
   // Init OLED display
@@ -160,6 +199,30 @@ void getReadings(){
   temperature = -273;
   humidity = 10.1;
   pressure = 100000;
+
+
+    if (SerialPort.available() > 0) {
+	//if (true){
+      received = "";
+      received = SerialPort.readString();
+      
+      toggled = true;
+  
+      display_handler.print("Received: ");
+      display_handler.println(received);
+
+
+      
+
+    } else {
+
+    	display_handler.println("Serial port unavailable");
+      display_handler.print("most recent msg: ");
+      display_handler.println(received);
+    }
+
+
+
 }
 
 void updateDisplay(){
