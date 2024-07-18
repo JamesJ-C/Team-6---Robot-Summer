@@ -6,6 +6,7 @@
 */
 #include <esp_now.h>
 #include <WiFi.h>
+// #include <FS.h>
 
 #include <Wire.h>
 
@@ -16,7 +17,7 @@
 #define SCREEN_HEIGHT 64  // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
@@ -84,10 +85,10 @@ void setup() {
 
 
   // Init OLED display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  }
+  // if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+  //   Serial.println(F("SSD1306 allocation failed"));
+  //   for(;;);
+  // }
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -145,28 +146,28 @@ void getReadings(){
 
 void updateDisplay(){
   // Display Readings on OLED Display
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(WHITE);
-  display.setCursor(0, 0);
-  display.println("INCOMING READINGS");
-  display.setCursor(0, 15);
-  display.print("Temperature: ");
-  display.print(incomingTemp);
-  display.cp437(true);
-  display.write(248);
-  display.print("C");
-  display.setCursor(0, 25);
-  display.print("Humidity: ");
-  display.print(incomingHum);
-  display.print("%");
-  display.setCursor(0, 35);
-  display.print("Pressure: ");
-  display.print(incomingPres);
-  display.print("hPa");
-  display.setCursor(0, 56);
-  display.print(success);
-  display.display();
+  // display.clearDisplay();
+  // display.setTextSize(1);
+  // display.setTextColor(WHITE);
+  // display.setCursor(0, 0);
+  // display.println("INCOMING READINGS");
+  // display.setCursor(0, 15);
+  // display.print("Temperature: ");
+  // display.print(incomingTemp);
+  // display.cp437(true);
+  // display.write(248);
+  // display.print("C");
+  // display.setCursor(0, 25);
+  // display.print("Humidity: ");
+  // display.print(incomingHum);
+  // display.print("%");
+  // display.setCursor(0, 35);
+  // display.print("Pressure: ");
+  // display.print(incomingPres);
+  // display.print("hPa");
+  // display.setCursor(0, 56);
+  // display.print(success);
+  // display.display();
   
   // Display Readings in Serial Monitor
   Serial.println("INCOMING READINGS");
