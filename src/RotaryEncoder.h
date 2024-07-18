@@ -20,8 +20,8 @@ namespace encoder {
 
     /*  for calculating direction. This value seems to make 0 position work on startup 
     otherwise there would be an offset on increment by 2 */
-    int lastEncoded = 0;//0b11; 
-    volatile int increments = 10; //net clicks offset from 0
+    int lastEncoded = 0b11; 
+    volatile int increments = 0; //net clicks offset from 0
     int previousIncrement; //net clicks at the previous time stamp
     double angularVelocity = 0; 
 

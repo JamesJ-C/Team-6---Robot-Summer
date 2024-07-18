@@ -120,17 +120,17 @@ void setup() {
 
 void loop() {
 
-  /*  print statements  */
-  {
-  /*	---------------  */
+//   /*  print statements  */
+//   {
+//   /*	---------------  */
 
   display_handler.clearDisplay();
   display_handler.setTextSize(1);
   display_handler.setTextColor(SSD1306_WHITE);
   display_handler.setCursor(0,0);
-	display_handler.print("Counter: ");
-	display_handler.println(counter);
-  display_handler.print("Obj Counter: ");
+// 	// display_handler.print("Counter: ");
+// 	// display_handler.println(counter);
+//   // display_handler.print("Obj Counter: ");
 	display_handler.println(encoder1.getIncrements() );
 
 
@@ -138,24 +138,24 @@ void loop() {
 	display_handler.println(motor1.encoder->getIncrements() );
 
 
-  display_handler.print("g: ");
-	display_handler.println(g);
+//   // display_handler.print("g: ");
+// 	// display_handler.println(g);
 
 
-  display_handler.print("error: ");
-	display_handler.println(error );
+//   // display_handler.print("error: ");
+// 	// display_handler.println(error );
 
 
-  // display_handler.print("Obj speed: ");
-	// display_handler.println(encoder1.getSpeed() );
+//   // // display_handler.print("Obj speed: ");
+// 	// // display_handler.println(encoder1.getSpeed() );
 
 
   display_handler.display();
 
 
-  /*	---------------  */
+//   /*	---------------  */
 
-  }
+//   }
 
   // int readVal = analogRead(POT_PIN);
 
@@ -165,26 +165,32 @@ void loop() {
 
   // error = setVal - measuredVal;
 
+  error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
-  // p = P_GAIN * error;
-  // d = D_GAIN * (error - lastError);
-  // i = I_GAIN * error + i; //const * error + previous int value
-  // if (i > max_I) {i = max_I;}
-  // if (i < -max_I) {i = -max_I;}
+  p = P_GAIN * error;
+  d = D_GAIN * (error - lastError);
+  i = I_GAIN * error + i; //const * error + previous int value
+  if (i > max_I) {i = max_I;}
+  if (i < -max_I) {i = -max_I;}
 
 
-  // g = LOOP_GAIN * ( p + i + d );
+  g = LOOP_GAIN * ( p + i + d );
 
-  // motor1.setMotor(g);
+  // Serial.println("Transfer function: " + String(g));
 
-  // lastError = error;
+  if (g > 0)
+    Serial.println("dir 1");
+  else if (g < 0)
+    Serial.println("dir 2");
+  else 
+    Serial.print("forward");
+
+//  motor1.setMotor(g);
+
+  lastError = error;
 
 
   //do motor code now
-
-
-
-
 
 
 

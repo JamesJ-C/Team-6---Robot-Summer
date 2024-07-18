@@ -57,6 +57,12 @@ namespace digitalPins {
 
     #define BUTTON_PIN PB_12//PA_10
 
+    #define FRONT_TAPE_SENSOR_1 PA_2
+    #define FRONT_TAPE_SENSOR_2 PA_3
+
+    #define BACK_TAPE_SENSOR_3 PA_0
+    #define BACK_TAPE_SENSOR_4 PA_1
+
 
 
 }
