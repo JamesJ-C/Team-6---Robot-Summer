@@ -53,8 +53,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
-//uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
+//uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
+uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store BME280 readings to be sent
 float temperature;
@@ -106,8 +106,8 @@ esp_now_peer_info_t peerInfo;
 
 // Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  //Serial.print("\r\nLast Packet Send Status:\t");
-  //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  Serial.print("\r\nLast Packet Send Status:\t");
+  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
   if (status ==0){
     success = "Delivery Success :)";
   }
@@ -135,7 +135,7 @@ void setup() {
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
   // Init Serial Monitor
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 
   // Init OLED display
@@ -193,15 +193,15 @@ void loop() {
   //   Serial.println("Error sending the data");
   // }
   
-  Serial.println("incoming msg: " + String(incomingReadings.strMsg));
-  Serial.println();
+  //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+  //Serial.println();
 
   //updateDisplay();
-  
-  // if (count % 4 ==0) {
-  //   delay(500);
-  // }
-  // count++;
+  delay(1000);
+  if (count % 4 ==0) {
+    delay(1000);
+  }
+  count++;
 }
 
 
@@ -211,9 +211,9 @@ void getReadings(){
   // pressure = 100000;
 
 
-  // reflectance1 = -62;
-  // reflectance1 = -16;
-  // transferFunction = 699;
+  reflectance1 = -62;
+  reflectance1 = -16;
+  transferFunction = 699;
     //Serial.println("readings>>>");
     if (SerialPort.available() > 0) {
 
@@ -222,7 +222,7 @@ void getReadings(){
       received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
-      //Serial.println("msg: " + String(received));
+      Serial.println("msg: " + String(received));
 
     } else {
       //Serial.println("else statmen");
