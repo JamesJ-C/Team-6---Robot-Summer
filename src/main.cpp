@@ -201,19 +201,21 @@ void getReadings(){
   // pressure = 100000;
 
 
-  reflectance1 = -62;
-  reflectance1 = -16;
-  transferFunction = 699;
-
+  // reflectance1 = -62;
+  // reflectance1 = -16;
+  // transferFunction = 699;
+    Serial.println("readings>>>");
     if (SerialPort.available() > 0) {
 
+      Serial.println("if sttmt");
       received = "";
-      received = SerialPort.readString();
+      received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
+      Serial.println("msg: " + String(received));
 
     } else {
-
+      Serial.println("else statmen");
       strMsg = "n/a: " + String(received);
     
     }
