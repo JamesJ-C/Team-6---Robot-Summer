@@ -6,43 +6,95 @@
 */
 #include <esp_now.h>
 #include <WiFi.h>
-// #include <FS.h>
-
 #include <Wire.h>
-
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+
+
+
+/*  imported  */
+#include <Arduino.h>
+#include <Wire.h>
+#include <HardwareSerial.h>
+
+#define BP 0
+#define ESP 1
+
+#define MASTER 1
+#define SLAVE 0
+
+#define BOARD_TYPE BP
+#define STATUS SLAVE
+
+
+#define RX 9
+#define TX 10
+
+
+HardwareSerial SerialPort(1);  //if using UART1
+
+bool toggled = false;
+
+
+String received;
+
+int loopedCount = 0;
+
+
+/*  imported  */
+
+
 
 #define SCREEN_WIDTH 128  // OLED display width, in pixels
 #define SCREEN_HEIGHT 64  // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
-// Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-//uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
-uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
+uint8_t broadcastAddress[] = {0x64, 0xdb7, 0x08, 0x9d, 0x68, 0x0c};
+{0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
+//uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store BME280 readings to be sent
 float temperature;
 float humidity;
 float pressure;
 
+int reflectance1;
+int reflectance2;
+double transferFunction;
+String strMsg;
+
 // Define variables to store incoming readings
 float incomingTemp;
 float incomingHum;
 float incomingPres;
+
+int incomingReflectance1;
+int incomingReflectance2;
+double incomingTransferFunction;
 
 // Variable to store if sending data was successful
 String success;
 
 //Structure example to send data
 //Must match the receiver structure
+// typedef struct struct_message {
+//     float temp;
+//     float hum;
+//     float pres;
+// } struct_message;
+
 typedef struct struct_message {
-    float temp;
-    float hum;
-    float pres;
+
+  int reflectance1;
+  int reflectance2;
+  double transferFunction;
+  String strMsg;
+
+
 } struct_message;
 
 // Create a struct_message called BME280Readings to hold sensor readings
@@ -70,9 +122,9 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
   Serial.print("Bytes received: ");
   Serial.println(len);
-  incomingTemp = incomingReadings.temp;
-  incomingHum = incomingReadings.hum;
-  incomingPres = incomingReadings.pres;
+  incomingReflectance1 = incomingReadings.reflectance1;
+  incomingReflectance2 = incomingReadings.reflectance2;
+  incomingTransferFunction = incomingReadings.transferFunction;
 }
 
 
@@ -80,15 +132,18 @@ void updateDisplay();
 void getReadings();
 
 void setup() {
+
+  SerialPort.begin(115200, SERIAL_8N1, RX, TX);
+
   // Init Serial Monitor
   Serial.begin(115200);
 
 
   // Init OLED display
-  // if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-  //   Serial.println(F("SSD1306 allocation failed"));
-  //   for(;;);
-  // }
+  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+    Serial.println(F("SSD1306 allocation failed"));
+    for(;;);
+  }
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -122,9 +177,10 @@ void loop() {
   getReadings();
  
   // Set values to send
-  msg.temp = temperature;
-  msg.hum = humidity;
-  msg.pres = pressure;
+  msg.reflectance1 = reflectance1;
+  msg.reflectance2 = reflectance2;
+  msg.transferFunction = transferFunction;
+  msg.strMsg = strMsg;
 
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
@@ -138,10 +194,29 @@ void loop() {
   updateDisplay();
   delay(10000);
 }
+
+
 void getReadings(){
-  temperature = -273;
-  humidity = 10.1;
-  pressure = 100000;
+  // temperature = -273;
+  // humidity = 10.1;
+  // pressure = 100000;
+
+
+    if (SerialPort.available() > 0) {
+
+      received = "";
+      received = SerialPort.readString();
+      
+      strMsg = received;
+
+    } else {
+
+      strMsg = "n/a: " + String(received);
+    
+    }
+
+
+
 }
 
 void updateDisplay(){
@@ -171,14 +246,16 @@ void updateDisplay(){
   
   // Display Readings in Serial Monitor
   Serial.println("INCOMING READINGS");
-  Serial.print("Temperature: ");
-  Serial.print(incomingReadings.temp);
-  Serial.println(" ºC");
-  Serial.print("Humidity: ");
-  Serial.print(incomingReadings.hum);
-  Serial.println(" %");
-  Serial.print("Pressure: ");
-  Serial.print(incomingReadings.pres);
-  Serial.println(" hPa");
+  Serial.print("ref1: ");
+  Serial.print(incomingReadings.reflectance1);
+  //Serial.println(" ºC");
+  Serial.print("ref2: ");
+  Serial.print(incomingReadings.reflectance2);
+  //Serial.println(" %");
+  Serial.print("transfer func: ");
+  Serial.print(incomingReadings.transferFunction);
+  Serial.print("strMsg: ");
+  Serial.print(incomingReadings.strMsg);
+  //Serial.println(" hPa");
   Serial.println();
 }
