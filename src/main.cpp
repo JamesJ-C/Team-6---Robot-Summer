@@ -120,8 +120,8 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
+  // Serial.print("Bytes received: ");
+  // Serial.println(len);
   incomingReflectance1 = incomingReadings.reflectance1;
   incomingReflectance2 = incomingReadings.reflectance2;
   incomingTransferFunction = incomingReadings.transferFunction;
