@@ -106,8 +106,8 @@ esp_now_peer_info_t peerInfo;
 
 // Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
-  Serial.print("\r\nLast Packet Send Status:\t");
-  Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
+  //Serial.print("\r\nLast Packet Send Status:\t");
+  //Serial.println(status == ESP_NOW_SEND_SUCCESS ? "Delivery Success" : "Delivery Fail");
   if (status ==0){
     success = "Delivery Success :)";
   }
@@ -119,8 +119,8 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
-  Serial.print("Bytes received: ");
-  Serial.println(len);
+  //Serial.print("Bytes received: ");
+  //Serial.println(len);
   incomingReflectance1 = incomingReadings.reflectance1;
   incomingReflectance2 = incomingReadings.reflectance2;
   incomingTransferFunction = incomingReadings.transferFunction;
@@ -135,7 +135,7 @@ void setup() {
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
   // Init Serial Monitor
-  Serial.begin(115200);
+  Serial.begin(9600);
 
 
   // Init OLED display
@@ -171,6 +171,8 @@ void setup() {
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
  
+int count = 1;
+
 void loop() {
   
   getReadings();
@@ -184,14 +186,22 @@ void loop() {
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
    
-  if (result == ESP_OK) {
-    Serial.println("Sent with success");
-  }
-  else {
-    Serial.println("Error sending the data");
-  }
-  updateDisplay();
-  delay(10000);
+  // if (result == ESP_OK) {
+  //   Serial.println("Sent with success");
+  // }
+  // else {
+  //   Serial.println("Error sending the data");
+  // }
+  
+  Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+  Serial.println();
+
+  //updateDisplay();
+  
+  // if (count % 4 ==0) {
+  //   delay(500);
+  // }
+  // count++;
 }
 
 
@@ -204,18 +214,18 @@ void getReadings(){
   // reflectance1 = -62;
   // reflectance1 = -16;
   // transferFunction = 699;
-    Serial.println("readings>>>");
+    //Serial.println("readings>>>");
     if (SerialPort.available() > 0) {
 
-      Serial.println("if sttmt");
+      //Serial.println("if sttmt");
       received = "";
       received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
-      Serial.println("msg: " + String(received));
+      //Serial.println("msg: " + String(received));
 
     } else {
-      Serial.println("else statmen");
+      //Serial.println("else statmen");
       strMsg = "n/a: " + String(received);
     
     }
@@ -250,17 +260,17 @@ void updateDisplay(){
   // display.display();
   
   // Display Readings in Serial Monitor
-  Serial.println("INCOMING READINGS");
-  Serial.print("ref1: ");
-  Serial.print(incomingReadings.reflectance1);
-  //Serial.println(" ºC");
-  Serial.print("ref2: ");
-  Serial.print(incomingReadings.reflectance2);
-  //Serial.println(" %");
-  Serial.print("transfer func: ");
-  Serial.print(incomingReadings.transferFunction);
-  Serial.print("strMsg: ");
-  Serial.print(incomingReadings.strMsg);
-  //Serial.println(" hPa");
-  Serial.println();
+  // Serial.println("INCOMING READINGS");
+  // Serial.print("ref1: ");
+  // Serial.print(incomingReadings.reflectance1);
+  // //Serial.println(" ºC");
+  // Serial.print("ref2: ");
+  // Serial.print(incomingReadings.reflectance2);
+  // //Serial.println(" %");
+  // Serial.print("transfer func: ");
+  // Serial.print(incomingReadings.transferFunction);
+  // Serial.print("strMsg: ");
+  // Serial.print(incomingReadings.strMsg);
+  // //Serial.println(" hPa");
+  // Serial.println();
 }
