@@ -53,8 +53,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-uint8_t broadcastAddress[] = {0x64, 0xdb7, 0x08, 0x9d, 0x68, 0x0c};
-{0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
+uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
 //uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store BME280 readings to be sent
@@ -201,6 +200,10 @@ void getReadings(){
   // humidity = 10.1;
   // pressure = 100000;
 
+
+  reflectance1 = -62;
+  reflectance1 = -16;
+  transferFunction = 699;
 
     if (SerialPort.available() > 0) {
 
