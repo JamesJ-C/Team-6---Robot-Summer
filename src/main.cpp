@@ -9,6 +9,26 @@
 
 
 
+/*  imports   */
+
+
+#include <HardwareSerial.h>
+
+
+
+/*  BP pin defs  */
+
+#define RX PB11
+#define TX PB10
+
+HardwareSerial SerialPort(USART3);
+
+String msg;
+
+
+/*  imports  */
+
+
 
 /*  Function Declerations  */
 void updateEncoder();
@@ -64,6 +84,8 @@ movement::Motor motor2(Motor2_P1, Motor2_P2);
 
 
 void setup() {
+
+  SerialPort.begin(115200);
 
 
 	// Setup Serial Monitor
@@ -172,8 +194,12 @@ void loop() {
   error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
   Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-
   Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+
+  SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
@@ -200,6 +226,9 @@ void loop() {
 
   motor1.forward( 1.0 * (midMotorSpeed + g) );
   motor2.forward(midMotorSpeed - g);
+
+  SerialPort.println("m1: " + String( midMotorSpeed + g) );
+  SerialPort.println("m2: " + String( midMotorSpeed - g) );
 
   // motor1.forward( 4095 );
   // motor2.forward(4095);
