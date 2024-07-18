@@ -1,6 +1,6 @@
 #include <Arduino.h>
-#include <Wire.h>
-#include <Adafruit_SSD1306.h>
+// #include <Wire.h>
+// #include <Adafruit_SSD1306.h>
 #include <Servo.h>
 
 #include "RotaryEncoder.h"
@@ -55,12 +55,12 @@ int g;
 
 
 /*  Object declerations  */
-Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+// Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 encoder::RotaryEncoder encoder1(PB_8, PB_9);
-movement::Motor motor1(Motor1_P1, Motor1_P2, &encoder1);
-
+movement::Motor motor1(Motor1_P1, Motor1_P2);//, &encoder1);
+movement::Motor motor2(Motor2_P1, Motor2_P2);
 
 
 void setup() {
@@ -74,24 +74,28 @@ void setup() {
   pinMode(POT_PIN, INPUT);
 
   /*  Display setup  */
-  display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  // display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
 
-  display_handler.display();
-  delay(2000);
+  // display_handler.display();
+  // delay(2000);
 
-	display_handler.clearDisplay();
-	display_handler.setTextSize(1);
-	display_handler.setTextColor(SSD1306_WHITE);
-	display_handler.setCursor(0,0);
-	display_handler.println("Setting up...");
-	display_handler.display();
+	// display_handler.clearDisplay();
+	// display_handler.setTextSize(1);
+	// display_handler.setTextColor(SSD1306_WHITE);
+	// display_handler.setCursor(0,0);
+	// display_handler.println("Setting up...");
+	// display_handler.display();
 
 
   /*  Motor Pins  */
   pinMode(motor1.getPinA(), OUTPUT);
   pinMode(motor1.getPinB(), OUTPUT);
 
+  pinMode(motor2.getPinA(), OUTPUT);
+  pinMode(motor2.getPinB(), OUTPUT);
+
   motor1.off();
+  motor2.off();
 
 
   /*  Encoders  */
@@ -124,33 +128,33 @@ void loop() {
 //   {
 //   /*	---------------  */
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-// 	// display_handler.print("Counter: ");
-// 	// display_handler.println(counter);
-//   // display_handler.print("Obj Counter: ");
-	display_handler.println(encoder1.getIncrements() );
+//   display_handler.clearDisplay();
+//   display_handler.setTextSize(1);
+//   display_handler.setTextColor(SSD1306_WHITE);
+//   display_handler.setCursor(0,0);
+// // 	// display_handler.print("Counter: ");
+// // 	// display_handler.println(counter);
+// //   // display_handler.print("Obj Counter: ");
+// 	display_handler.println(encoder1.getIncrements() );
 
 
-  display_handler.print("motor.Obj Counter: ");
-	display_handler.println(motor1.encoder->getIncrements() );
+//   display_handler.print("motor.Obj Counter: ");
+// 	display_handler.println(motor1.encoder->getIncrements() );
 
 
-//   // display_handler.print("g: ");
-// 	// display_handler.println(g);
+// //   // display_handler.print("g: ");
+// // 	// display_handler.println(g);
 
 
-//   // display_handler.print("error: ");
-// 	// display_handler.println(error );
+// //   // display_handler.print("error: ");
+// // 	// display_handler.println(error );
 
 
-//   // // display_handler.print("Obj speed: ");
-// 	// // display_handler.println(encoder1.getSpeed() );
+// //   // // display_handler.print("Obj speed: ");
+// // 	// // display_handler.println(encoder1.getSpeed() );
 
 
-  display_handler.display();
+//   display_handler.display();
 
 
 //   /*	---------------  */
@@ -167,6 +171,10 @@ void loop() {
 
   error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
+  // Serial.println( "tape 1" + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+
+  // Serial.println( "tape 2" + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
   i = I_GAIN * error + i; //const * error + previous int value
@@ -176,7 +184,7 @@ void loop() {
 
   g = LOOP_GAIN * ( p + i + d );
 
-  // Serial.println("Transfer function: " + String(g));
+  Serial.println("Transfer function: " + String(g));
 
   if (g > 0)
     Serial.println("dir 1");
@@ -185,7 +193,11 @@ void loop() {
   else 
     Serial.print("forward");
 
-//  motor1.setMotor(g);
+  //motor1.setMotor(g);
+
+  motor1.forward(4095);
+  motor2.forward(4095);
+
 
   lastError = error;
 
