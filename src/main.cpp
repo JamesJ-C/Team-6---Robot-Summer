@@ -135,7 +135,7 @@ void setup() {
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
   // Init Serial Monitor
-  Serial.begin(9600);
+  Serial.begin(115200);
 
 
   // Init OLED display
@@ -184,7 +184,7 @@ void loop() {
   msg.strMsg = strMsg;
 
   // Send message via ESP-NOW
-  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
+  //esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
    
   // if (result == ESP_OK) {
   //   Serial.println("Sent with success");
@@ -195,6 +195,9 @@ void loop() {
   
   Serial.println("incoming msg: " + String(incomingReadings.strMsg));
   Serial.println();
+  if(incomingReadings.strMsg.length() > 1){
+    delay(1000);
+  }
 
   //updateDisplay();
   
