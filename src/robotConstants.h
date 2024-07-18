@@ -24,11 +24,11 @@ namespace robotConstants {
 /*  Motor pins  */
 namespace motorPins {
 
-    #define Motor1_P1 PB_6
-    #define Motor1_P2 PB_7
+    #define Motor1_P1 PB_7
+    #define Motor1_P2 PB_6
 
-    #define Motor2_P1 PB_9
-    #define Motor2_P2 PB_8
+    #define Motor2_P1 PB_8
+    #define Motor2_P2 PB_9
     //these have been adjusted for driving direction
 
     
@@ -61,8 +61,8 @@ namespace digitalPins {
 
     #define BUTTON_PIN PB_12//PA_10
 
-    #define FRONT_TAPE_SENSOR_1 PA_6
-    #define FRONT_TAPE_SENSOR_2 PA_7
+    #define FRONT_TAPE_SENSOR_1 PA_7
+    #define FRONT_TAPE_SENSOR_2 PA_6
 
     #define BACK_TAPE_SENSOR_3 PA_0
     #define BACK_TAPE_SENSOR_4 PA_1

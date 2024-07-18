@@ -35,17 +35,31 @@ namespace movement {
     return PWM_pinB;
   }
 
-  void Motor::setMotor(int motorSpeed){
+  void Motor::setMotor(int val){
 
-    if (motorSpeed > 100){
-      forward(motorSpeed);
-    }
-    else if (motorSpeed < -100){
-      backward(-motorSpeed);
-    }
-    else {
-      stop();
-    }
+
+    const int maxMotorSpeed = 3500;
+
+    const int midMotorSpeed = 3800;
+
+    motorSpeed = constrain(val + midMotorSpeed, 3500, 4095);
+
+    this->forward(motorSpeed);
+
+    Serial.println("Motor " + String(PWM_pinA) + ": " + String(motorSpeed));
+
+
+
+
+    // if (motorSpeed > 100){
+    //   forward(motorSpeed);
+    // }
+    // else if (motorSpeed < -100){
+    //   backward(-motorSpeed);
+    // }
+    // else {
+    //   stop();
+    // }
 
   }
 

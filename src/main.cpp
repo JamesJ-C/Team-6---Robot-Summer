@@ -34,10 +34,10 @@ bool buttonPressed = false;
 
 
 /*  PID Control Values  */
-int LOOP_GAIN = 1;
-int P_GAIN = 30;
+double LOOP_GAIN = 1.0 / 10.0;
+int P_GAIN = 600;
 int I_GAIN = 0;
-int D_GAIN = 10;
+int D_GAIN = 0;
 
 //use lecture slide to tune
 int setVal = 32;
@@ -51,7 +51,7 @@ int max_I = 140;
 
 int p,d,i;
 
-int g;
+double g;
 
 
 /*  Object declerations  */
@@ -171,9 +171,9 @@ void loop() {
 
   error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
-  // Serial.println( "tape 1" + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
 
-  // Serial.println( "tape 2" + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+  Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
@@ -182,22 +182,27 @@ void loop() {
   if (i < -max_I) {i = -max_I;}
 
 
-  g = LOOP_GAIN * ( p + i + d );
+  g = LOOP_GAIN * (double) ( p + i + d ) / 20.0;
 
-  Serial.println("Transfer function: " + String(g));
+  // Serial.println("Transfer function: " + String(g));
 
-  if (g > 0)
-    Serial.println("dir 1");
-  else if (g < 0)
-    Serial.println("dir 2");
-  else 
-    Serial.print("forward");
+  // if (g > 0)
+  //   Serial.println("dir 1");
+  // else if (g < 0)
+  //   Serial.println("dir 2");
+  // else 
+  //   Serial.print("forward");
 
-  //motor1.setMotor(g);
+  // motor1.setMotor(g);
+  // motor2.setMotor(-1 * g);
 
-  motor1.forward(4095);
-  motor2.forward(4095);
+  const int midMotorSpeed = 3800;
 
+  motor1.forward( 1.0 * (midMotorSpeed + g) );
+  motor2.forward(midMotorSpeed - g);
+
+  // motor1.forward( 4095 );
+  // motor2.forward(4095);
 
   lastError = error;
 
