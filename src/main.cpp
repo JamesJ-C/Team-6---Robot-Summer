@@ -198,11 +198,11 @@ void loop() {
 
   const int midMotorSpeed = 3800;
 
-  // motor1.forward( 1.0 * (midMotorSpeed + g) );
-  // motor2.forward(midMotorSpeed - g);
+  motor1.forward( 1.0 * (midMotorSpeed + g) );
+  motor2.forward(midMotorSpeed - g);
 
-  motor1.forward( 4095 );
-  motor2.forward(4095);
+  // motor1.forward( 4095 );
+  // motor2.forward(4095);
 
   lastError = error;
 
