@@ -56,7 +56,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-//uint8_t broadcastAddress[] = {0xd4, 0xd4, 0xda, 0xa3, 0xa0, 0x98};
+//uint8_t broadcastAddress[] = {0x64, 0xdb7, 0x08, 0x9d, 0x68, 0x0c};
 uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store BME280 readings to be sent
@@ -67,6 +67,7 @@ float pressure;
 int reflectance1;
 int reflectance2;
 double transferFunction;
+String strMsg;
 
 // Define variables to store incoming readings
 float incomingTemp;
@@ -93,6 +94,7 @@ typedef struct struct_message {
   int reflectance1;
   int reflectance2;
   double transferFunction;
+  String strMsg;
 
 
 } struct_message;
@@ -177,9 +179,10 @@ void loop() {
   getReadings();
  
   // Set values to send
-  msg.reflectance1 = temperature;
-  msg.reflectance2 = humidity;
-  msg.transferFunction = pressure;
+  msg.reflectance1 = reflectance1;
+  msg.reflectance2 = reflectance2;
+  msg.transferFunction = transferFunction;
+  msg.strMsg = strMsg;
 
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
@@ -196,29 +199,22 @@ void loop() {
 
 
 void getReadings(){
-  temperature = -273;
-  humidity = 10.1;
-  pressure = 100000;
+  // temperature = -273;
+  // humidity = 10.1;
+  // pressure = 100000;
 
 
     if (SerialPort.available() > 0) {
-	//if (true){
+
       received = "";
       received = SerialPort.readString();
       
-      toggled = true;
-  
-      display_handler.print("Received: ");
-      display_handler.println(received);
-
-
-      
+      strMsg = received;
 
     } else {
 
-    	display_handler.println("Serial port unavailable");
-      display_handler.print("most recent msg: ");
-      display_handler.println(received);
+      strMsg = "n/a: " + String(received);
+    
     }
 
 
@@ -260,6 +256,8 @@ void updateDisplay(){
   //Serial.println(" %");
   Serial.print("transfer func: ");
   Serial.print(incomingReadings.transferFunction);
+  Serial.print("strMsg: ");
+  Serial.print(incomingReadings.strMsg);
   //Serial.println(" hPa");
   Serial.println();
 }
