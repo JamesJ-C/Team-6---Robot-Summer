@@ -9,18 +9,17 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-#include <FS.h>
 
 
 
 /*  imported  */
-#include <Arduino.h>
+//#include <Arduino.h>
 //#include <HardwareSerial.h>
 
 #define RX 9
 #define TX 10
 
-HardwareSerial SerialPort(1);  //if using UART1
+//HardwareSerial SerialPort(1);  //if using UART1
 String received;
 
 /*  imported  */
@@ -100,7 +99,7 @@ void getReadings();
 
 void setup() {
 
-  SerialPort.begin(115200, SERIAL_8N1, RX, TX);
+  //SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
   // Init Serial Monitor
   Serial.begin(9600);
@@ -169,18 +168,18 @@ void getReadings(){
   // pressure = 100000;
 
 
-    if (SerialPort.available() > 0) {
+    // if (SerialPort.available() > 0) {
 
-      received = "";
-      received = SerialPort.readString();
+    //   received = "";
+    //   received = SerialPort.readString();
       
-      strMsg = received;
+    //   strMsg = received;
 
-    } else {
+    // } else {
 
-      strMsg = "n/a: " + String(received);
+    //   strMsg = "n/a: " + String(received);
     
-    }
+    // }
 
 
 
