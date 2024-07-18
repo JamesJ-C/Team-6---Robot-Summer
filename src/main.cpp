@@ -71,12 +71,14 @@ void loop() {
     display_handler.setTextColor(SSD1306_WHITE);
     display_handler.setCursor(0,0);
 
-	loopedCount++;
-	if(loopedCount = 1){
-		//loopedCount = 0;
-	    SerialPort.println("from the esp");
-		display_handler.println("sent");
-	}
+/*  Send code  */
+
+	// loopedCount++;
+	// if(loopedCount = 1){
+	// 	//loopedCount = 0;
+	//     SerialPort.println("from the esp");
+	// 	display_handler.println("sent");
+	// }
 
 
 
