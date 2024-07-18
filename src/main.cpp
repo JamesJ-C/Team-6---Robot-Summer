@@ -74,6 +74,7 @@ float incomingPres;
 int incomingReflectance1;
 int incomingReflectance2;
 double incomingTransferFunction;
+String incomingStrMsg;
 
 // Variable to store if sending data was successful
 String success;
@@ -119,11 +120,14 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
-  //Serial.print("Bytes received: ");
-  //Serial.println(len);
+  Serial.print("Bytes received: ");
+  Serial.println(len);
   incomingReflectance1 = incomingReadings.reflectance1;
   incomingReflectance2 = incomingReadings.reflectance2;
   incomingTransferFunction = incomingReadings.transferFunction;
+  incomingStrMsg = incomingReadings.strMsg;
+  Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+  delay(1000);
 }
 
 
@@ -193,10 +197,12 @@ void loop() {
   //   Serial.println("Error sending the data");
   // }
   
-  Serial.println("incoming msg: " + String(incomingReadings.strMsg));
-  Serial.println();
+  //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+  //Serial.println("incoming msg: " + incomingReflectance1);
+  // Serial.println("incoming msg: " + String(incomingStrMsg));
+  // Serial.println();
   if(incomingReadings.strMsg.length() > 1){
-    delay(1000);
+    //delay(1000);
   }
 
   //updateDisplay();
