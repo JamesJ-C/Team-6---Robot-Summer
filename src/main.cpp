@@ -6,43 +6,22 @@
 */
 #include <esp_now.h>
 #include <WiFi.h>
-
 #include <Wire.h>
-
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
+#include <FS.h>
 
 
 
 /*  imported  */
 #include <Arduino.h>
-#include <Wire.h>
-#include <HardwareSerial.h>
-#include <Adafruit_SSD1306.h>
-
-#define BP 0
-#define ESP 1
-
-#define MASTER 1
-#define SLAVE 0
-
-#define BOARD_TYPE BP
-#define STATUS SLAVE
-
+//#include <HardwareSerial.h>
 
 #define RX 9
 #define TX 10
 
-
 HardwareSerial SerialPort(1);  //if using UART1
-
-bool toggled = false;
-
-
 String received;
-
-int loopedCount = 0;
-
 
 /*  imported  */
 
@@ -60,9 +39,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store BME280 readings to be sent
-float temperature;
-float humidity;
-float pressure;
 
 int reflectance1;
 int reflectance2;
@@ -70,9 +46,6 @@ double transferFunction;
 String strMsg;
 
 // Define variables to store incoming readings
-float incomingTemp;
-float incomingHum;
-float incomingPres;
 
 int incomingReflectance1;
 int incomingReflectance2;
@@ -80,14 +53,6 @@ double incomingTransferFunction;
 
 // Variable to store if sending data was successful
 String success;
-
-//Structure example to send data
-//Must match the receiver structure
-// typedef struct struct_message {
-//     float temp;
-//     float hum;
-//     float pres;
-// } struct_message;
 
 typedef struct struct_message {
 
