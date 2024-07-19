@@ -59,10 +59,7 @@ bool buttonPressed = false;
 
 
 /*  PID Control Values  */
-double LOOP_GAIN = 1.0 / 1.0;
-double P_GAIN = 1.6;//1.6;//1.4 goes very slowl
-int I_GAIN = 0;
-int D_GAIN = 0;
+
 
 //use lecture slide to tune
 int setVal = 32;
@@ -179,13 +176,19 @@ void loop() {
 
   error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
-  // Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  // Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+  Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
 
   SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
+
+
+  double LOOP_GAIN = 1.0 / 1.0;
+  double P_GAIN = 5;//1.6;//1.4 goes very slowl
+  int I_GAIN = 0;
+  int D_GAIN = 0;
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
@@ -193,49 +196,37 @@ void loop() {
   if (i > max_I) {i = max_I;}
   if (i < -max_I) {i = -max_I;}
 
+  g = LOOP_GAIN * (double) ( p + i + d );
 
-  const int speedGain = 1.0;
-
-  g = LOOP_GAIN * (double) ( p + i + d ) * speedGain;
-
-  // Serial.println("Transfer function: " + String(g));
-
-  // if (g > 0)
-  //   Serial.println("dir 1");
-  // else if (g < 0)
-  //   Serial.println("dir 2");
-  // else 
-  //   Serial.print("forward");
-
-  // MotorL.setMotor(g);
-  // MotorR.setMotor(-1 * g);
-
+    
+  
   const int midMotorSpeed = 3400;
+//3800.0 / 3300.0
+  MotorL.forward( (midMotorSpeed - 1 * g) );
+  MotorR.forward( ( ( midMotorSpeed + 1 * g) ) );
 
-
-  // if (g > 20){
-  //   MotorL.forward( 1.0 * (3400) );
-  //   MotorR.forward(  ( 3900) );
-  // }
-  // else if (g < 20) {
-  //   MotorL.forward( 1.0 * (3900) );
-  //   MotorR.forward(  ( 3400) );
-  // }
-  // else {
-  //   MotorL.forward( 3500 );
-  //   MotorR.forward( 3500 );
-  // }
-
-
-
-  MotorL.forward( 1.0 * (midMotorSpeed - g) );
-  MotorR.forward( ( ( midMotorSpeed + g) ) );
+  Serial.println("g: " + String( g) );
 
   SerialPort.println("m1: " + String( midMotorSpeed - g) );
   SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
-  // MotorL.forward( 3400 );
-  // MotorR.backward(3400);
+  Serial.println("m1: " + String( midMotorSpeed - g) );
+  Serial.println("m2: " + String( midMotorSpeed + g) );
+
+  // MotorL.forward( 3500 );
+  // MotorR.forward(3500);
+
+  // delay(1000);
+
+  // MotorL.off();
+  // MotorR.off();
+  // delay(1000);
+
+
+  // MotorL.forward( 3700 );
+  // MotorR.forward(3500);
+
+  // delay(1000);
 
   lastError = error;
 

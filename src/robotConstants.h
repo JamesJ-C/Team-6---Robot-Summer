@@ -25,11 +25,11 @@ namespace robotConstants {
 namespace motorPins {
 
     /*  Drive motor pins. Adjusted for direction  */
-    #define MotorL_P1 PB_7
-    #define MotorL_P2 PB_6
+    #define MotorR_P1 PB_7
+    #define MotorR_P2 PB_6
 
-    #define MotorR_P1 PB_8
-    #define MotorR_P2 PB_9
+    #define MotorL_P1 PB_9
+    #define MotorL_P2 PB_8
 
 
 }
