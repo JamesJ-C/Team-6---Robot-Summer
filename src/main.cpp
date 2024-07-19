@@ -224,7 +224,7 @@ void loop() {
   // motor1.setMotor(g);
   // motor2.setMotor(-1 * g);
 
-  const int midMotorSpeed = 4000;//3400;
+  const int midMotorSpeed = 3800;
 
 
 
