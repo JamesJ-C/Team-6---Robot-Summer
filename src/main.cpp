@@ -55,7 +55,7 @@ bool buttonPressed = false;
 
 /*  PID Control Values  */
 double LOOP_GAIN = 1.0 / 10.0;
-int P_GAIN = 600;
+int P_GAIN = 300;
 int I_GAIN = 0;
 int D_GAIN = 0;
 
@@ -222,16 +222,16 @@ void loop() {
   // motor1.setMotor(g);
   // motor2.setMotor(-1 * g);
 
-  const int midMotorSpeed = 3800;
+  const int midMotorSpeed = 3400;
 
-  motor1.forward( 1.0 * (midMotorSpeed + g) );
-  motor2.forward(midMotorSpeed - g);
+  motor1.forward( 1.0 * (midMotorSpeed - g) );
+  motor2.forward(midMotorSpeed + g);
 
-  SerialPort.println("m1: " + String( midMotorSpeed + g) );
-  SerialPort.println("m2: " + String( midMotorSpeed - g) );
+  SerialPort.println("m1: " + String( midMotorSpeed - g) );
+  SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
-  // motor1.forward( 4095 );
-  // motor2.forward(4095);
+  // motor1.forward( 3400 );
+  // motor2.forward(3400);
 
   lastError = error;
 
