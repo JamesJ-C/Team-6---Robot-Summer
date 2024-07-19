@@ -52,6 +52,8 @@ namespace servoPins {
 namespace analogInPins {
 
     #define POT_PIN A1
+    #define IR_SENSOR1 PA_0
+    #define IR_SENSOR2 PA_1
 
 
 
@@ -68,6 +70,15 @@ namespace digitalPins {
     #define BACK_TAPE_SENSOR_4 PA_1
 
 
+
+}
+
+
+namespace irConstants {
+
+
+    #define THRESHOLD 100 // Black line detection threshold
+    #define NUM_SAMPLES 200
 
 }
 
