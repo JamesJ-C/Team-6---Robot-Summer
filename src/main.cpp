@@ -55,7 +55,7 @@ bool buttonPressed = false;
 
 /*  PID Control Values  */
 double LOOP_GAIN = 1.0 / 10.0;
-int P_GAIN = 600;
+int P_GAIN = 30;
 int I_GAIN = 0;
 int D_GAIN = 0;
 
