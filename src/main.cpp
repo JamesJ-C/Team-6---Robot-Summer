@@ -170,7 +170,7 @@ void setup() {
   display_handler.print("150 degrees");
   display_handler.display();
 
-  servo1.write(150);
+  //servo1.write(150);
   delay(1000);
 
 
@@ -184,7 +184,7 @@ void loop() {
 
   int pos = analogRead(POT_PIN);
 
-  int servoPos = map(pos, 0, 1023, 0, 184);
+  int servoPos = map(pos, 0, 1023, 0, 194);
 
   servo1.write( servoPos );
   
