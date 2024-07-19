@@ -227,15 +227,29 @@ void loop() {
   const int midMotorSpeed = 3800;
 
 
+  // if (g > 20){
+  //   motor1.forward( 1.0 * (3400) );
+  //   motor2.forward(  ( 3900) );
+  // }
+  // else if (g < 20) {
+  //   motor1.forward( 1.0 * (3900) );
+  //   motor2.forward(  ( 3400) );
+  // }
+  // else {
+  //   motor1.forward( 3500 );
+  //   motor2.forward( 3500 );
+  // }
 
-  motor1.forward( 1.0 * (midMotorSpeed - 0.5 * g) );
-  motor2.forward( ( ( midMotorSpeed + g) * 0.6/3*2.1) );
 
-  SerialPort.println("m1: " + String( midMotorSpeed - g) );
-  SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
-  // motor1.forward( 3400 );
-  // motor2.forward(3400);
+  // motor1.forward( 1.0 * (midMotorSpeed - 0.5 * g) );
+  // motor2.forward( ( ( midMotorSpeed + g) * 0.6/3*2.1) );
+
+  // SerialPort.println("m1: " + String( midMotorSpeed - g) );
+  // SerialPort.println("m2: " + String( midMotorSpeed + g) );
+
+  motor1.forward( 3400 );
+  motor2.forward(3400);
 
   lastError = error;
 
