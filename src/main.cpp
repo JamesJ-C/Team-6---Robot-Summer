@@ -54,8 +54,8 @@ bool buttonPressed = false;
 
 
 /*  PID Control Values  */
-double LOOP_GAIN = 1.0 / 10.0;
-int P_GAIN = 30;
+double LOOP_GAIN = 1.0 / 1.0;
+double P_GAIN = 1.2;
 int I_GAIN = 0;
 int D_GAIN = 0;
 
@@ -64,12 +64,12 @@ int setVal = 32;
 
 int measuredVal;
 
-int error = 0;
-int lastError = 0;
+double error = 0.0;
+double lastError = 0.0;
 
 int max_I = 140;
 
-int p,d,i;
+double p,d,i;
 
 double g;
 
@@ -208,7 +208,7 @@ void loop() {
   if (i < -max_I) {i = -max_I;}
 
 
-  g = LOOP_GAIN * (double) ( p + i + d ) / 20.0;
+  g = LOOP_GAIN * (double) ( p + i + d );
 
   // Serial.println("Transfer function: " + String(g));
 
