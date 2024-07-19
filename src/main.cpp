@@ -11,6 +11,8 @@
 #include <Adafruit_SSD1306.h>
 
 
+int callCount = 0;
+
 
 /*  imported  */
 #include <Arduino.h>
@@ -117,6 +119,8 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   }
 }
 
+
+
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
@@ -127,6 +131,17 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   incomingTransferFunction = incomingReadings.transferFunction;
   incomingStrMsg = incomingReadings.strMsg;
   Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+
+  if (callCount % 4 == 0){
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+  }
+  display.println(":" + String(incomingReadings.strMsg));
+  display.display();
+  callCount++;
+
   delay(1000);
 }
 
@@ -142,11 +157,25 @@ void setup() {
   Serial.begin(115200);
 
 
-  // Init OLED display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  }
+  // // Init OLED display
+  // if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
+  //   Serial.println(F("SSD1306 allocation failed"));
+  //   for(;;);
+  // }
+
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+ 
+
+  display.display();
+  delay(2000);
+
+  // Displays "Hello world!" on the screen
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("Setting up...");
+  display.display();
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
