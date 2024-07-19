@@ -55,7 +55,7 @@ bool buttonPressed = false;
 
 /*  PID Control Values  */
 double LOOP_GAIN = 1.0 / 1.0;
-double P_GAIN = 1.2;
+double P_GAIN = 1.4;//1.6;//1.4 goes very slowl
 int I_GAIN = 0;
 int D_GAIN = 0;
 
@@ -208,7 +208,9 @@ void loop() {
   if (i < -max_I) {i = -max_I;}
 
 
-  g = LOOP_GAIN * (double) ( p + i + d );
+  const int speedGain = 3.0;
+
+  g = LOOP_GAIN * (double) ( p + i + d ) * speedGain;
 
   // Serial.println("Transfer function: " + String(g));
 
@@ -222,10 +224,12 @@ void loop() {
   // motor1.setMotor(g);
   // motor2.setMotor(-1 * g);
 
-  const int midMotorSpeed = 3400;
+  const int midMotorSpeed = 4000;//3400;
 
-  motor1.forward( 1.0 * (midMotorSpeed - g) );
-  motor2.forward(midMotorSpeed + g);
+
+
+  motor1.forward( 1.0 * (midMotorSpeed - 0.5 * g) );
+  motor2.forward( ( ( midMotorSpeed + g) * 0.6/3*2.1) );
 
   SerialPort.println("m1: " + String( midMotorSpeed - g) );
   SerialPort.println("m2: " + String( midMotorSpeed + g) );
