@@ -9,6 +9,32 @@
 
 
 
+String board;
+int boardNum = -1;
+
+#ifdef ESP32
+
+board = "esp32";
+boardNum = 1;
+
+#endif
+
+#ifdef BLUEPILL_F103C8
+
+board = "BP";
+boardNum = 2;
+
+#define G 3
+
+#endif
+
+#ifdef ARDUINO_ARCH_STM32
+
+#define G 1
+
+#endif
+
+
 /*  imports   */
 
 
@@ -88,9 +114,12 @@ void setup() {
   SerialPort.begin(115200);
 
 
+
 	// Setup Serial Monitor
 	Serial.begin(9600);
-  Serial.println("Hello" + String());
+  Serial.println("Hello" + String(BOARD_NAME));
+
+  Serial.println(boardNum);
 
   /*  Pot Pin  */
   pinMode(POT_PIN, INPUT);
@@ -193,8 +222,8 @@ void loop() {
 
   error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
-  Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+  // Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  // Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
 
   SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
