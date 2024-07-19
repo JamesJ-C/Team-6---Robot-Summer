@@ -35,6 +35,11 @@ namespace movement {
     return PWM_pinB;
   }
 
+  /** ##this function is still being worked on
+   * @brief 
+   * 
+   * @param val 
+   */
   void Motor::setMotor(int val){
 
 
@@ -121,7 +126,7 @@ namespace movement {
     pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
   }
 
-  /**
+  /** ##this function is still being worked on
    * @brief sets up the encoder by going to the limits of the switches 
    * and saves the difference between the values. Sets one of the limit switches to 0 increments 
    * 

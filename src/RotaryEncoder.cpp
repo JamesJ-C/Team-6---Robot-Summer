@@ -39,16 +39,25 @@ namespace encoder {
         return increments;
     }
 
-
+    /**
+     * @brief sets the max value that the encoder should achieve. This value is not enforced
+     * 
+     * @param max max value for encoder
+     */
     void RotaryEncoder::setMaxIncrement(int max){
         this->maxIncrement = max;
     }
 
+    /**
+     * @brief gets the maximum increments the encoder should achieve
+     * 
+     * @return int max increments
+     */
     int RotaryEncoder::getMaxIncrement(){
         return this->maxIncrement;
     }
     
-    /**
+    /** #### this function and associated speed functions do not work.
      * @brief Get the Speed measured by the encoder
      * 
      * @return int speed
@@ -72,7 +81,7 @@ namespace encoder {
     }
 
     
-    /**
+    /** ### this function does not work properly
      * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
      * 
      */
@@ -88,8 +97,8 @@ namespace encoder {
      /**
      * @brief old function not needed. Still would like to keep for the time being
      * 
-     * @param A
-     * @param B 
+     * @param A digital read of pin A
+     * @param B digital read of pin B
      */
     void RotaryEncoder::updateEncoder(bool A, bool B){
 
@@ -128,6 +137,11 @@ namespace encoder {
 
     }
 
+    /**
+     * @brief sets the increments value to a specific number
+     * 
+     * @param increment number to set increments to
+     */
     void RotaryEncoder::setIncrement(int increment) {
         this->increments = increment;
     }

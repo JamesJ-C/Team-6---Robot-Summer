@@ -24,19 +24,19 @@ namespace robotConstants {
 /*  Motor pins  */
 namespace motorPins {
 
-    #define Motor1_P1 PB_7
-    #define Motor1_P2 PB_6
+    /*  Drive motor pins. Adjusted for direction  */
+    #define MotorL_P1 PB_7
+    #define MotorL_P2 PB_6
 
-    #define Motor2_P1 PB_8
-    #define Motor2_P2 PB_9
-    //these have been adjusted for driving direction
+    #define MotorR_P1 PB_8
+    #define MotorR_P2 PB_9
 
-    
 
 }
 
 namespace rotaryPins {
 
+    /*  Rotary encoder pins used for testing. May not be the actual control board pins  */
     #define ROTARY_A PB13
     #define ROTARY_B PB14
 
@@ -51,6 +51,7 @@ namespace servoPins {
 
 namespace analogInPins {
 
+    /*  Pins used for testing  */
     #define POT_PIN A1
     #define IR_SENSOR1 PA_0
     #define IR_SENSOR2 PA_1
@@ -61,11 +62,14 @@ namespace analogInPins {
 
 namespace digitalPins {
 
+
     #define BUTTON_PIN PB_12//PA_10
 
+    /*  Adjusted for driving direction  */
     #define FRONT_TAPE_SENSOR_1 PA_7
     #define FRONT_TAPE_SENSOR_2 PA_6
 
+    /*  Not necesarrily adjusted for direction  */
     #define BACK_TAPE_SENSOR_3 PA_0
     #define BACK_TAPE_SENSOR_4 PA_1
 
