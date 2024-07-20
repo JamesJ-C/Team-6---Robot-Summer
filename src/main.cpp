@@ -186,9 +186,9 @@ void loop() {
 
 
   double LOOP_GAIN = 1.0;
-  double P_GAIN = 0.7;//1.6;//1.4 goes very slowl
-  double I_GAIN = 0;
-  double D_GAIN = 0;
+  double P_GAIN = 0.7;//1.4 goes very slowl
+  double I_GAIN = 0.0;
+  double D_GAIN = 0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
@@ -197,8 +197,6 @@ void loop() {
   if (i < -max_I) {i = -max_I;}
 
   g = LOOP_GAIN * ( p + i + d );
-
-  //g = ( p );//+ i + d );
 
   Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
@@ -210,7 +208,7 @@ void loop() {
   SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
   
   //SEND MOTOR VALS
-  const int midMotorSpeed = 3200;
+  const int midMotorSpeed = 3300;
 //3800.0 / 3300.0
   MotorL.forward( (midMotorSpeed - 1 * g) );
   MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
