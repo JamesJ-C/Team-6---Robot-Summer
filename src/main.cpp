@@ -69,7 +69,7 @@ int measuredVal;
 double error = 0.0;
 double lastError = 0.0;
 
-int max_I = 140;
+double max_I = 140;
 
 double p,d,i;
 
@@ -106,9 +106,17 @@ void setup() {
   pinMode(MotorR.getPinA(), OUTPUT);
   pinMode(MotorR.getPinB(), OUTPUT);
 
+
+
   MotorL.off();
   MotorR.off();
-
+  delay(500);
+  MotorL.forward(3000);
+  delay(100);
+  MotorL.off();
+  MotorR.forward(3000);
+  delay(100);
+  MotorR.off();
 
   /*  Encoders  */
 	pinMode(ROTARY_A, INPUT);
@@ -174,21 +182,13 @@ void loop() {
 
   // error = setVal - measuredVal;
 
-  error = analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
-
-  Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+  error = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
 
-  SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
-
-
-
-  double LOOP_GAIN = 1.0 / 1.0;
-  double P_GAIN = 5;//1.6;//1.4 goes very slowl
-  int I_GAIN = 0;
-  int D_GAIN = 0;
+  double LOOP_GAIN = 1.0;
+  double P_GAIN = 0.7;//1.6;//1.4 goes very slowl
+  double I_GAIN = 0;
+  double D_GAIN = 0;
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
@@ -196,22 +196,40 @@ void loop() {
   if (i > max_I) {i = max_I;}
   if (i < -max_I) {i = -max_I;}
 
-  g = LOOP_GAIN * (double) ( p + i + d );
+  g = LOOP_GAIN * ( p + i + d );
 
-    
+  //g = ( p );//+ i + d );
+
+  Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+  Serial.println( "error: " + String( error ));
+  Serial.println( "p: " + String( p ));
+
+  SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+  SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
   
-  const int midMotorSpeed = 3400;
+  //SEND MOTOR VALS
+  const int midMotorSpeed = 3200;
 //3800.0 / 3300.0
   MotorL.forward( (midMotorSpeed - 1 * g) );
-  MotorR.forward( ( ( midMotorSpeed + 1 * g) ) );
+  MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
 
-  Serial.println("g: " + String( g) );
+  int mL = midMotorSpeed - g;
+    int mR = midMotorSpeed + g;
 
-  SerialPort.println("m1: " + String( midMotorSpeed - g) );
-  SerialPort.println("m2: " + String( midMotorSpeed + g) );
+  // SerialPort.println("g: " + String( g) );
+  // SerialPort.println("m1: " + String( midMotorSpeed - g) );
+  // SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
-  Serial.println("m1: " + String( midMotorSpeed - g) );
-  Serial.println("m2: " + String( midMotorSpeed + g) );
+  Serial.print("g: ");
+  Serial.println(g);
+
+  Serial.print("mL: ");
+  Serial.println(mL);
+
+  Serial.print("mR: ");
+  Serial.println(mR);
 
   // MotorL.forward( 3500 );
   // MotorR.forward(3500);
