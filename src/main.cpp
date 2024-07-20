@@ -141,8 +141,6 @@ void loop() {
   // SerialPort.print("motor.Obj Counter: ");
 	// SerialPort.println(MotorL.encoder->getIncrements() );
 
-
-
   // int readVal = analogRead(POT_PIN);
 
   // setVal = map(readVal, 0, 1023, -500, 500);
@@ -150,6 +148,7 @@ void loop() {
   // measuredVal = MotorL.encoder->getIncrements();
 
   // error = setVal - measuredVal;
+  
 
   error = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
@@ -174,9 +173,12 @@ void loop() {
   MotorL.forward( (midMotorSpeed - 1 * g) );
   MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
 
+
+  /*  SerialPort & Serial Monitor prints  */
+  {
+
   int mL = midMotorSpeed - g;
   int mR = midMotorSpeed + g;
-
   // SerialPort.println("g: " + String( g) );
   // SerialPort.println("m1: " + String( midMotorSpeed - g) );
   // SerialPort.println("m2: " + String( midMotorSpeed + g) );
@@ -198,6 +200,8 @@ void loop() {
 
   Serial.print("mR: ");
   Serial.println(mR);
+
+  }
 
 }
 
