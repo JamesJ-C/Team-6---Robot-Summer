@@ -137,42 +137,11 @@ void setup() {
 
 void loop() {
 
-//   /*  print statements  */
-//   {
-//   /*	---------------  */
 
-//   display_handler.clearDisplay();
-//   display_handler.setTextSize(1);
-//   display_handler.setTextColor(SSD1306_WHITE);
-//   display_handler.setCursor(0,0);
-// // 	// display_handler.print("Counter: ");
-// // 	// display_handler.println(counter);
-// //   // display_handler.print("Obj Counter: ");
-// 	display_handler.println(encoder1.getIncrements() );
+  // SerialPort.print("motor.Obj Counter: ");
+	// SerialPort.println(MotorL.encoder->getIncrements() );
 
 
-//   display_handler.print("motor.Obj Counter: ");
-// 	display_handler.println(MotorL.encoder->getIncrements() );
-
-
-// //   // display_handler.print("g: ");
-// // 	// display_handler.println(g);
-
-
-// //   // display_handler.print("error: ");
-// // 	// display_handler.println(error );
-
-
-// //   // // display_handler.print("Obj speed: ");
-// // 	// // display_handler.println(encoder1.getSpeed() );
-
-
-//   display_handler.display();
-
-
-//   /*	---------------  */
-
-//   }
 
   // int readVal = analogRead(POT_PIN);
 
@@ -196,7 +165,21 @@ void loop() {
   if (i > max_I) {i = max_I;}
   if (i < -max_I) {i = -max_I;}
 
-  g = LOOP_GAIN * ( p + i + d );
+  g = LOOP_GAIN * ( p + i + d ); 
+  lastError = error; 
+
+  //SEND MOTOR VALS
+  const int midMotorSpeed = 3300;
+
+  MotorL.forward( (midMotorSpeed - 1 * g) );
+  MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
+
+  int mL = midMotorSpeed - g;
+  int mR = midMotorSpeed + g;
+
+  // SerialPort.println("g: " + String( g) );
+  // SerialPort.println("m1: " + String( midMotorSpeed - g) );
+  // SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
   Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
@@ -206,19 +189,6 @@ void loop() {
 
   SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
-  
-  //SEND MOTOR VALS
-  const int midMotorSpeed = 3300;
-//3800.0 / 3300.0
-  MotorL.forward( (midMotorSpeed - 1 * g) );
-  MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
-
-  int mL = midMotorSpeed - g;
-    int mR = midMotorSpeed + g;
-
-  // SerialPort.println("g: " + String( g) );
-  // SerialPort.println("m1: " + String( midMotorSpeed - g) );
-  // SerialPort.println("m2: " + String( midMotorSpeed + g) );
 
   Serial.print("g: ");
   Serial.println(g);
@@ -228,28 +198,6 @@ void loop() {
 
   Serial.print("mR: ");
   Serial.println(mR);
-
-  // MotorL.forward( 3500 );
-  // MotorR.forward(3500);
-
-  // delay(1000);
-
-  // MotorL.off();
-  // MotorR.off();
-  // delay(1000);
-
-
-  // MotorL.forward( 3700 );
-  // MotorR.forward(3500);
-
-  // delay(1000);
-
-  lastError = error;
-
-
-  //do motor code now
-
-
 
 }
 
