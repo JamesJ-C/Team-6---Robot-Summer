@@ -186,9 +186,9 @@ void loop() {
 
 
   double LOOP_GAIN = 1.0;
-  double P_GAIN = 0.6;//1.4 goes very slowl
+  double P_GAIN = 0.55;//1.4 goes very slowl
   double I_GAIN = 0.0;
-  double D_GAIN = 1.2;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
+  double D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
 
   p = P_GAIN * error;
   d = D_GAIN * (error - lastError);
