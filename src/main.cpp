@@ -139,10 +139,19 @@ void setup() {
 
 
   // Init OLED display
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-    Serial.println(F("SSD1306 allocation failed"));
-    for(;;);
-  }
+    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+ 
+
+  display.display();
+  delay(2000);
+
+  // Displays "Hello world!" on the screen
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("Setting up...");
+  display.display();
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
