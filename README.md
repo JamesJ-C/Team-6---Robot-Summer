@@ -12,7 +12,7 @@ PID control of rod with limit switches (needed for:)
 
 Claw servo integration with limit switches
 
-drive PID tuning
+DONE: drive PID tuning
     find better suited motors
 
 
