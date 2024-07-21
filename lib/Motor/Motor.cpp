@@ -72,6 +72,8 @@ namespace movement {
 
   }
 
+#ifndef ESP32
+
   /**
    * @brief moves the motor forward at a given pwm signal
    * 
@@ -88,6 +90,9 @@ namespace movement {
 
   }
 
+#endif
+
+#ifndef ESP32
   /**
    * @brief moves the motor backward at a given pwm signal
    * 
@@ -99,6 +104,10 @@ namespace movement {
     pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     pwm_start(PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
   }
+
+#endif
+
+#ifndef ESP32
 
   /**
    * @brief Stops the motor from turning. If the motor is spinning, it pulses quickly in the opposite direction
@@ -125,10 +134,21 @@ namespace movement {
     
   }
 
+#endif
+
+#ifndef ESP32
+
+  /**
+   * @brief sets both pwm outputs to the motor to 0 immediately
+   * 
+   */
   void Motor::off(){
     pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
   }
+
+#endif
+
 
   /** ##this function is still being worked on
    * @brief sets up the encoder by going to the limits of the switches 
