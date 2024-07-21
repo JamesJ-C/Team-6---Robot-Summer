@@ -1,8 +1,11 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 #include <Arduino.h>
-#include "RotaryEncoder.h"
+// #include "RotaryEncoder.h"
 
+
+// #include <Motor.h>
+#include <RotaryEncoder.h>
 
 namespace movement {
 
