@@ -45,7 +45,7 @@ void setup() {
   display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
 
-  Serial.begin(9600);
+  Serial.begin(115200);
 
   // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
   display_handler.display();

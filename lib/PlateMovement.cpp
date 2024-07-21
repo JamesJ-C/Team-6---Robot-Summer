@@ -87,7 +87,7 @@ void setup() {
 
 
 	// Setup Serial Monitor
-	Serial.begin(9600);
+	Serial.begin(115200);
   Serial.println("Hello" + String(BOARD_NAME));
 
   Serial.println(boardNum);

@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include <map>
 // #include "Motor.h"
 // #include "RotaryEncoder.h"
 
@@ -9,6 +10,18 @@
 
 namespace movement {
 
+  #ifdef ESP32
+    Motor::Motor(PinName PWM_pinA, PinName L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder)
+    : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB){
+
+      this->encoder = Encoder;
+
+      pwmMap.insert({outputName + "_1", channel_1});
+      pwmMap.insert({outputName + "_2", channel_2});
+
+    }
+
+  #endif
 
   /**
    * @brief Construct a new Motor object
@@ -72,6 +85,18 @@ namespace movement {
 
   }
 
+
+#ifdef ESP32
+//func forward
+  Motor::forward(int PWM_Val){
+    forwardDirection = true;
+    backwardDirection = false;
+    this->motorSpeed = PWM_Val;
+
+    ledcWrite( this->pwmMap.at(this->outputName + "_1") , PWM_Val );
+    ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+  }
+#endif 
 #ifndef ESP32
 
   /**
@@ -82,7 +107,6 @@ namespace movement {
   void Motor::forward(int PWM_Val){
     forwardDirection = true;
     backwardDirection = false;
-
     this->motorSpeed = PWM_Val;
 
     pwm_start(PWM_pinA, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
@@ -92,6 +116,17 @@ namespace movement {
 
 #endif
 
+#ifdef ESP32
+//func backward
+  Motor::backard(int PWM_Val){
+    forwardDirection = false;
+    backwardDirection = true;
+    this->motorSpeed = PWM_Val;
+
+    ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
+    ledcWrite( this->pwmMap.at(this->outputName + "_2") , PWM_Val );
+  }
+#endif
 #ifndef ESP32
   /**
    * @brief moves the motor backward at a given pwm signal
@@ -101,11 +136,30 @@ namespace movement {
   void Motor::backward(int PWM_Val){
     forwardDirection = false;
     backwardDirection = true;
+    this->motorSpeed = PWM_Val;
+
     pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     pwm_start(PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
   }
 
 #endif
+
+//func stop
+//updated stop function
+void Motor::stop() {
+  if (forwardDirection){
+    this->backward(this->motorSpeed);
+
+    delay(100);
+  }
+  else if (backwardDirection){
+    this->forward(this->motorSpeed);
+
+    delay(100);    
+  }
+
+  this->off();
+}
 
 #ifndef ESP32
 
@@ -114,28 +168,39 @@ namespace movement {
    * before sending nothing to the motors
    * 
    */
-  void Motor::stop(){
+  // void Motor::stop(){
   
-    if (forwardDirection){
-      pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-      pwm_start(PWM_pinB, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
+  //   if (forwardDirection){
+  //     pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+  //     pwm_start(PWM_pinB, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
 
-      delay(100);
-    }
-    else if (backwardDirection){
-      pwm_start(PWM_pinA, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
-      pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+  //     delay(100);
+  //   }
+  //   else if (backwardDirection){
+  //     pwm_start(PWM_pinA, MOTOR_FREQUENCY, this->motorSpeed, RESOLUTION_12B_COMPARE_FORMAT);
+  //     pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
 
-      delay(100);    
-    }
+  //     delay(100);    
+  //   }
 
-    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+  //   pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+  //   pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     
-  }
+  // }
 
 #endif
 
+#ifdef ESP32
+//func off
+  Motor::off(){
+    forwardDirection = false;
+    backwardDirection = false;
+    this->motorSpeed = 0;
+
+    ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
+    ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+  }
+#endif
 #ifndef ESP32
 
   /**
@@ -143,6 +208,10 @@ namespace movement {
    * 
    */
   void Motor::off(){
+    forwardDirection = false;
+    backwardDirection = false;
+    this->motorSpeed = 0;
+
     pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
   }

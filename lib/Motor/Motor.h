@@ -2,6 +2,7 @@
 #define MOTOR_H 
 
 #include <Arduino.h>
+#include <map>
 // #include "RotaryEncoder.h"
 
 
@@ -32,6 +33,12 @@ namespace movement {
     bool forwardDirection = false;
     bool backwardDirection = false;
 
+    #ifndef ESP32
+        //create map
+        std::map<String, int> pwmMap;
+        String outputName;
+    #endif
+
 
     public:
 
@@ -40,6 +47,16 @@ namespace movement {
 
 
     encoder::RotaryEncoder* encoder;
+
+
+    #ifndef ESP32
+
+        Motor(PinName PWM_pinA, PinName L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder);
+
+    #endif
+
+
+
 
     /**
      * @brief Construct a new Motor object
