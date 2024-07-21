@@ -33,7 +33,7 @@ namespace movement {
     bool forwardDirection = false;
     bool backwardDirection = false;
 
-    #ifndef ESP32
+    #ifdef ESP32
         //create map
         std::map<String, int> pwmMap;
         String outputName;
@@ -49,7 +49,7 @@ namespace movement {
     encoder::RotaryEncoder* encoder;
 
 
-    #ifndef ESP32
+    #ifdef ESP32
 
         Motor(PinName PWM_pinA, PinName L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder);
 
