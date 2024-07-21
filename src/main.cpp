@@ -10,6 +10,8 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 
+#include <func.h>
+
 
 
 /*  imported  */
@@ -136,6 +138,8 @@ void setup() {
 
   // Init Serial Monitor
   Serial.begin(115200);
+
+  funcs::printStuff();
 
 
   // Init OLED display
