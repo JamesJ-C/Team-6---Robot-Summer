@@ -51,7 +51,6 @@ encoder::RotaryEncoder encoder1(PB_8, PB_9);
 movement::Motor MotorL(MotorL_P1, MotorL_P2);//, &encoder1);
 movement::Motor MotorR(MotorR_P1, MotorR_P2);
 
-
 void setup() {
 
   SerialPort.begin(115200);
