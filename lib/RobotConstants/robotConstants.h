@@ -38,7 +38,7 @@ namespace motorPins {
         #define MOTOR_1_b GPIO33
 
         #define MTOR_2_a GPIO12
-        #define MTOR_2_a GPIO13
+        #define MTOR_2_b GPIO13
     #endif
 
 }

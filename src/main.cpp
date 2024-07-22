@@ -99,22 +99,30 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
   incomingInfoStack.push(incomingReadings.strMsg);
 
-  if (callCount % 4 == 0){
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-  }
-  display.println(":" + String(incomingReadings.strMsg));
-  display.display();
-  callCount++;
-
-  delay(1000);
+  // if (callCount % 4 == 0){
+  //   display.clearDisplay();
+  //   display.setTextSize(1);
+  //   display.setTextColor(SSD1306_WHITE);
+  //   display.setCursor(0,0);
+  // }
+  // display.println(":" + String(incomingReadings.strMsg));
+  // display.display();
+  // callCount++;
+  // delay(1000);
 }
 
 
 void updateDisplay();
 void getReadings();
+
+
+void setDisplay() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+}
+
 
 void setup() {
 
@@ -123,16 +131,7 @@ void setup() {
   // Init Serial Monitor
   Serial.begin(115200);
 
-
-  // // Init OLED display
-  // if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) { 
-  //   Serial.println(F("SSD1306 allocation failed"));
-  //   for(;;);
-  // }
-
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
- 
-
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
   delay(2000);
 
@@ -143,6 +142,7 @@ void setup() {
   display.setCursor(0,0);
   display.println("Setting up...");
   display.display();
+
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -171,7 +171,7 @@ void setup() {
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
  
-int count = 1;
+int itemsDisplayed = 0;
 
 void loop() {
   
@@ -192,34 +192,28 @@ void loop() {
   // else {
   //   Serial.println("Error sending the data");
   // }
+
+  
+  if (!incomingInfoStack.empty() && itemsDisplayed < 5){
+    display.println( incomingInfoStack.top() );
+    Serial.println( incomingInfoStack.top() );
+    incomingInfoStack.pop();
+  } else {
+    display.display();
+    setDisplay();
+  }
+
   
   //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
   //Serial.println("incoming msg: " + incomingReflectance1);
   // Serial.println("incoming msg: " + String(incomingStrMsg));
   // Serial.println();
-  if(incomingReadings.strMsg.length() > 1){
-    //delay(1000);
-  }
 
-  //updateDisplay();
-  
-  // if (count % 4 ==0) {
-  //   delay(500);
-  // }
-  // count++;
 }
 
 
 void getReadings(){
-  // temperature = -273;
-  // humidity = 10.1;
-  // pressure = 100000;
-
-
-  // reflectance1 = -62;
-  // reflectance1 = -16;
-  // transferFunction = 699;
-    //Serial.println("readings>>>");
+  
     if (SerialPort.available() > 0) {
 
       //Serial.println("if sttmt");
