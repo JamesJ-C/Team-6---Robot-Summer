@@ -64,7 +64,10 @@ namespace analogInPins {
     #define POT_PIN A1
     #define IR_SENSOR1 PA_0
     #define IR_SENSOR2 PA_1
-
+    
+    /* Pins used for station detection */
+    #define TAPE_LA PA4
+    #define TAPE_LB PA5
 
 
 }
