@@ -48,12 +48,18 @@ boardNum = 1;
 HardwareSerial SerialPort(USART3);
 String msg;
 
-
+/* Variables for station detection */
+int currentStation = 0;
+int targetStation = 0;
+bool stopped = false;
+bool direction = false; // false is forward, true is backward
 
 /*  Function Declerations  */
 void updateEncoder();
 void ISRUpdateEncoder();
 void ISRButton();
+void tapeDetectedLB();
+void tapeDetectedLA();
 
 
 //NEED TO FIX THIS VARIABLE
@@ -129,17 +135,23 @@ void setup() {
 
   pinMode(BUTTON_PIN, INPUT);
 
-
+  targetStation = 1; // test driving to first tape
+  
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
 
 	attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
 	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(TAPE_LB), tapeDetectedLB, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(TAPE_LA), tapeDetectedLA, CHANGE);
 
 }
 
 
 void loop() {
 
+  // driving straight
+  MotorL.forward(3000);
+  MotorR.forward(3000);
 
   // SerialPort.print("motor.Obj Counter: ");
 	// SerialPort.println(MotorL.encoder->getIncrements() );
@@ -173,8 +185,8 @@ void loop() {
   //SEND MOTOR VALS
   const int midMotorSpeed = 3300;
 
-  MotorL.forward( (midMotorSpeed - 1 * g) );
-  MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
+  // MotorL.forward( (midMotorSpeed - 1 * g) );
+  // MotorR.forward(  1 / 1.3 * ( ( midMotorSpeed + 1 * g) ) );
 
 
   /*  SerialPort & Serial Monitor prints  */
@@ -236,5 +248,45 @@ void ISRButton() {
   buttonPressed = true;
 
   //MotorL.buttonPressed = true;
+
+}
+
+/**
+ * @brief function for handling station detection on sensor B on left side
+ * 
+ */
+void tapeDetectedLB() {
+
+  // only stop if driving in right direction, reached the target destination, and not already stopped
+  if (!stopped && !direction && currentStation == (targetStation - 1)) {
+    MotorL.stop();
+    MotorR.stop();
+    currentStation++;
+    stopped = true;
+    delay(1000);
+  }
+  else if (stopped) {
+    stopped = false;
+  }
+
+}
+
+/**
+ * @brief function for handling station detection on sensor A on left side
+ * 
+ */
+void tapeDetectedLA() {
+
+  // only stop if driving in right direction, reached the target destination, and not already stopped
+  if (!stopped && direction && currentStation == (targetStation + 1)) {
+    MotorL.stop();
+    MotorR.stop();
+    currentStation--;
+    stopped = true;
+    delay(1000);
+  }
+  else if (stopped) {
+    stopped = false;
+  }
 
 }
