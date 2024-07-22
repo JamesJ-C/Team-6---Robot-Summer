@@ -34,11 +34,11 @@ namespace motorPins {
 
     /*  ESP PINS  */
     #ifdef ESP32
-        #define MOTOR_1_a GPIO32
-        #define MOTOR_1_b GPIO33
+        #define MOTOR_1_a 32
+        #define MOTOR_1_b 33
 
-        #define MTOR_2_a GPIO12
-        #define MTOR_2_b GPIO13
+        #define MTOR_2_a 12
+        #define MTOR_2_b 13
     #endif
 
 }

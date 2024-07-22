@@ -12,7 +12,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-#include <stack>
+#include <queue>
 
 #include <robotConstants.h>
 
@@ -61,7 +61,7 @@ typedef struct struct_message {
 
 } struct_message;
 
-std::stack<String> incomingInfoStack;
+std::queue<String> incomingInfoQueue;
 
 
 // Create a struct_message called BME280Readings to hold sensor readings
@@ -97,7 +97,7 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   incomingStrMsg = incomingReadings.strMsg;
   Serial.println("incoming msg: " + String(incomingReadings.strMsg));
 
-  incomingInfoStack.push(incomingReadings.strMsg);
+  incomingInfoQueue.push(incomingReadings.strMsg);
 
 }
 
@@ -115,6 +115,12 @@ void setDisplay() {
 
 
 void setup() {
+
+  ledcAttachPin(MOTOR_1_a , 1 );
+  ledcAttachPin(MOTOR_1_b , 2 );
+
+  ledcSetup(1, 12000, 8);
+  ledcSetup(2, 12000, 8);
 
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
@@ -163,8 +169,24 @@ void setup() {
 
 
 int itemsDisplayed = 0;
+
+unsigned long startTime = millis();
+
 void loop() {
-  
+
+if (millis() - startTime < 2000) {  
+  ledcWrite(1, 200);
+  ledcWrite(1, 0);
+}
+if (millis() - startTime > 2000) {
+  ledcWrite(1, 0);
+  ledcWrite(1, 200);
+}
+
+
+
+
+
   getReadings();
  
   // Set values to send
@@ -183,6 +205,7 @@ void loop() {
     Serial.println("Error sending the data");
   }
   
+  updateDisplay();
   //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
   //Serial.println("incoming msg: " + incomingReflectance1);
   // Serial.println("incoming msg: " + String(incomingStrMsg));
@@ -199,7 +222,9 @@ void getReadings(){
       received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
-      display.println("msg: " + String(received));
+      incomingInfoQueue.push(received);
+      // display.println("msg: " + String(received));
+      // display.println("msg: " + String(received));
 
     } else {
       //Serial.println("else statmen");
@@ -213,54 +238,18 @@ void getReadings(){
 
 void updateDisplay(){
 
-  if (!incomingInfoStack.empty() && itemsDisplayed < 5){
-      display.println( incomingInfoStack.top() );
-      Serial.println( incomingInfoStack.top() );
-      incomingInfoStack.pop();
+  if (!incomingInfoQueue.empty() && itemsDisplayed < 5) {
+      display.println( incomingInfoQueue.front() );
+      Serial.println( incomingInfoQueue.front() );
+      incomingInfoQueue.pop();
       itemsDisplayed++;
-    } else {
+    } else if (itemsDisplayed < 5) {
+
+    }
+    else {
       itemsDisplayed = 0;
       display.display();
       setDisplay();
   }
 
-
-  // Display Readings on OLED Display
-  // display.clearDisplay();
-  // display.setTextSize(1);
-  // display.setTextColor(WHITE);
-  // display.setCursor(0, 0);
-  // display.println("INCOMING READINGS");
-  // display.setCursor(0, 15);
-  // display.print("Temperature: ");
-  // display.print(incomingTemp);
-  // display.cp437(true);
-  // display.write(248);
-  // display.print("C");
-  // display.setCursor(0, 25);
-  // display.print("Humidity: ");
-  // display.print(incomingHum);
-  // display.print("%");
-  // display.setCursor(0, 35);
-  // display.print("Pressure: ");
-  // display.print(incomingPres);
-  // display.print("hPa");
-  // display.setCursor(0, 56);
-  // display.print(success);
-  // display.display();
-  
-  // Display Readings in Serial Monitor
-  // Serial.println("INCOMING READINGS");
-  // Serial.print("ref1: ");
-  // Serial.print(incomingReadings.reflectance1);
-  // //Serial.println(" ºC");
-  // Serial.print("ref2: ");
-  // Serial.print(incomingReadings.reflectance2);
-  // //Serial.println(" %");
-  // Serial.print("transfer func: ");
-  // Serial.print(incomingReadings.transferFunction);
-  // Serial.print("strMsg: ");
-  // Serial.print(incomingReadings.strMsg);
-  // //Serial.println(" hPa");
-  // Serial.println();
 }
