@@ -99,16 +99,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
   incomingInfoStack.push(incomingReadings.strMsg);
 
-  // if (callCount % 4 == 0){
-  //   display.clearDisplay();
-  //   display.setTextSize(1);
-  //   display.setTextColor(SSD1306_WHITE);
-  //   display.setCursor(0,0);
-  // }
-  // display.println(":" + String(incomingReadings.strMsg));
-  // display.display();
-  // callCount++;
-  // delay(1000);
 }
 
 
@@ -170,9 +160,9 @@ void setup() {
   // Register for a callback function that will be called when data is received
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
 }
- 
-int itemsDisplayed = 0;
 
+
+int itemsDisplayed = 0;
 void loop() {
   
   getReadings();
@@ -184,25 +174,14 @@ void loop() {
   msg.strMsg = strMsg;
 
   // Send message via ESP-NOW
-  //esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
+  esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
    
-  // if (result == ESP_OK) {
-  //   Serial.println("Sent with success");
-  // }
-  // else {
-  //   Serial.println("Error sending the data");
-  // }
-
-  
-  if (!incomingInfoStack.empty() && itemsDisplayed < 5){
-    display.println( incomingInfoStack.top() );
-    Serial.println( incomingInfoStack.top() );
-    incomingInfoStack.pop();
-  } else {
-    display.display();
-    setDisplay();
+  if (result == ESP_OK) {
+    Serial.println("Sent with success");
   }
-
+  else {
+    Serial.println("Error sending the data");
+  }
   
   //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
   //Serial.println("incoming msg: " + incomingReflectance1);
@@ -216,12 +195,11 @@ void getReadings(){
   
     if (SerialPort.available() > 0) {
 
-      //Serial.println("if sttmt");
       received = "";
       received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
-      //Serial.println("msg: " + String(received));
+      display.println("msg: " + String(received));
 
     } else {
       //Serial.println("else statmen");
@@ -234,6 +212,19 @@ void getReadings(){
 }
 
 void updateDisplay(){
+
+  if (!incomingInfoStack.empty() && itemsDisplayed < 5){
+      display.println( incomingInfoStack.top() );
+      Serial.println( incomingInfoStack.top() );
+      incomingInfoStack.pop();
+      itemsDisplayed++;
+    } else {
+      itemsDisplayed = 0;
+      display.display();
+      setDisplay();
+  }
+
+
   // Display Readings on OLED Display
   // display.clearDisplay();
   // display.setTextSize(1);
