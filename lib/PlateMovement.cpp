@@ -153,7 +153,7 @@ void loop() {
 
   measuredVal = MotorL.encoder->getIncrements();
 
- plateError = setVal - measuredVal;
+  plateError = setVal - measuredVal;
   
 
   double PLATE_PID_TOTAL_GAIN = 1.0;

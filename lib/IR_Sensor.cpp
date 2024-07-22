@@ -1,6 +1,6 @@
 
 #include <Wire.h>
-#include <Adafruit_SSD1306.h>
+//#include <Adafruit_SSD1306.h>
 #include <vector>
 
 #include "RotaryEncoder.h"
@@ -10,7 +10,7 @@
 
 
 
-Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+//Adafruit_SSD1306 display_handler(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
 
 int loopCount = 0;
@@ -42,22 +42,22 @@ int max_I = 140;
 
 
 void setup() {
-  display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  // display_handler.begin(SSD1306_SWITCHCAPVCC, 0x3C);
  
 
   Serial.begin(115200);
 
   // Displays Adafruit logo by default. call clearDisplay immediately if you don't want this.
-  display_handler.display();
+  // display_handler.display();
   delay(2000);
 
   // Displays "Hello world!" on the screen
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.println("Setup");
-  display_handler.display();
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.println("Setup");
+  // display_handler.display();
 
   Serial.println("Setup");
 
@@ -76,13 +76,13 @@ void loop() {
 
   Serial.println("transfer function: " + String(g));
 
-  display_handler.clearDisplay();
-  display_handler.setTextSize(1);
-  display_handler.setTextColor(SSD1306_WHITE);
-  display_handler.setCursor(0,0);
-  display_handler.print("g: ");
-  display_handler.println( g );
-  display_handler.display();
+  // display_handler.clearDisplay();
+  // display_handler.setTextSize(1);
+  // display_handler.setTextColor(SSD1306_WHITE);
+  // display_handler.setCursor(0,0);
+  // display_handler.print("g: ");
+  // display_handler.println( g );
+  // display_handler.display();
 
 
   delay(600);
