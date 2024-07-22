@@ -9,46 +9,21 @@
 #include <Wire.h>
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
-
-#include <func.h>
-
-
-
-/*  imported  */
 #include <Arduino.h>
-#include <Wire.h>
 #include <HardwareSerial.h>
 
-#define BP 0
-#define ESP 1
+#include <func.h>
+#include <robotConstants.h>
 
-#define MASTER 1
-#define SLAVE 0
-
-#define BOARD_TYPE BP
-#define STATUS SLAVE
-
+#include <stack>
 
 #define RX 9
 #define TX 10
 
-
 HardwareSerial SerialPort(1);  //if using UART1
-
-bool toggled = false;
-
 
 String received;
 
-int loopedCount = 0;
-
-
-/*  imported  */
-
-
-
-#define SCREEN_WIDTH 128  // OLED display width, in pixels
-#define SCREEN_HEIGHT 64  // OLED display height, in pixels
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
@@ -58,10 +33,6 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 //uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
 uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
-// Define variables to store BME280 readings to be sent
-float temperature;
-float humidity;
-float pressure;
 
 int reflectance1;
 int reflectance2;
@@ -69,24 +40,12 @@ double transferFunction;
 String strMsg;
 
 // Define variables to store incoming readings
-float incomingTemp;
-float incomingHum;
-float incomingPres;
-
 int incomingReflectance1;
 int incomingReflectance2;
 double incomingTransferFunction;
 
 // Variable to store if sending data was successful
 String success;
-
-//Structure example to send data
-//Must match the receiver structure
-// typedef struct struct_message {
-//     float temp;
-//     float hum;
-//     float pres;
-// } struct_message;
 
 typedef struct struct_message {
 
@@ -98,10 +57,10 @@ typedef struct struct_message {
 
 } struct_message;
 
-// Create a struct_message called BME280Readings to hold sensor readings
+// Create a struct_message called msg to hold sensor readings
 struct_message msg;
 
-// Create a struct_message to hold incoming sensor readings
+// Create a struct_message to hold incoming data
 struct_message incomingReadings;
 
 esp_now_peer_info_t peerInfo;
@@ -126,11 +85,19 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   incomingReflectance1 = incomingReadings.reflectance1;
   incomingReflectance2 = incomingReadings.reflectance2;
   incomingTransferFunction = incomingReadings.transferFunction;
+
 }
 
 
 void updateDisplay();
 void getReadings();
+
+void setDisplay() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+}
 
 void setup() {
 
@@ -143,9 +110,7 @@ void setup() {
 
 
   // Init OLED display
-    display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
- 
-
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
   delay(2000);
 
@@ -157,12 +122,16 @@ void setup() {
   display.println("Setting up...");
   display.display();
 
+
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
 
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
+    setDisplay();
+    display.println("Error initializing ESP-NOW");
+    display.display();
     return;
   }
 
