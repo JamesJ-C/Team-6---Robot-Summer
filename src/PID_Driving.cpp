@@ -257,6 +257,9 @@ void ISRButton() {
  */
 void tapeDetectedLB() {
 
+  SerialPort.println( "tape LA: " + String( analogRead(TAPE_LA) ));
+  SerialPort.println( "tape LB: " + String( analogRead(TAPE_LB) ));
+
   // only stop if driving in right direction, reached the target destination, and not already stopped
   if (!stopped && !direction && currentStation == (targetStation - 1)) {
     MotorL.stop();
@@ -276,6 +279,9 @@ void tapeDetectedLB() {
  * 
  */
 void tapeDetectedLA() {
+
+  SerialPort.println( "tape LA: " + String( analogRead(TAPE_LA) ));
+  SerialPort.println( "tape LB: " + String( analogRead(TAPE_LB) ));
 
   // only stop if driving in right direction, reached the target destination, and not already stopped
   if (!stopped && direction && currentStation == (targetStation + 1)) {
