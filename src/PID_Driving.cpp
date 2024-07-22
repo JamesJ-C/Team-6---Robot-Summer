@@ -24,10 +24,10 @@ boardNum = 1;
 
 #endif
 
-#ifdef BLUEPILL_F103C8
+#ifndef ESP32
 
-board = "BP";
-boardNum = 2;
+// board = "BP";
+// boardNum = 2;
 
 #define G 3
 
@@ -35,7 +35,7 @@ boardNum = 2;
 
 #ifdef ARDUINO_ARCH_STM32
 
-#define G 1
+#define H 1
 
 #endif
 // end test

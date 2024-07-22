@@ -8,34 +8,6 @@
 #include "Motor.h"
 #include "robotConstants.h"
 
-
-//test code to try smth
-String board;
-int boardNum = -1;
-
-#ifdef ESP32
-
-board = "esp32";
-boardNum = 1;
-
-#endif
-
-#ifdef BLUEPILL_F103C8
-
-board = "BP";
-boardNum = 2;
-
-#define G 3
-
-#endif
-
-#ifdef ARDUINO_ARCH_STM32
-
-#define G 1
-
-#endif
-// end test
-
 /*  BP pin defs for UART */
 
 #define RX PB11
@@ -89,8 +61,6 @@ void setup() {
 	// Setup Serial Monitor
 	Serial.begin(115200);
   Serial.println("Hello" + String(BOARD_NAME));
-
-  Serial.println(boardNum);
 
   /*  Pot Pin  */
   pinMode(POT_PIN, INPUT);
