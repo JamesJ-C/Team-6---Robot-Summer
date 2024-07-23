@@ -31,8 +31,8 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
 // REPLACE WITH THE MAC Address of your receiver 
-uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
-//uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
+//uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9d, 0x68, 0x0c};
+uint8_t broadcastAddress[] = {0x64, 0xb7, 0x08, 0x9c, 0x5c, 0xe0};
 
 // Define variables to store readings to be sent
 
@@ -72,6 +72,15 @@ struct_message incomingReadings;
 
 esp_now_peer_info_t peerInfo;
 
+
+void setDisplay() {
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+}
+
+
 // Callback when data is sent
 void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   //Serial.print("\r\nLast Packet Send Status:\t");
@@ -97,6 +106,10 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   incomingStrMsg = incomingReadings.strMsg;
   Serial.println("incoming msg: " + String(incomingReadings.strMsg));
 
+  setDisplay();
+  display.println(incomingReadings.strMsg);
+  display.display();
+
   incomingInfoQueue.push(incomingReadings.strMsg);
 
 }
@@ -104,15 +117,6 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
 void updateDisplay();
 void getReadings();
-
-
-void setDisplay() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-}
-
 
 void setup() {
 
@@ -124,6 +128,8 @@ void setup() {
 
   ledcSetup(1, 12000, 8);
   ledcSetup(2, 12000, 8);
+  ledcSetup(3, 12000, 8);
+  ledcSetup(4, 12000, 8);
 
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
@@ -149,6 +155,9 @@ void setup() {
   // Init ESP-NOW
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
+    setDisplay();
+    display.println("Error initializing ESP-NOW");
+    display.display();
     return;
   }
 
@@ -177,14 +186,20 @@ unsigned long startTime = millis();
 
 void loop() {
 
-if (millis() - startTime < 2000) {  
-  ledcWrite(1, 100);
-  ledcWrite(2, 0);
-}
-if (millis() - startTime > 2000) {
-  ledcWrite(1, 0);
-  ledcWrite(2, 100);
-}
+// if (millis() - startTime < 2000) {  
+//   ledcWrite(1, 100);
+//   ledcWrite(2, 0);
+
+//   ledcWrite(3, 100);
+//   ledcWrite(4, 0);
+// }
+// if (millis() - startTime > 2000) {
+//   ledcWrite(1, 0);
+//   ledcWrite(2, 100);
+
+//   ledcWrite(3, 0);
+//   ledcWrite(4, 100);
+// }
 
 
 
