@@ -61,7 +61,9 @@ typedef struct struct_message {
 
 } struct_message;
 
-std::queue<String> incomingInfoQueue;
+std::queue<String> incomingUARTInfoQueue;
+
+std::queue<String> incomingWifiInfoQueue;
 
 
 // Create a struct_message called BME280Readings to hold sensor readings
@@ -104,13 +106,13 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   incomingReflectance2 = incomingReadings.reflectance2;
   incomingTransferFunction = incomingReadings.transferFunction;
   incomingStrMsg = incomingReadings.strMsg;
-  Serial.println("incoming msg: " + String(incomingReadings.strMsg));
+  // // // Serial.println("incoming msg: " + String(incomingReadings.strMsg));
 
-  setDisplay();
-  display.println(incomingReadings.strMsg);
-  display.display();
+  // setDisplay();
+  // display.println(incomingReadings.strMsg);
+  // display.display();
 
-  incomingInfoQueue.push(incomingReadings.strMsg);
+  incomingWifiInfoQueue.push(incomingReadings.strMsg);
 
 }
 
@@ -180,11 +182,19 @@ void setup() {
 }
 
 
-int itemsDisplayed = 0;
+int uartItemsDisplayed = 0;
+int wifiItemsDisplayed = 0;
 
 unsigned long startTime = millis();
 
 void loop() {
+
+  ledcWrite(1, 100);
+  ledcWrite(2, 100);
+
+  ledcWrite(3, 100);
+  ledcWrite(4, 100);
+
 
 // if (millis() - startTime < 2000) {  
 //   ledcWrite(1, 100);
@@ -217,10 +227,10 @@ void loop() {
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
    
   if (result == ESP_OK) {
-    Serial.println("Sent with success");
+    // / // /Serial.println("Sent with success");
   }
   else {
-    Serial.println("Error sending the data");
+    // // / // Serial.println("Error sending the data");
   }
   
   updateDisplay();
@@ -240,7 +250,7 @@ void getReadings(){
       received = SerialPort.readStringUntil('\n');
       
       strMsg = received;
-      incomingInfoQueue.push(received);
+      incomingUARTInfoQueue.push(received);
       // display.println("msg: " + String(received));
       // display.println("msg: " + String(received));
 
@@ -250,24 +260,44 @@ void getReadings(){
     
     }
 
-
+//strMsg = "2." + received;
 
 }
 
 void updateDisplay(){
 
-  if (!incomingInfoQueue.empty() && itemsDisplayed < 3) {
-      display.println( incomingInfoQueue.front() );
-      Serial.println( incomingInfoQueue.front() );
-      incomingInfoQueue.pop();
-      itemsDisplayed++;
-    } else if (itemsDisplayed < 5) {
+  Serial.println("wifiQ size: " + String( incomingWifiInfoQueue.size() ) );
+  Serial.println("wifi items displayed: " + String( wifiItemsDisplayed ) );
+
+  if (!incomingWifiInfoQueue.empty() && wifiItemsDisplayed < 3) {
+    Serial.println("1st if");
+      display.println( "Wifi: " + incomingWifiInfoQueue.front() );
+      Serial.println( "Wifi: " + incomingWifiInfoQueue.front() );
+      incomingWifiInfoQueue.pop();
+      wifiItemsDisplayed++;
+    } else if (wifiItemsDisplayed < 5) {
 
     }
-    else {
-      itemsDisplayed = 0;
+
+
+  if (!incomingUARTInfoQueue.empty() && uartItemsDisplayed < 3) {
+      display.println( "UART: " + incomingUARTInfoQueue.front() );
+      Serial.println( "UART: " + incomingUARTInfoQueue.front() );
+      incomingUARTInfoQueue.pop();
+      uartItemsDisplayed++;
+    } else if (uartItemsDisplayed < 5) {
+
+    }
+
+
+  if (uartItemsDisplayed || wifiItemsDisplayed >= 3) {
+      Serial.println("disp if");
+      wifiItemsDisplayed = uartItemsDisplayed = 0;
       display.display();
-      setDisplay();
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
   }
 
 }
