@@ -82,8 +82,8 @@ namespace digitalPins {
     #define FRONT_TAPE_SENSOR_2 PA_6
 
     /*  Not necesarrily adjusted for direction  */
-    #define BACK_TAPE_SENSOR_3 PA_0
-    #define BACK_TAPE_SENSOR_4 PA_1
+    #define BACK_TAPE_SENSOR_1 PA_0
+    #define BACK_TAPE_SENSOR_2 PA_1
 
 
 
