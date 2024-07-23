@@ -119,6 +119,9 @@ void setup() {
   ledcAttachPin(MOTOR_1_a , 1 );
   ledcAttachPin(MOTOR_1_b , 2 );
 
+  ledcAttachPin(MOTOR_2_a , 3 );
+  ledcAttachPin(MOTOR_2_b , 4 );
+
   ledcSetup(1, 12000, 8);
   ledcSetup(2, 12000, 8);
 
@@ -175,12 +178,12 @@ unsigned long startTime = millis();
 void loop() {
 
 if (millis() - startTime < 2000) {  
-  ledcWrite(1, 200);
-  ledcWrite(1, 0);
+  ledcWrite(1, 100);
+  ledcWrite(2, 0);
 }
 if (millis() - startTime > 2000) {
   ledcWrite(1, 0);
-  ledcWrite(1, 200);
+  ledcWrite(2, 100);
 }
 
 
@@ -238,7 +241,7 @@ void getReadings(){
 
 void updateDisplay(){
 
-  if (!incomingInfoQueue.empty() && itemsDisplayed < 5) {
+  if (!incomingInfoQueue.empty() && itemsDisplayed < 3) {
       display.println( incomingInfoQueue.front() );
       Serial.println( incomingInfoQueue.front() );
       incomingInfoQueue.pop();
