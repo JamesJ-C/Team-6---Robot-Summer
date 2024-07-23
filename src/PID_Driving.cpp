@@ -241,7 +241,7 @@ if (false) {
     //SEND MOTOR VALS
 
     MotorL.backward( (backwardMidMotorSpeed - 1 * backward_g) );
-    MotorR.backward(  1 / 1.3 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
+    MotorR.backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
 
 
     /*  SerialPort & Serial Monitor prints  */
