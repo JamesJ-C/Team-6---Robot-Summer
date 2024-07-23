@@ -18,8 +18,6 @@
 HardwareSerial SerialPort(USART3);
 String msg;
 
-
-
 /*  Function Declerations  */
 void updateEncoder();
 void ISRUpdateEncoder();
@@ -58,8 +56,6 @@ void setup() {
 
   SerialPort.begin(115200);
 
-
-
 	// Setup Serial Monitor
 	Serial.begin(115200);
   Serial.println("Hello" + String(BOARD_NAME));
@@ -74,8 +70,6 @@ void setup() {
 
   pinMode(MotorR.getPinA(), OUTPUT);
   pinMode(MotorR.getPinB(), OUTPUT);
-
-
 
   MotorL.off();
   MotorR.off();
@@ -106,11 +100,9 @@ void setup() {
 
 void loop() {
 
-
   if (SerialPort.available() > 0){
     msg = SerialPort.readString();
   }
-
 
   SerialPort.print("motor.Obj Counter: ");
 	SerialPort.println(MotorL.encoder->getIncrements() );
@@ -118,11 +110,8 @@ void loop() {
   Serial.print("motor.Obj Counter: ");
 	Serial.println(MotorL.encoder->getIncrements() );
 
-
-
   int setVal = 32;
   int measuredVal;
-
 
   int readVal = msg.toInt();
 
@@ -148,7 +137,6 @@ void loop() {
   lastPlateError =plateError; 
 
   //Do motor code here
- 
  
 
   /*  SerialPort & Serial Monitor prints  */
@@ -194,5 +182,63 @@ void ISRButton() {
   buttonPressed = true;
 
   //MotorL.buttonPressed = true;
+
+}
+
+#include <Arduino.h>
+#include "RotaryEncoder.h"
+#include "Motor.h"
+#include "robotConstants.h"
+
+#define PLATE_MOTOR_PIN_A PB1
+#define PLATE_MOTOR_PIN_B PB2
+#define PLATE_ENCODER_PIN_A PB
+#define PLATE_ENCODER_PIN_B PB
+#define LIMIT_SWITCH_LEFT PB
+#define LIMIT_SWITCH_RIGHT PB
+
+movement::Motor motor(PLATE_MOTOR_PIN_A, PLATE_MOTOR_PIN_B);
+encoder::RotaryEncoder encoder(PLATE_ENCODER_PIN_A, PLATE_ENCODER_PIN_B);
+
+volatile int encoderPosition = 0; // volatile tells compllier that the vallue can be changed by smth outside of normal program flow like ISR or external hardware
+bool movingRight = true; 
+
+
+//functions 
+
+void updateEncoder(); 
+void checkLimitSwitches(); 
+
+void setup(){
+
+  Serial.begin(115200); 
+  //Motor Pins
+  pinMode(PLATE_MOTOR_PIN_A, OUTPUT); 
+  pinMode(PLATE_MOTOR_PIN_B, OUTPUT);
+
+ //Encoder Pins 
+  pinMode(PLATE_ENCODER_PIN_A, INPUT_PULLUP)
+  pinMode(PLATE_ENCODER_PIN_B, INPUT_PULLUP)
+  attachInterrupt(digitalPinToInterrupt(PLATE_ENCODER_PIN_A), PLATE_ENCODER_PIN_A.updateEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(PLATE_ENCODER_PIN_B), PLATE_ENCODER_PIN_B.updateEncoder, CHANGE);
+  //Sets up interrupt to call 'updateEncoder' ISR function whenever theres a change to the encoder pin 
+  
+  //Limit Switch Pins 
+  pinMode(LIMIT_SWITCH_LEFT, INPUT);
+  pinMode(LIMIT_SWITCH_RIGHT, INPUT);
+
+  motor.forward(2000); 
+}
+
+void loop(){
+  Serial.print("Encoder Position: ");
+  Serial.println(encoderPosition);
+  delay(100);
+}
+void updateEncoder(){
+
+}
+
+void checkLimitSwitches(){
 
 }
