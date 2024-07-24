@@ -18,16 +18,8 @@ String msg;
 
 
 /*  Function Declerations  */
-void updateEncoder();
 void ISRUpdateElevatorEncoder();
-void ISRButton();
 void localize();
-
-
-//NEED TO FIX THIS VARIABLE
-bool buttonPressed = false;
-//NEED TO FIX THIS VARIABLE
-
 
 /*  PID Control Values  */
 
@@ -47,7 +39,7 @@ double g_elevator_Val ;
 
 /*  Object declerations  */
 
-encoder::RotaryEncoder elevatorEncoder(PB_8, PB_9);
+encoder::RotaryEncoder elevatorEncoder( ELEVATOR_ROTARY_ENCODER_A, ELEVATOR_ROTARY_ENCODER_B);
 movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MOTOR_ELEVATOR_P2, &elevatorEncoder);
 
 void setup() {
@@ -60,13 +52,19 @@ void setup() {
 	Serial.begin(115200);
   Serial.println("Hello" + String(BOARD_NAME));
 
-  /*  Pot Pin  */
-  pinMode(POT_PIN, INPUT);
-
 
   /*  Motor Pins  */
   pinMode(MotorElevator.getPinA(), OUTPUT);
   pinMode(MotorElevator.getPinB(), OUTPUT);
+
+
+  /*  Encoders  */
+	pinMode(elevatorEncoder.getPinA(), INPUT);
+	pinMode(elevatorEncoder.getPinB(), INPUT);
+
+
+  attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinA() ), ISRUpdateElevatorEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinB() ), ISRUpdateElevatorEncoder, CHANGE);
 
 
 
@@ -76,21 +74,6 @@ void setup() {
   delay(100);
   MotorElevator.off();
   delay(100);
-
-  /*  Encoders  */
-	pinMode(ROTARY_A, INPUT);
-	pinMode(ROTARY_B, INPUT);
-  // pinMode(elevatorEncoder.getPinA(), INPUT);
-	// pinMode(elevatorEncoder.getPinB(), INPUT);
-
-  pinMode(BUTTON_PIN, INPUT);
-
-
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
-
-    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateElevatorEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateElevatorEncoder, CHANGE);
-
     // perform motor sweep to initialize motion
     localize();
 
@@ -103,7 +86,7 @@ void loop() {
   int measuredVal;
 
 
-  int readVal = analogRead(POT_PIN);
+  int readVal = SerialPort.read();
 
   setVal = map(readVal, 0, 1023, -500, 500);
 
@@ -137,8 +120,8 @@ void loop() {
  */
 void ISRUpdateElevatorEncoder(){
 
-  bool A = digitalRead(ROTARY_A);
-  bool B = digitalRead(ROTARY_B);
+  bool A = digitalRead( elevatorEncoder.getPinA() );
+  bool B = digitalRead( elevatorEncoder.getPinB() );
 
   elevatorEncoder.updateEncoder(A, B);
   elevatorEncoder.updateTime( millis() );

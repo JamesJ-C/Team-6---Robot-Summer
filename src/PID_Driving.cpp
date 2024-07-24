@@ -48,6 +48,7 @@ boardNum = 1;
 HardwareSerial SerialPort(USART3);
 String msg;
 
+
 /* Variables for station detection */
 int currentStation = 0;
 int targetStation = 0;
@@ -55,21 +56,11 @@ bool stopped = false;
 bool direction = true; // false is forward, true is backward
 #define TAPE_THRESHOLD 800
 
-/*  Function Declerations  */
-void updateEncoder();
-void ISRUpdateEncoder();
-void ISRButton();
-
-
-//NEED TO FIX THIS VARIABLE
-bool buttonPressed = false;
-//NEED TO FIX THIS VARIABLE
-
 
 /*  PID Control Values  */
 
 
-//use lecture slide to tune
+/*  Forward driving values  */
 
 double forwardError = 0.0;
 double forwardLastError = 0.0;
@@ -80,7 +71,8 @@ double forward_p, forward_d, forward_i;
 
 double forward_g;
 
-//
+
+/*  backward driving values  */
 
 double backwardError = 0.0;
 double backwardLastError = 0.0;
@@ -92,8 +84,7 @@ double backward_g;
 
 /*  Object declerations  */
 
-encoder::RotaryEncoder encoder1(PB_8, PB_9);
-movement::Motor MotorL(MotorL_P1, MotorL_P2);//, &encoder1);
+movement::Motor MotorL(MotorL_P1, MotorL_P2);
 movement::Motor MotorR(MotorR_P1, MotorR_P2);
 
 
@@ -121,6 +112,12 @@ void setup() {
   pinMode(MotorR.getPinB(), OUTPUT);
 
 
+  pinMode(TAPE_LA, INPUT);
+  pinMode(TAPE_LB, INPUT);
+
+
+  targetStation = 1; // test driving to first tape
+
 
   MotorL.off();
   MotorR.off();
@@ -132,24 +129,7 @@ void setup() {
   delay(100);
   MotorR.off();
 
-  /*  Encoders  */
-	pinMode(ROTARY_A, INPUT);
-	pinMode(ROTARY_B, INPUT);
-  // pinMode(encoder1.getPinA(), INPUT);
-	// pinMode(encoder1.getPinB(), INPUT);
-
-  pinMode(BUTTON_PIN, INPUT);
-  pinMode(TAPE_LA, INPUT);
-  pinMode(TAPE_LB, INPUT);
-
-  targetStation = 1; // test driving to first tape
   
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
-
-	attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
-
-
 }
 
 
@@ -276,36 +256,5 @@ if (false) {
 
 
   }
-
-}
-
-/**
- * @brief function attached to RotaryA and RotaryB to update encoder values
- * 
- */
-void ISRUpdateEncoder(){
-
-  bool A = digitalRead(ROTARY_A);
-  bool B = digitalRead(ROTARY_B);
-
-  encoder1.updateEncoder(A, B);
-  encoder1.updateTime( millis() );
-
-}
-
-
-/**
- * @brief function for reading the debounced button press values.
- * 
- */
-void ISRButton() {
-
-  //  Serial.print("inside the interrupt");
-
-  encoder1.resetIncrement();
-  //delay(100);
-  buttonPressed = true;
-
-  //MotorL.buttonPressed = true;
 
 }
