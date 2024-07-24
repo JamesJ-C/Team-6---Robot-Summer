@@ -180,8 +180,8 @@ void localize() {
 
     // initialize bottom of elevator movement
     MotorElevator.off();
-    encoder1.resetIncrement();
-    bottom = encoder1.getIncrements();
+    MotorElevator.encoder->resetIncrement();
+    bottom = MotorElevator.encoder->getIncrements();
 
     // turn motor in opposite direction until top limit reached
     while (!digitalRead(UPPER_LIMIT_ELEVATOR)) {
@@ -190,12 +190,12 @@ void localize() {
 
     // initialize top of elevator movement
     MotorElevator.off();
-    top = encoder1.getIncrements();
-    encoder1.setMaxIncrement(top);
+    top = MotorElevator.encoder->getIncrements();
+    MotorElevator.encoder->setMaxIncrement(top);
 
     // turn motor and reach middle of motion
     center = top / 2;
-    while (encoder1.getIncrements() != center) {
+    while (MotorElevator.encoder->getIncrements() != center) {
         MotorElevator.backward(3000);
     }
     MotorElevator.stop();
