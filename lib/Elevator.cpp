@@ -157,7 +157,7 @@ void localize() {
     int center;
 
     // turn motor until elevator reaches bottom limit
-    while (!digitalRead(LOWER_LIMIT_ELEVATOR)) {
+    while (!digitalRead(ELEVATOR_LOWER_LIMIT_SWITCH)) {
         MotorElevator.backward(2000);
     }
 
@@ -167,7 +167,7 @@ void localize() {
     bottom = MotorElevator.encoder->getIncrements();
 
     // turn motor in opposite direction until top limit reached
-    while (!digitalRead(UPPER_LIMIT_ELEVATOR)) {
+    while (!digitalRead(ELEVATOR_UPPER_LIMIT_SWITCH)) {
         MotorElevator.forward(2000);
     }
 

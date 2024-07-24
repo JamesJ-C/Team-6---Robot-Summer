@@ -54,8 +54,14 @@ namespace motorPins {
 namespace rotaryPins {
 
     /*  Rotary encoder pins used for testing. May not be the actual control board pins  */
-    #define ROTARY_A PB13
-    #define ROTARY_B PB14
+    // #define ROTARY_A PB13
+    // #define ROTARY_B PB14
+
+    #define ARM_ROTARY_ENCODER_A PB13
+    #define ARM_ROTARY_ENCODER_B PB14
+    
+    #define ELEVATOR_ROTARY_ENCODER_A PB13
+    #define ELEVATOR_ROTARY_ENCODER_B PB14
 
 }
 

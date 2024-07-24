@@ -18,8 +18,7 @@ String msg;
 
 
 /*  Function Declerations  */
-void updateEncoder();
-void ISRUpdateEncoder();
+void ISRUpdateLinearArmEncoder();
 void ISRButton();
 void localize();
 
@@ -76,6 +75,7 @@ void setup() {
   delay(100);
   armMotor.off();
   delay(100);
+  
 
   /*  Encoders  */
 	pinMode(ROTARY_A, INPUT);
@@ -145,22 +145,6 @@ void ISRUpdateLinearArmEncoder(){
 
 }
 
-
-/**
- * @brief function for reading the debounced button press values.
- * 
- */
-void ISRButton() {
-
-  //  Serial.print("inside the interrupt");
-
-  armEncoder.resetIncrement();
-  //delay(100);
-  buttonPressed = true;
-
-  //armMotor.buttonPressed = true;
-
-}
 
 /**
  * @brief performs motor sweep to localize range of elevator motion 
