@@ -4,9 +4,9 @@
 
 #include <HardwareSerial.h>
 
-#include "RotaryEncoder.h"
-#include "Motor.h"
-#include "robotConstants.h"
+#include <RotaryEncoder.h>
+#include <Motor.h>
+#include <robotConstants.h>
 
 /*  BP pin defs for UART */
 
@@ -19,24 +19,30 @@ String msg;
 
 /*  Function Declerations  */
 void ISRUpdateLinearArmEncoder();
-void ISRButton();
+void ISRUpdateElevatorEncoder();
 void localize();
 
 
 /*  PID Control Values  */
 
 int setVal = 32;
-
 int measuredVal;
 
+/*  arm PID  */
 double armError = 0.0;
 double lastArmError = 0.0;
-
 double MAX_I = 140;
-
 double p_arm_Val, d_arm_Val, i_arm_Val;
-
 double g_arm_Val ;
+
+
+/*  Elevator PID  */
+double plateError = 0.0;
+double lastPlateError = 0.0;
+double MAX_I = 140;
+double p_elevator_Val, d_elevator_Val, i_elevator_Val;
+double g_elevator_Val ;
+
 
 
 /*  Object declerations  */
@@ -44,13 +50,17 @@ double g_arm_Val ;
 encoder::RotaryEncoder armEncoder(PB_8, PB_9);
 movement::Motor armMotor(ARM_MOTOR_P1, ARM_MOTOR_P2, &armEncoder);
 
+encoder::RotaryEncoder elevatorEncoder( ELEVATOR_ROTARY_ENCODER_A, ELEVATOR_ROTARY_ENCODER_B);
+movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MOTOR_ELEVATOR_P2, &elevatorEncoder);
+
+
 void setup() {
 
   /*  Setup Serials  */
   {
     /*  Setup Serial Monitor  */
     Serial.begin(115200);
-    Serial.println("Hello" + String(BOARD_NAME));
+    Serial.println("Setup..." + String(BOARD_NAME));
 
     /*  Setup UART port  */
     SerialPort.begin(115200);
@@ -63,9 +73,15 @@ void setup() {
     pinMode(armMotor.getPinA(), OUTPUT);
     pinMode(armMotor.getPinB(), OUTPUT);
 
+    pinMode(MotorElevator.getPinA(), OUTPUT);
+    pinMode(MotorElevator.getPinB(), OUTPUT);
+
     /*  Encoders  */
     pinMode(armEncoder.getPinA(), INPUT);
     pinMode(armEncoder.getPinB(), INPUT);
+
+    pinMode(elevatorEncoder.getPinA(), INPUT);
+	pinMode(elevatorEncoder.getPinB(), INPUT);    
 
   }
 
@@ -74,16 +90,29 @@ void setup() {
     /*  Arm encoders  */
     attachInterrupt(digitalPinToInterrupt(armEncoder.getPinA()), ISRUpdateLinearArmEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(armEncoder.getPinB()), ISRUpdateLinearArmEncoder, CHANGE);
+  
+    attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinA() ), ISRUpdateElevatorEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinB() ), ISRUpdateElevatorEncoder, CHANGE);
+  
   }
 
   /*  Perform Setup Actions  */
   {
 
+    /*  Arm setup  */
     armMotor.off();
     delay(500);
     armMotor.forward(3000);
     delay(100);
     armMotor.off();
+    delay(100);
+
+    /*  Elevator setup  */
+    MotorElevator.off();
+    delay(500);
+    MotorElevator.forward(3000);
+    delay(100);
+    MotorElevator.off();
     delay(100);
 
     /*  perform motor sweep to initialize motion  */
@@ -95,36 +124,6 @@ void setup() {
 
 
 void loop() {
-
-  int setVal = 32;
-  int measuredVal;
-
-
-  int readVal = SerialPort.read();
-
-  setVal = map(readVal, 0, 1023, -500, 500);
-
-  measuredVal = armMotor.encoder->getIncrements();
-
-  armError = setVal - measuredVal;
-  
-
-  double PLATE_PID_TOTAL_GAIN = 1.0;
-  double P_ARM_GAIN = 0.55;//1.4 goes very slowl
-  double I_ARM_GAIN = 0.0;
-  double D_ARM_GAIN = 0;
-
-  p_arm_Val = P_ARM_GAIN *armError;
-  d_arm_Val = D_ARM_GAIN * (armError - lastArmError);
-  i_arm_Val = I_ARM_GAIN *armError + i_arm_Val; //const *armError + previous int value
-  if (i_arm_Val > MAX_I) {i_arm_Val = MAX_I;}
-  if (i_arm_Val < -MAX_I) {i_arm_Val = -MAX_I;}
-
-  g_arm_Val = PLATE_PID_TOTAL_GAIN * ( p_arm_Val + i_arm_Val + d_arm_Val ); 
-  lastArmError =armError; 
-
-// PID hopefully
-  armMotor.forward( g_arm_Val );
 
 }
 
@@ -140,6 +139,20 @@ void ISRUpdateLinearArmEncoder(){
 
   armEncoder.updateEncoder(A, B);
   armEncoder.updateTime( millis() );
+
+}
+
+/**
+ * @brief function attached to RotaryA and RotaryB to update encoder values
+ * 
+ */
+void ISRUpdateElevatorEncoder(){
+
+  bool A = digitalRead( elevatorEncoder.getPinA() );
+  bool B = digitalRead( elevatorEncoder.getPinB() );
+
+  elevatorEncoder.updateEncoder(A, B);
+  elevatorEncoder.updateTime( millis() );
 
 }
 

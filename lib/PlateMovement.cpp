@@ -22,12 +22,6 @@ void updateEncoder();
 void ISRUpdateEncoder();
 void ISRButton();
 
-
-//NEED TO FIX THIS VARIABLE
-bool buttonPressed = false;
-//NEED TO FIX THIS VARIABLE
-
-
 /*  PID Control Values  */
 
 int setVal = 32;
