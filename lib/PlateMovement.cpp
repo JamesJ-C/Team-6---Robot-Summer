@@ -46,7 +46,6 @@ double g_plate_Val ;
 
 /*  Object declerations  */
 
-encoder::RotaryEncoder encoder1(PB_8, PB_9);
 movement::Motor MotorL(MotorL_P1, MotorL_P2);//, &encoder1);
 movement::Motor MotorR(MotorR_P1, MotorR_P2);
 
@@ -60,9 +59,6 @@ void setup() {
 	Serial.begin(115200);
   Serial.println("Hello" + String(BOARD_NAME));
 
-  /*  Pot Pin  */
-  pinMode(POT_PIN, INPUT);
-
 
   /*  Motor Pins  */
   pinMode(MotorL.getPinA(), OUTPUT);
@@ -71,31 +67,6 @@ void setup() {
   pinMode(MotorR.getPinA(), OUTPUT);
   pinMode(MotorR.getPinB(), OUTPUT);
 
-
-
-  MotorL.off();
-  MotorR.off();
-  delay(500);
-  MotorL.forward(3000);
-  delay(100);
-  MotorL.off();
-  MotorR.forward(3000);
-  delay(100);
-  MotorR.off();
-
-  /*  Encoders  */
-	pinMode(ROTARY_A, INPUT);
-	pinMode(ROTARY_B, INPUT);
-  // pinMode(encoder1.getPinA(), INPUT);
-	// pinMode(encoder1.getPinB(), INPUT);
-
-  pinMode(BUTTON_PIN, INPUT);
-
-
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
-
-	attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
 
 }
 
@@ -115,7 +86,7 @@ void loop() {
   int measuredVal;
 
 
-  int readVal = analogRead(POT_PIN);
+  int readVal = 300;
 
   setVal = map(readVal, 0, 1023, -500, 500);
 
@@ -154,36 +125,5 @@ void loop() {
   Serial.println( "p: " + String( p_plate_Val ));
 
   }
-
-}
-
-/**
- * @brief function attached to RotaryA and RotaryB to update encoder values
- * 
- */
-void ISRUpdateEncoder(){
-
-  bool A = digitalRead(ROTARY_A);
-  bool B = digitalRead(ROTARY_B);
-
-  encoder1.updateEncoder(A, B);
-  encoder1.updateTime( millis() );
-
-}
-
-
-/**
- * @brief function for reading the debounced button press values.
- * 
- */
-void ISRButton() {
-
-  //  Serial.print("inside the interrupt");
-
-  encoder1.resetIncrement();
-  //delay(100);
-  buttonPressed = true;
-
-  //MotorL.buttonPressed = true;
 
 }
