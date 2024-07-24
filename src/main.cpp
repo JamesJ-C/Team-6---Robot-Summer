@@ -201,11 +201,28 @@ void setup() {
 }
 
 
-ledcAttachPin(elevatorMotor.getPinA(), 1);
-ledcAttachPin(elevatorMotor.getPinB(), 2);
+// ledcAttachPin(elevatorMotor.getPinA(), 1);
+// ledcAttachPin(elevatorMotor.getPinB(), 2);
 
-ledcAttachPin(armMotor.getPinA(), 3);
-ledcAttachPin(armMotor.getPinB(), 4);
+// ledcAttachPin(armMotor.getPinA(), 3);
+// ledcAttachPin(armMotor.getPinB(), 4);
+
+// ledcSetup(1, 500, 12);
+// ledcSetup(2, 500, 12);
+// ledcSetup(3, 500, 12);
+// ledcSetup(4, 500, 12);
+
+ledcAttachPin(MOTOR_1_a, 1);
+ledcAttachPin(MOTOR_1_b, 2);
+
+ledcSetup(1, 1000, 8);
+ledcSetup(2, 1000, 8);
+
+ledcAttachPin(MOTOR_2_a, 3);
+ledcAttachPin(MOTOR_2_b, 4);
+
+ledcSetup(3, 1000, 8);
+ledcSetup(4, 1000, 8);
 
 
 }
@@ -218,9 +235,14 @@ int wifiItemsDisplayed = 0;
 void loop() {
 
 
-  elevatorMotor.forward(200);
+ledcWrite(1, 200);
+ledcWrite(2, 200);
+ledcWrite(3, 200);
+ledcWrite(4, 200);
+
+  // elevatorMotor.forward(3000);
   
-  armMotor.forward(200);
+  // armMotor.forward(3000);
 
 /*  Wifi  */
 {
