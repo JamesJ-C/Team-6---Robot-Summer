@@ -88,8 +88,8 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
 
-    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateElevatorEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateElevatorEncoder, CHANGE);
 
     // perform motor sweep to initialize motion
     localize();
