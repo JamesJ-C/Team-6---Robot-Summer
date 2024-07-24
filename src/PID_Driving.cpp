@@ -70,18 +70,24 @@ bool buttonPressed = false;
 
 
 //use lecture slide to tune
-int setVal = 32;
 
-int measuredVal;
-
-double error = 0.0;
-double lastError = 0.0;
+double forwardError = 0.0;
+double forwardLastError = 0.0;
 
 double max_I = 140;
 
-double p,d,i;
+double forward_p, forward_d, forward_i;
 
-double g;
+double forward_g;
+
+//
+
+double backwardError = 0.0;
+double backwardLastError = 0.0;
+
+double backward_p, backward_d, backward_i;
+
+double backward_g;
 
 
 /*  Object declerations  */
@@ -148,57 +154,42 @@ void setup() {
 
 
 void loop() {
-  // if (analogRead(TAPE_LB) > TAPE_THRESHOLD) {
-  //   // MotorL.stop();
-  //   // MotorR.stop();
-  //   // delay(1000);
-  // }
-  // else {
 
-  // SerialPort.println( "tape LA: " + String( analogRead(TAPE_LA) ));
-  // SerialPort.println( "tape LB: " + String( analogRead(TAPE_LB) ));
-  // SerialPort.print("motor.Obj Counter: ");
-	// SerialPort.println(MotorL.encoder->getIncrements() );
+const int forwardMidMotorSpeed = 3300;
+const int backwardMidMotorSpeed = 3300;
 
-  // int readVal = analogRead(POT_PIN);
+/*  driving forwards  */
+if (false) {
 
-  // setVal = map(readVal, 0, 1023, -500, 500);
-
-  // measuredVal = MotorL.encoder->getIncrements();
-
-  // error = setVal - measuredVal;
-  
-
-  error = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
+  forwardError = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
 
 
-  double LOOP_GAIN = 1.0;
-  double P_GAIN = 0.55;//1.4 goes very slowl
-  double I_GAIN = 0.0;
-  double D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
+  double FORWARD_LOOP_GAIN = 1.0;
+  double FORWARD_P_GAIN = 0.55;//1.4 goes very slowl
+  double FORWARD_I_GAIN = 0.0;
+  double FORWARD_D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
 
-  p = P_GAIN * error;
-  d = D_GAIN * (error - lastError);
-  i = I_GAIN * error + i; //const * error + previous int value
-  if (i > max_I) {i = max_I;}
-  if (i < -max_I) {i = -max_I;}
+  forward_p = FORWARD_P_GAIN * forwardError;
+  forward_d = FORWARD_D_GAIN * (forwardError - forwardLastError);
+  forward_i = FORWARD_I_GAIN * forwardError + forward_i; //const * error + previous int value
+  if (forward_i > max_I) {forward_i = max_I;}
+  if (forward_i < -max_I) {forward_i = -max_I;}
 
-  g = LOOP_GAIN * ( p + i + d ); 
-  lastError = error; 
+  forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
+  forwardLastError = forwardError; 
 
   //SEND MOTOR VALS
-  const int midMotorSpeed = 3300;
 
-  // MotorL.forward( (midMotorSpeed - 1 * g) );
-  // MotorR.forward( 1.0 / 1.3 * (( midMotorSpeed + 1 * g)) );
+  MotorL.forward( (forwardMidMotorSpeed - 1 * forward_g) );
+  MotorR.forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
 
   MotorR.forward(3300);
   MotorL.forward(3300);
   /*  SerialPort & Serial Monitor prints  */
   {
 
-  int mL = midMotorSpeed - g;
-  int mR = midMotorSpeed + g;
+  int mL = forwardMidMotorSpeed - forward_g;
+  int mR = forwardMidMotorSpeed + forward_g;
   // SerialPort.println("g: " + String( g) );
   // SerialPort.println("m1: " + String( midMotorSpeed - g) );
   // SerialPort.println("m2: " + String( midMotorSpeed + g) );
@@ -206,20 +197,83 @@ void loop() {
   // Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   // Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
-  // Serial.println( "error: " + String( error ));
-  // Serial.println( "p: " + String( p ));
+  Serial.println( "error: " + String( forwardError ));
+  Serial.println( "p: " + String( forward_p ));
 
   //SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
   //SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
 
-  // Serial.print("g: ");
-  // Serial.println(g);
+  Serial.print("g: ");
+  Serial.println(forward_g);
 
-  SerialPort.print("mL: ");
-  SerialPort.println(mL);
+  Serial.print("mL: ");
+  Serial.println(mL);
 
-  SerialPort.print("mR: ");
-  SerialPort.println(mR);
+  Serial.print("mR: ");
+  Serial.println(mR);
+
+  }
+
+  }
+
+  /*  Driving backwards  */
+
+  if (true) {
+
+    SerialPort.println("Backwards!!");
+
+    backwardError = (double) analogRead(BACK_TAPE_SENSOR_1) - analogRead(BACK_TAPE_SENSOR_2);
+
+
+    double BACKWARD_LOOP_GAIN = 1.0;
+    double BACKWARD_P_GAIN = 0.55;//1.4 goes very slowl
+    double BACKWARD_I_GAIN = 0.0;
+    double BACKWARD_D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
+
+    backward_p = BACKWARD_P_GAIN * backwardError;
+    backward_d = BACKWARD_D_GAIN * (backwardError - backwardLastError);
+    backward_i = BACKWARD_I_GAIN * backwardError + backward_i; //const * error + previous int value
+    if (backward_i > max_I) {backward_i = max_I;}
+    if (backward_i < -max_I) {backward_i = -max_I;}
+
+    backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
+    backwardLastError = backwardError; 
+
+    //SEND MOTOR VALS
+
+    MotorL.backward( (backwardMidMotorSpeed - 1 * backward_g) );
+    MotorR.backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
+
+
+    /*  SerialPort & Serial Monitor prints  */
+    {
+
+    int mL = backwardMidMotorSpeed - backward_g;
+    int mR = backwardMidMotorSpeed + backward_g;
+    // SerialPort.println("g: " + String( g) );
+    // SerialPort.println("m1: " + String( midMotorSpeed - g) );
+    // SerialPort.println("m2: " + String( midMotorSpeed + g) );
+
+    Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+    Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+    Serial.println( "error: " + String( backwardError ));
+    Serial.println( "p: " + String( backward_p ));
+
+    SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+    SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+    Serial.print("g: ");
+    Serial.println(backward_g);
+
+    Serial.print("mL: ");
+    Serial.println(mL);
+
+    Serial.print("mR: ");
+    Serial.println(mR);
+
+    }
+
 
   }
 

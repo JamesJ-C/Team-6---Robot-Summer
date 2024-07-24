@@ -85,9 +85,9 @@ namespace digitalPins {
     #define FRONT_TAPE_SENSOR_1 PA_7
     #define FRONT_TAPE_SENSOR_2 PA_6
 
-    /*  Not necesarrily adjusted for direction  */
-    #define BACK_TAPE_SENSOR_3 PA_0
-    #define BACK_TAPE_SENSOR_4 PA_1
+    /*  Adjusted for direction  */
+    #define BACK_TAPE_SENSOR_1 PA_0
+    #define BACK_TAPE_SENSOR_2 PA_1
 
     /* Limit switches for elevator */
     #define LOWER_LIMIT_ELEVATOR PB_12
