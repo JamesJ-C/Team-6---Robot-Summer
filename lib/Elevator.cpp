@@ -19,7 +19,7 @@ String msg;
 
 /*  Function Declerations  */
 void updateEncoder();
-void ISRUpdateEncoder();
+void ISRUpdateElevatorEncoder();
 void ISRButton();
 void localize();
 
@@ -47,8 +47,8 @@ double g_elevator_Val ;
 
 /*  Object declerations  */
 
-encoder::RotaryEncoder encoder1(PB_8, PB_9);
-movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MotorElevator_P2);//, &encoder1);
+encoder::RotaryEncoder elevatorEncoder(PB_8, PB_9);
+movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MOTOR_ELEVATOR_P2, &elevatorEncoder);
 
 void setup() {
 
@@ -80,16 +80,16 @@ void setup() {
   /*  Encoders  */
 	pinMode(ROTARY_A, INPUT);
 	pinMode(ROTARY_B, INPUT);
-  // pinMode(encoder1.getPinA(), INPUT);
-	// pinMode(encoder1.getPinB(), INPUT);
+  // pinMode(elevatorEncoder.getPinA(), INPUT);
+	// pinMode(elevatorEncoder.getPinB(), INPUT);
 
   pinMode(BUTTON_PIN, INPUT);
 
 
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
 
-    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateElevatorEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateElevatorEncoder, CHANGE);
 
     // perform motor sweep to initialize motion
     localize();
@@ -135,30 +135,13 @@ void loop() {
  * @brief function attached to RotaryA and RotaryB to update encoder values
  * 
  */
-void ISRUpdateEncoder(){
+void ISRUpdateElevatorEncoder(){
 
   bool A = digitalRead(ROTARY_A);
   bool B = digitalRead(ROTARY_B);
 
-  encoder1.updateEncoder(A, B);
-  encoder1.updateTime( millis() );
-
-}
-
-
-/**
- * @brief function for reading the debounced button press values.
- * 
- */
-void ISRButton() {
-
-  //  Serial.print("inside the interrupt");
-
-  encoder1.resetIncrement();
-  //delay(100);
-  buttonPressed = true;
-
-  //MotorElevator.buttonPressed = true;
+  elevatorEncoder.updateEncoder(A, B);
+  elevatorEncoder.updateTime( millis() );
 
 }
 
