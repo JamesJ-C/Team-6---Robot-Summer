@@ -1,9 +1,3 @@
-/*
-  Rui Santos & Sara Santos - Random Nerd Tutorials
-  Complete project details at https://RandomNerdTutorials.com/esp-now-two-way-communication-esp32/
-  Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files.
-  The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
 #include <esp_now.h>
 #include <WiFi.h>
 #include <Wire.h>
@@ -11,10 +5,11 @@
 #include <Adafruit_SSD1306.h>
 #include <Arduino.h>
 #include <HardwareSerial.h>
+#include <robotConstants.h>
 
 #include <queue>
 
-#include <robotConstants.h>
+
 
 
 int callCount = 0;
@@ -95,8 +90,6 @@ void OnDataSent(const uint8_t *mac_addr, esp_now_send_status_t status) {
   }
 }
 
-
-
 // Callback when data is received
 void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
@@ -116,9 +109,14 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 
 }
 
-
 void updateDisplay();
 void getReadings();
+
+
+
+void ISRUpdateEncoder();
+
+
 
 void setup() {
 
@@ -132,6 +130,9 @@ void setup() {
   ledcSetup(2, 12000, 8);
   ledcSetup(3, 12000, 8);
   ledcSetup(4, 12000, 8);
+
+
+
 
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
@@ -150,6 +151,8 @@ void setup() {
   display.println("Setting up...");
   display.display();
 
+/*  Wifi stuff  */
+  {
 
   // Set device as a Wi-Fi Station
   WiFi.mode(WIFI_STA);
@@ -179,42 +182,27 @@ void setup() {
   }
   // Register for a callback function that will be called when data is received
   esp_now_register_recv_cb(esp_now_recv_cb_t(OnDataRecv));
+
+
+}//wifi
+
+
+  attachInterrupt(digitalPinToInterrupt(4), ISRUpdateEncoder, CHANGE);
+
+
+
 }
 
 
 int uartItemsDisplayed = 0;
 int wifiItemsDisplayed = 0;
 
-unsigned long startTime = millis();
 
 void loop() {
 
-  ledcWrite(1, 100);
-  ledcWrite(2, 100);
 
-  ledcWrite(3, 100);
-  ledcWrite(4, 100);
-
-
-// if (millis() - startTime < 2000) {  
-//   ledcWrite(1, 100);
-//   ledcWrite(2, 0);
-
-//   ledcWrite(3, 100);
-//   ledcWrite(4, 0);
-// }
-// if (millis() - startTime > 2000) {
-//   ledcWrite(1, 0);
-//   ledcWrite(2, 100);
-
-//   ledcWrite(3, 0);
-//   ledcWrite(4, 100);
-// }
-
-
-
-
-
+/*  Wifi  */
+{
   getReadings();
  
   // Set values to send
@@ -238,6 +226,11 @@ void loop() {
   //Serial.println("incoming msg: " + incomingReflectance1);
   // Serial.println("incoming msg: " + String(incomingStrMsg));
   // Serial.println();
+
+}
+
+
+
 
 }
 
@@ -301,3 +294,4 @@ void updateDisplay(){
   }
 
 }
+
