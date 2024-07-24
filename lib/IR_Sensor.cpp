@@ -181,7 +181,7 @@ double crossCorrelation (PinName analogPin){
 
   avg = ( (loopCount - 1) * avg + max ) / loopCount;
 
-    return max;
+  return max;
 
 }
 

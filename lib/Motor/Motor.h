@@ -46,7 +46,7 @@ namespace movement {
     bool buttonPressed = false;
 
 
-    encoder::RotaryEncoder* encoder;
+    encoder::RotaryEncoder *encoder;
 
 
     #ifdef ESP32
