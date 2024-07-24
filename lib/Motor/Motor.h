@@ -56,7 +56,7 @@ namespace movement {
     #endif
 
 
-
+    #ifndef ESP32
 
     /**
      * @brief Construct a new Motor object
@@ -74,6 +74,10 @@ namespace movement {
      * @param Encoder encoder object to attach to the motor
      */
     Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder* Encoder);
+
+
+    #endif
+
 
     /** 
      * @brief Returns the first of 2 PWM pins

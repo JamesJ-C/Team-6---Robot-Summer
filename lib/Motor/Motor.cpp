@@ -23,6 +23,8 @@ namespace movement {
 
   #endif
 
+  #ifndef ESP32
+
   /**
    * @brief Construct a new Motor object
    * 
@@ -37,6 +39,8 @@ namespace movement {
 
   }
 
+
+  #endif
   /** 
    * @brief Returns the first of 2 PWM pins
    */

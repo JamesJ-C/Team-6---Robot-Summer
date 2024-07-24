@@ -125,8 +125,8 @@ void ISRUpdateArmEncoder();
 encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ROTARY_A, ELEVATOR_ROTARY_B);
 encoder::RotaryEncoder armEncoder(ARM_ROTARY_A, ARM_ROTARY_B);
 
-movement::Motor elevatorMotor(MOTOR_1_a, MOTOR_1_b, &elevatorEncoder);
-
+movement::Motor elevatorMotor(MOTOR_1_a, MOTOR_1_b, "elevator", 1, 2, &elevatorEncoder);
+movement::Motor armMotor(MOTOR_2_a, MOTOR_2_b, "arm", 1, 2, &armEncoder);
 
 void setup() {
 
@@ -200,6 +200,14 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_B), ISRUpdateArmEncoder, CHANGE);
 }
 
+
+ledcAttachPin(elevatorMotor.getPinA(), 1);
+ledcAttachPin(elevatorMotor.getPinB(), 2);
+
+ledcAttachPin(armMotor.getPinA(), 3);
+ledcAttachPin(armMotor.getPinB(), 4);
+
+
 }
 
 
@@ -209,6 +217,10 @@ int wifiItemsDisplayed = 0;
 
 void loop() {
 
+
+  elevatorMotor.forward(200);
+  
+  armMotor.forward(200);
 
 /*  Wifi  */
 {
