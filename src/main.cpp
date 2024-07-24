@@ -114,12 +114,18 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
 void updateDisplay();
 void getReadings();
 
+void ISRUpdateElevatorEncoder();
+void ISRUpdateArmEncoder();
 
 
-void ISRUpdateEncoder(){}
+
+/*  Object Declerations  */
 
 
+encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ROTARY_A, ELEVATOR_ROTARY_B);
+encoder::RotaryEncoder armEncoder(ARM_ROTARY_A, ARM_ROTARY_B);
 
+movement::Motor elevatorMotor(MOTOR_1_a, MOTOR_1_b, &elevatorEncoder);
 
 
 void setup() {
@@ -185,9 +191,14 @@ void setup() {
 }//wifi
 
 
-  attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-  attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
+/*  Interrupt Attaches  */
+{
+  attachInterrupt(digitalPinToInterrupt(ELEVATOR_ROTARY_A), ISRUpdateElevatorEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ELEVATOR_ROTARY_B), ISRUpdateElevatorEncoder, CHANGE);
 
+  attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_A), ISRUpdateArmEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_B), ISRUpdateArmEncoder, CHANGE);
+}
 
 }
 
@@ -229,7 +240,6 @@ void loop() {
 
 
 
-
 }
 
 
@@ -266,22 +276,16 @@ void updateDisplay(){
       Serial.println( "Wifi: " + incomingWifiInfoQueue.front() );
       incomingWifiInfoQueue.pop();
       wifiItemsDisplayed++;
-    } else if (wifiItemsDisplayed < 5) {
-
-    }
-
+    } 
 
   if (!incomingUARTInfoQueue.empty() && uartItemsDisplayed < 3) {
       display.println( "UART: " + incomingUARTInfoQueue.front() );
       Serial.println( "UART: " + incomingUARTInfoQueue.front() );
       incomingUARTInfoQueue.pop();
       uartItemsDisplayed++;
-    } else if (uartItemsDisplayed < 5) {
+    } 
 
-    }
-
-
-  if (uartItemsDisplayed || wifiItemsDisplayed >= 3) {
+  if (uartItemsDisplayed >= 3 || wifiItemsDisplayed >= 3) {
       Serial.println("disp if");
       wifiItemsDisplayed = uartItemsDisplayed = 0;
       display.display();
@@ -293,3 +297,22 @@ void updateDisplay(){
 
 }
 
+
+void ISRUpdateElevatorEncoder(){
+
+  bool A = digitalRead(elevatorEncoder.getPinA());
+  bool B = digitalRead(elevatorEncoder.getPinB());
+
+  elevatorEncoder.updateEncoder(A, B);
+
+}
+
+void ISRUpdateArmEncoder() {
+
+
+  bool A = digitalRead(armEncoder.getPinA());
+  bool B = digitalRead(armEncoder.getPinB());
+
+  armEncoder.updateEncoder(A, B);
+
+}

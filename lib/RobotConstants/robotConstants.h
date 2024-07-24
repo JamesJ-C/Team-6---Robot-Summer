@@ -54,17 +54,21 @@ namespace rotaryPins {
 
     #ifdef ESP32
 
-    #define ROTARY_A 2
-    #define ROTARY_B 4
+    #define ELEVATOR_ROTARY_A 2
+    #define ELEVATOR_ROTARY_B 4
+
+    #define ARM_ROTARY_A 2
+    #define ARM_ROTARY_B 4
 
     #endif
 
 
 }
 
-
 namespace servoPins {
 
+    #define PLATE_SERVO_1 25
+    #define PLATE_SERVO_2 26
 
 
 }
@@ -86,6 +90,8 @@ namespace analogInPins {
 namespace digitalPins {
 
 
+#ifndef ESP32
+
     #define BUTTON_PIN PB_12//PA_10
 
     /*  Adjusted for driving direction  */
@@ -95,11 +101,24 @@ namespace digitalPins {
     /*  Not necesarrily adjusted for direction  */
     #define BACK_TAPE_SENSOR_3 PA_0
     #define BACK_TAPE_SENSOR_4 PA_1
+#endif
 
+#ifdef ESP32
+
+
+    #define PLATE_LIMIT_SWITCH_A 19
+    #define PLATE_LIMIT_SWITCH_B 8
+
+    #define ELEVATOR_LIMIT_SWITCH_A 5
+    #define ELEVATOR_LIMIT_SWITCH_B 5
+
+    #define ARM_LIMIT_SWITCH_A 5
+    #define ARM_LIMIT_SWITCH_B 5
+
+#endif
 
 
 }
-
 
 namespace irConstants {
 
