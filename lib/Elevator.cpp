@@ -19,7 +19,7 @@ String msg;
 
 /*  Function Declerations  */
 void updateEncoder();
-void ISRUpdateEncoder();
+void ISRUpdateElevatorEncoder();
 void ISRButton();
 void localize();
 
@@ -135,30 +135,13 @@ void loop() {
  * @brief function attached to RotaryA and RotaryB to update encoder values
  * 
  */
-void ISRUpdateEncoder(){
+void ISRUpdateElevatorEncoder(){
 
   bool A = digitalRead(ROTARY_A);
   bool B = digitalRead(ROTARY_B);
 
   elevatorEncoder.updateEncoder(A, B);
   elevatorEncoder.updateTime( millis() );
-
-}
-
-
-/**
- * @brief function for reading the debounced button press values.
- * 
- */
-void ISRButton() {
-
-  //  Serial.print("inside the interrupt");
-
-  elevatorEncoder.resetIncrement();
-  //delay(100);
-  buttonPressed = true;
-
-  //MotorElevator.buttonPressed = true;
 
 }
 
