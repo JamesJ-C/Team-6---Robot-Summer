@@ -51,48 +51,50 @@ movement::Motor armMotor(ARM_MOTOR_P1, ARM_MOTOR_P2, &armEncoder);
 
 void setup() {
 
-  SerialPort.begin(115200);
+  /*  Setup Serials  */
+  {
+    /*  Setup Serial Monitor  */
+    Serial.begin(115200);
+    Serial.println("Hello" + String(BOARD_NAME));
 
+    /*  Setup UART port  */
+    SerialPort.begin(115200);
 
+  }
 
-	// Setup Serial Monitor
-	Serial.begin(115200);
-  Serial.println("Hello" + String(BOARD_NAME));
+  /*  PinModes  */
+  {
+    /*  Motor Pins  */
+    pinMode(armMotor.getPinA(), OUTPUT);
+    pinMode(armMotor.getPinB(), OUTPUT);
 
-  /*  Pot Pin  */
-  pinMode(POT_PIN, INPUT);
+    /*  Encoders  */
+    pinMode(armEncoder.getPinA(), INPUT);
+    pinMode(armEncoder.getPinB(), INPUT);
 
+  }
 
-  /*  Motor Pins  */
-  pinMode(armMotor.getPinA(), OUTPUT);
-  pinMode(armMotor.getPinB(), OUTPUT);
+  /*  Attach Interrupts  */
+  {
+    /*  Arm encoders  */
+    attachInterrupt(digitalPinToInterrupt(armEncoder.getPinA()), ISRUpdateLinearArmEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(armEncoder.getPinB()), ISRUpdateLinearArmEncoder, CHANGE);
+  }
 
+  /*  Perform Setup Actions  */
+  {
 
+    armMotor.off();
+    delay(500);
+    armMotor.forward(3000);
+    delay(100);
+    armMotor.off();
+    delay(100);
 
-  armMotor.off();
-  delay(500);
-  armMotor.forward(3000);
-  delay(100);
-  armMotor.off();
-  delay(100);
-  
-
-  /*  Encoders  */
-	pinMode(ROTARY_A, INPUT);
-	pinMode(ROTARY_B, INPUT);
-  // pinMode(encoder1.getPinA(), INPUT);
-	// pinMode(encoder1.getPinB(), INPUT);
-
-  pinMode(BUTTON_PIN, INPUT);
-
-
-  attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
-
-    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateLinearArmEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateLinearArmEncoder, CHANGE);
-
-    // perform motor sweep to initialize motion
+    /*  perform motor sweep to initialize motion  */
     localize();
+
+  }
 
 }
 
@@ -103,7 +105,7 @@ void loop() {
   int measuredVal;
 
 
-  int readVal = analogRead(POT_PIN);
+  int readVal = SerialPort.read();
 
   setVal = map(readVal, 0, 1023, -500, 500);
 
@@ -131,14 +133,15 @@ void loop() {
 
 }
 
+
 /**
  * @brief function attached to RotaryA and RotaryB to update encoder values
  * 
  */
 void ISRUpdateLinearArmEncoder(){
 
-  bool A = digitalRead(ROTARY_A);
-  bool B = digitalRead(ROTARY_B);
+  bool A = digitalRead( armEncoder.getPinA() );
+  bool B = digitalRead( armEncoder.getPinB() );
 
   armEncoder.updateEncoder(A, B);
   armEncoder.updateTime( millis() );

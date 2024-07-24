@@ -75,7 +75,7 @@ namespace servoPins {
 namespace analogInPins {
 
     /*  Pins used for testing  */
-    #define POT_PIN A1
+    //#define POT_PIN A1
     #define IR_SENSOR1 PA_0
     #define IR_SENSOR2 PA_1
     
@@ -89,7 +89,7 @@ namespace analogInPins {
 namespace digitalPins {
 
 
-    #define BUTTON_PIN PB_12//PA_10
+    // #define BUTTON_PIN PB_12//PA_10
 
     /*  Adjusted for driving direction  */
     #define FRONT_TAPE_SENSOR_1 PA_7
