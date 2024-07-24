@@ -9,6 +9,8 @@
 
 #include <queue>
 
+#include <Motor.h>
+#include <RotaryEncoder.h>
 
 
 
@@ -114,31 +116,25 @@ void getReadings();
 
 
 
-void ISRUpdateEncoder();
+void ISRUpdateEncoder(){}
+
+
 
 
 
 void setup() {
 
-  ledcAttachPin(MOTOR_1_a , 1 );
-  ledcAttachPin(MOTOR_1_b , 2 );
 
-  ledcAttachPin(MOTOR_2_a , 3 );
-  ledcAttachPin(MOTOR_2_b , 4 );
-
-  ledcSetup(1, 12000, 8);
-  ledcSetup(2, 12000, 8);
-  ledcSetup(3, 12000, 8);
-  ledcSetup(4, 12000, 8);
-
-
-
-
+/*  Serial Setup  */
+{
   SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
   // Init Serial Monitor
   Serial.begin(115200);
+}
 
+/*  Display setup  */
+{
   display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
   display.display();
   delay(2000);
@@ -150,6 +146,8 @@ void setup() {
   display.setCursor(0,0);
   display.println("Setting up...");
   display.display();
+
+}
 
 /*  Wifi stuff  */
   {
@@ -187,8 +185,8 @@ void setup() {
 }//wifi
 
 
-  attachInterrupt(digitalPinToInterrupt(4), ISRUpdateEncoder, CHANGE);
-
+  attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
 
 
 }

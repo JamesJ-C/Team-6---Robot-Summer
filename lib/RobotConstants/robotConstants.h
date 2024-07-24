@@ -45,9 +45,20 @@ namespace motorPins {
 
 namespace rotaryPins {
 
+    
+    #ifndef ESP32
     /*  Rotary encoder pins used for testing. May not be the actual control board pins  */
     #define ROTARY_A PB13
     #define ROTARY_B PB14
+    #endif
+
+    #ifdef ESP32
+
+    #define ROTARY_A 2
+    #define ROTARY_B 4
+
+    #endif
+
 
 }
 
