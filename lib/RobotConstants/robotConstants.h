@@ -31,6 +31,10 @@ namespace motorPins {
     #define MotorL_P1 PB_9
     #define MotorL_P2 PB_8
 
+    /* Elevator motor */
+    #define MotorElevator_P1 PB_6
+    #define MotorElevator_P2 PB_7
+
 
     /*  ESP PINS  */
     #ifdef ESP32
@@ -85,6 +89,9 @@ namespace digitalPins {
     #define BACK_TAPE_SENSOR_3 PA_0
     #define BACK_TAPE_SENSOR_4 PA_1
 
+    /* Limit switches for elevator */
+    #define LOWER_LIMIT_ELEVATOR PB_12
+    #define UPPER_LIMIT_ELEVATOR PB_15
 
 
 }

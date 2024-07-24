@@ -224,12 +224,12 @@ void Motor::stop() {
    * and saves the difference between the values. Sets one of the limit switches to 0 increments 
    * 
    */
-  void Motor::setupEncoder (){
+  void Motor::localize (){
 
     int firstStop;
     int secondStop;
 
-    //turn all the way one way until switch
+    //turn all the way one way until switch is hit
     this->backward(3000);
     while (true) {
       if (buttonPressed){

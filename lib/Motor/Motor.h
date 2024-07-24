@@ -124,7 +124,7 @@ namespace movement {
      * and saves the difference between the values. Sets one of the limit switches to 0 increments 
      * 
      */
-    void setupEncoder ();
+    void localize ();
 
 
     };
