@@ -47,8 +47,8 @@ double g_elevator_Val ;
 
 /*  Object declerations  */
 
-encoder::RotaryEncoder encoder1(PB_8, PB_9);
-movement::Motor MotorElevator(MotorElevator_P1, MotorElevator_P2);//, &encoder1);
+encoder::RotaryEncoder elevatorEncoder(PB_8, PB_9);
+movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MOTOR_ELEVATOR_P2, &elevatorEncoder);
 
 void setup() {
 
@@ -80,8 +80,8 @@ void setup() {
   /*  Encoders  */
 	pinMode(ROTARY_A, INPUT);
 	pinMode(ROTARY_B, INPUT);
-  // pinMode(encoder1.getPinA(), INPUT);
-	// pinMode(encoder1.getPinB(), INPUT);
+  // pinMode(elevatorEncoder.getPinA(), INPUT);
+	// pinMode(elevatorEncoder.getPinB(), INPUT);
 
   pinMode(BUTTON_PIN, INPUT);
 
@@ -140,8 +140,8 @@ void ISRUpdateEncoder(){
   bool A = digitalRead(ROTARY_A);
   bool B = digitalRead(ROTARY_B);
 
-  encoder1.updateEncoder(A, B);
-  encoder1.updateTime( millis() );
+  elevatorEncoder.updateEncoder(A, B);
+  elevatorEncoder.updateTime( millis() );
 
 }
 
@@ -154,7 +154,7 @@ void ISRButton() {
 
   //  Serial.print("inside the interrupt");
 
-  encoder1.resetIncrement();
+  elevatorEncoder.resetIncrement();
   //delay(100);
   buttonPressed = true;
 
