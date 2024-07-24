@@ -94,12 +94,12 @@ namespace digitalPins {
     #define BACK_TAPE_SENSOR_2 PA_1
 
     /* Limit switches for elevator */
-    #define LOWER_LIMIT_ELEVATOR PB_12
-    #define UPPER_LIMIT_ELEVATOR PB_15
+    #define ELEVATOR_LOWER_LIMIT_SWITCH PB_12
+    #define ELEVATOR_UPPER_LIMIT_SWITCH PB_15
 
     /* Limit switches for elevator */
-    #define LOWER_LIMIT_ARM PB_12
-    #define UPPER_LIMIT_ARM PB_15
+    #define ARM_LOWER_LIMIT_SWITCH PB_12
+    #define ARM_UPPER_LIMIT_SWITCH PB_15
 
 
 }

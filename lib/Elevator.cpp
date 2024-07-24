@@ -48,7 +48,7 @@ double g_elevator_Val ;
 /*  Object declerations  */
 
 encoder::RotaryEncoder encoder1(PB_8, PB_9);
-movement::Motor MotorElevator(MotorElevator_P1, MotorElevator_P2);//, &encoder1);
+movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MotorElevator_P2);//, &encoder1);
 
 void setup() {
 

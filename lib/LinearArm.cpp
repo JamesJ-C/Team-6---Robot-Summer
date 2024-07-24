@@ -48,7 +48,7 @@ double g_arm_Val ;
 /*  Object declerations  */
 
 encoder::RotaryEncoder armEncoder(PB_8, PB_9);
-movement::Motor armMotor(ARM_Motor_P1, ARM_MOTOR_P2, &armEncoder);
+movement::Motor armMotor(ARM_MOTOR_P1, ARM_MOTOR_P2, &armEncoder);
 
 void setup() {
 
@@ -88,8 +88,8 @@ void setup() {
 
   attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), ISRButton, RISING);
 
-    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateEncoder, CHANGE);
-	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(ROTARY_A), ISRUpdateLinearArmEncoder, CHANGE);
+	attachInterrupt(digitalPinToInterrupt(ROTARY_B), ISRUpdateLinearArmEncoder, CHANGE);
 
     // perform motor sweep to initialize motion
     localize();
@@ -135,7 +135,7 @@ void loop() {
  * @brief function attached to RotaryA and RotaryB to update encoder values
  * 
  */
-void ISRUpdateEncoder(){
+void ISRUpdateLinearArmEncoder(){
 
   bool A = digitalRead(ROTARY_A);
   bool B = digitalRead(ROTARY_B);
@@ -174,28 +174,28 @@ void localize() {
     int center;
 
     // turn motor until elevator reaches bottom limit
-    while (!digitalRead(LOWER_LIMIT_ARM)) {
+    while (!digitalRead(ARM_LOWER_LIMIT_SWITCH)) {
         armMotor.backward(2000);
     }
 
     // initialize bottom of elevator movement
     armMotor.off();
-    armEncoder.resetIncrement();
-    bottom = armEncoder.getIncrements();
+    armMotor.encoder->resetIncrement();
+    bottom = armMotor.encoder->getIncrements();
 
     // turn motor in opposite direction until top limit reached
-    while (!digitalRead(UPPER_LIMIT_ARM)) {
+    while (!digitalRead(ARM_UPPER_LIMIT_SWITCH)) {
         armMotor.forward(2000);
     }
 
     // initialize top of elevator movement
     armMotor.off();
-    top = encoder1.getIncrements();
-    encoder1.setMaxIncrement(top);
+    top = armMotor.encoder->getIncrements();
+    armMotor.encoder->setMaxIncrement(top);
 
     // turn motor and reach middle of motion
     center = top / 2;
-    while (encoder1.getIncrements() != center) {
+    while (armMotor.encoder->getIncrements() != center) {
         armMotor.backward(3000);
     }
     armMotor.stop();
