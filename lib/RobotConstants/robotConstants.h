@@ -31,18 +31,22 @@ namespace motorPins {
     #define MotorL_P1 PB_9
     #define MotorL_P2 PB_8
 
-    /* Elevator motor */
-    #define MotorElevator_P1 PB_6
-    #define MotorElevator_P2 PB_7
+    /*  Elevator motor  */
+    #define MOTOR_ELEVATOR_P1 PB_6
+    #define MOTOR_ELEVATOR_P2 PB_7
+
+    /*  Linear arm motion pins  */
+    #define ARM_MOTOR_P1 PB_6
+    #define ARM_MOTOR_P2 PB_7
 
 
     /*  ESP PINS  */
     #ifdef ESP32
-        #define MOTOR_1_a GPIO32
-        #define MOTOR_1_b GPIO33
+        #define MOTOR_1_a 32
+        #define MOTOR_1_b 33
 
-        #define MTOR_2_a GPIO12
-        #define MTOR_2_a GPIO13
+        #define MTOR_2_a 12
+        #define MTOR_2_a 13
     #endif
 
 }
@@ -92,6 +96,10 @@ namespace digitalPins {
     /* Limit switches for elevator */
     #define LOWER_LIMIT_ELEVATOR PB_12
     #define UPPER_LIMIT_ELEVATOR PB_15
+
+    /* Limit switches for elevator */
+    #define LOWER_LIMIT_ARM PB_12
+    #define UPPER_LIMIT_ARM PB_15
 
 
 }
