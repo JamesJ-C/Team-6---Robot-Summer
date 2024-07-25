@@ -1,9 +1,6 @@
 #include <Arduino.h>
-#include <Wire.h>
 #include <Servo.h>
-
 #include <HardwareSerial.h>
-
 #include "RotaryEncoder.h"
 #include "Motor.h"
 #include "robotConstants.h"
@@ -16,108 +13,212 @@
 HardwareSerial SerialPort(USART3);
 String msg;
 
+#define PLATE_MOTOR_PIN_A PB_8
+#define PLATE_MOTOR_PIN_B PB_9
+#define PLATE_ENCODER_PIN_A PB_1
+#define PLATE_ENCODER_PIN_B PB_2
+#define LIMIT_SWITCH_LEFT PB12
+#define LIMIT_SWITCH_RIGHT PB15
+#define PLATESERVO PB12
+#define CLAWSERVO1 PB13 
+#define CLAWSERVO2 PB14
+#define CLAW_INITIAL_L 90
+#define CLAW_INITIAL_R 90
+#define CLAW_OPEN_L 60
+#define CLAW_OPEN_R 150
 
-/*  Function Declerations  */
-void updateEncoder();
-void ISRUpdateEncoder();
-void ISRButton();
+movement::Motor motor(PLATE_MOTOR_PIN_A, PLATE_MOTOR_PIN_B);
+encoder::RotaryEncoder plateencoder(PLATE_ENCODER_PIN_A, PLATE_ENCODER_PIN_B);
 
-/*  PID Control Values  */
+Servo plateservo; 
+Servo clawservoleft; 
+Servo clawservoright;
 
-int setVal = 32;
+volatile int encoderPosition = 0; // volatile tells compllier that the value can be changed by smth outside of normal program flow like ISR or external hardware
+bool movingRight = true; 
 
-int measuredVal;
-
-double plateError = 0.0;
-double lastPlateError = 0.0;
-
-double MAX_I = 140;
-
-double p_plate_Val, d_plate_Val, i_plate_Val;
-
-double g_plate_Val ;
-
-
-/*  Object declerations  */
-
-movement::Motor MotorL(MotorL_P1, MotorL_P2);//, &encoder1);
-movement::Motor MotorR(MotorR_P1, MotorR_P2);
-
-void setup() {
-
-  SerialPort.begin(115200);
-
-
-
-	// Setup Serial Monitor
-	Serial.begin(115200);
-  Serial.println("Hello" + String(BOARD_NAME));
-
-
-  /*  Motor Pins  */
-  pinMode(MotorL.getPinA(), OUTPUT);
-  pinMode(MotorL.getPinB(), OUTPUT);
-
-  pinMode(MotorR.getPinA(), OUTPUT);
-  pinMode(MotorR.getPinB(), OUTPUT);
+enum State {
+  IDLE,
+  MOVING_RIGHT,
+  MOVING_LEFT,
+  ACCEPT_BURGER,
+  SERVE_BURGER,
+  FINISH_SERVE,
+  FINISH_ACCEPT,
+  TRAVEL_MODE
+};
+State currentState = IDLE; 
 
 
-}
+//function prototypes
+// void checkLimitSwitches(); // switch goes high when pressed
+// void ISRUpdateEncoder();
+// void ISRButton();
+void openClaw();
+void closeClaw();
+void movePlateRight();
+void movePlateLeft();
+void stopPlate();
+void sweepObject();
+void clawNeutral(); 
+void movePlateMiddlefromRight(); 
+void movePlateMiddlefromLeft(); 
+void checkState(); 
 
+void setup(){
+  Serial.begin(115200); 
+  Serial.println(); 
+  //Motor Pins
+  pinMode(PLATE_MOTOR_PIN_A, OUTPUT); 
+  pinMode(PLATE_MOTOR_PIN_B, OUTPUT);
 
-void loop() {
-
-
-  SerialPort.print("motor.Obj Counter: ");
-	SerialPort.println(MotorL.encoder->getIncrements() );
-
-  Serial.print("motor.Obj Counter: ");
-	Serial.println(MotorL.encoder->getIncrements() );
-
-
-
-  int setVal = 32;
-  int measuredVal;
-
-
-  int readVal = 300;
-
-  setVal = map(readVal, 0, 1023, -500, 500);
-
-  measuredVal = MotorL.encoder->getIncrements();
-
-  plateError = setVal - measuredVal;
+ //Encoder Pins 
+  pinMode(PLATE_ENCODER_PIN_A, INPUT_PULLUP);
+  pinMode(PLATE_ENCODER_PIN_B, INPUT_PULLUP);
+  // attachInterrupt(digitalPinToInterrupt(PLATE_ENCODER_PIN_A), ISRUpdateEncoder, CHANGE);
+  // attachInterrupt(digitalPinToInterrupt(PLATE_ENCODER_PIN_B), ISRUpdateEncoder, CHANGE);
+  //Sets up interrupt to call 'updateEncoder' ISR function whenever theres a change to the encoder pin 
   
+  //Limit Switch Pins 
+  pinMode(LIMIT_SWITCH_LEFT, INPUT);
+  pinMode(LIMIT_SWITCH_RIGHT, INPUT);
+  // attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH_LEFT),ISRButton, RISING);
+  // attachInterrupt(digitalPinToInterrupt(LIMIT_SWITCH_RIGHT),ISRButton, RISING);
 
-  double PLATE_PID_TOTAL_GAIN = 1.0;
-  double P_PLATE_GAIN = 0.55;//1.4 goes very slowl
-  double I_PLATE_GAIN = 0.0;
-  double D_PLATE_GAIN = 0;
+  //Attaching servos 
+  plateservo.attach(PLATESERVO);
+  clawservoleft.attach(CLAWSERVO1); 
+  clawservoright.attach(CLAWSERVO2);
 
-  p_plate_Val = P_PLATE_GAIN *plateError;
-  d_plate_Val = D_PLATE_GAIN * (plateError - lastPlateError);
-  i_plate_Val = I_PLATE_GAIN *plateError + i_plate_Val; //const *plateError + previous int value
-  if (i_plate_Val > MAX_I) {i_plate_Val = MAX_I;}
-  if (i_plate_Val < -MAX_I) {i_plate_Val = -MAX_I;}
-
-  g_plate_Val = PLATE_PID_TOTAL_GAIN * ( p_plate_Val + i_plate_Val + d_plate_Val ); 
-  lastPlateError =plateError; 
-
-  //Do motor code here
- 
- 
-
-  /*  SerialPort & Serial Monitor prints  */
-  {
-
-  SerialPort.println("g: " + String( g_plate_Val ) );
-  Serial.println("g: " + String( g_plate_Val ) );
-
-  SerialPort.println( "error: " + String(plateError ));
-  SerialPort.println( "p: " + String( p_plate_Val ));
-  Serial.println( "error: " + String(plateError ));
-  Serial.println( "p: " + String( p_plate_Val ));
-
-  }
+//Initial Claw Position
+  clawNeutral(); 
 
 }
+void loop(){
+  checkState(); 
+switch (currentState)
+{
+case IDLE:
+  break;
+
+case MOVING_RIGHT:
+  movePlateRight();
+  break; 
+
+case SERVE_BURGER:
+  stopPlate();
+  sweepObject(); 
+  currentState = FINISH_SERVE; 
+  break; 
+
+case FINISH_SERVE:
+  clawNeutral(); 
+  movePlateMiddlefromRight(); 
+  currentState = IDLE; //IDLE STATE is with plate in the middle and claw in neutral position 
+
+case MOVING_LEFT:
+  movePlateLeft(); 
+
+case ACCEPT_BURGER:
+  stopPlate();
+  openClaw();
+
+case TRAVEL_MODE:
+  closeClaw(); 
+  delay(2000);
+  void movePlateMiddlefromLeft();
+  currentState = IDLE; 
+  }
+}
+void checkLimitSwitches(){
+  if (digitalRead(LIMIT_SWITCH_LEFT) == HIGH && !movingRight) {
+    motor.off();
+  } else if (digitalRead(LIMIT_SWITCH_RIGHT) == HIGH && movingRight) {
+    motor.off();
+    delay(2000);
+    motor.forward(3500); // Start moving backward
+    movingRight = false;
+  }
+}
+
+void checkState(){
+  if(inservingarea){
+  currentState = MOVING_RIGHT;
+} else if(digitalRead(LIMIT_SWITCH_RIGHT == HIGH)){
+  currentState = SERVE_BURGER; 
+} else if(atcuttingarea){
+  currentState = MOVING_LEFT; 
+} else if(digitalRead(LIMIT_SWITCH_RIGHT == HIGH)){
+  currentState = ACCEPT_BURGER; 
+} else if(wallesaysdone){
+  currentState = TRAVEL_MODE; 
+}
+}
+
+// void ISRUpdateEncoder(){
+
+//   bool A = digitalRead(ROTARY_A);
+//   bool B = digitalRead(ROTARY_B);
+
+//   plateencoder.updateEncoder(A, B);
+//   plateencoder.updateTime( millis());
+// }
+
+// void ISRButton(){
+//   motor.off(); 
+//   movingRight = !movingRight; 
+//   // Serial.println(String(count) + "ISR function");
+//   //delay(2000);
+// }
+
+void stopPlate(){
+  motor.stop(); 
+}
+
+void movePlateRight(){
+  motor.backward(3500); 
+}
+
+void movePlateLeft(){
+  motor.forward(3500); 
+}
+
+void expandPlate(){
+  plateservo.write(90);
+  delay(1000); 
+}
+
+void movePlateMiddlefromRight(){
+  motor.forward(3500);
+  delay(2500); 
+  motor.off(); 
+}
+
+void movePlateMiddlefromLeft(){
+  motor.backward(3500); 
+  delay(2500);
+  motor.off();
+}
+
+void openClaws(){
+  clawservoleft.write(0); 
+  clawservoright.write(180);
+}
+
+void closeClaws(){
+  clawservoleft.write(90); 
+  clawservoright.write(90);
+}
+
+void clawNeutral(){
+  clawservoleft.write(30);
+  clawservoright.write(40); 
+}
+
+void sweepObject(){
+  clawservoright.write(180); 
+  delay(1000);
+  clawservoleft.write(180); 
+}
+
+

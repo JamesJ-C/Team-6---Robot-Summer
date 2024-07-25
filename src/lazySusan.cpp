@@ -100,7 +100,7 @@ void loop() {
   lazySusanMotor.off();
   delay(500);
 
-  //localize();
+  localize();
 
 ////
 
@@ -173,9 +173,11 @@ void localize() {
 
     do {
       lazySusanMotor.forward(motorSpeed);
+      Serial.println("do while");
     }
-    while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
-
+    //while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
+    while (SerialPort.readString() != "LazySusan");
+    
     // initialize end limit of movement
     lazySusanMotor.off();
     delay(1000);
