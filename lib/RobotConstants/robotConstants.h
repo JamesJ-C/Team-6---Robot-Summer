@@ -9,7 +9,7 @@ namespace robotConstants {
 
 
 /*  Motor constants  */
-#define MOTOR_FREQUENCY 1000
+#define MOTOR_FREQUENCY 500
 
 
 /*  OLED consts  */
@@ -39,6 +39,9 @@ namespace motorPins {
     #define ARM_MOTOR_P1 PB_6
     #define ARM_MOTOR_P2 PB_7
 
+    #define LAZY_SUSAN_MOTOR_P1 PB_6
+    #define LAZY_SUSAN_MOTOR_P2 PB_7
+
 
     /*  ESP PINS  */
     #ifdef ESP32
@@ -62,6 +65,9 @@ namespace rotaryPins {
     
     #define ELEVATOR_ROTARY_ENCODER_A PB_13
     #define ELEVATOR_ROTARY_ENCODER_B PB_14
+
+    #define LAZY_SUSAN_ROTARY_ENCODER_A PB_13
+    #define LAZY_SUSAN_ROTARY_ENCODER_B PB_14
 
 }
 
@@ -106,6 +112,9 @@ namespace digitalPins {
     /* Limit switches for elevator */
     #define ARM_LOWER_LIMIT_SWITCH PB_12
     #define ARM_UPPER_LIMIT_SWITCH PB_15
+
+    #define LAZY_SUSAN_LOWER_LIMIT_SWITCH PB_12
+    #define LAZY_SUSAN_UPPER_LIMIT_SWITCH PB_15
 
 
 }
