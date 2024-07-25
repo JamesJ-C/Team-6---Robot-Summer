@@ -201,7 +201,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_B), ISRUpdateArmEncoder, CHANGE);
 
 
-  uint8_t n = 38;//5, 37 weird
+  uint8_t n = 19;//5, 37 weird
   pinMode(n, INPUT);
   attachInterrupt(digitalPinToInterrupt(n), ISRLazySusanLimitSwitch, CHANGE);
 }
@@ -251,7 +251,7 @@ void loop() {
 
 
 if (button != prevButton) {
-  SerialPort.println("lazySusan");
+  
   Serial.println("button Pressed");
   setDisplay();
   display.println("lazySusan");
@@ -380,7 +380,7 @@ void IRAM_ATTR ISRUpdateArmEncoder() {
 }
 
 void IRAM_ATTR ISRLazySusanLimitSwitch() {
-
+  SerialPort.println("lazySusan");
   button = !button;
 
 }
