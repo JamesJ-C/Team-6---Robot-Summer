@@ -83,11 +83,11 @@ void setup() {
 void loop() {
 
 
-  lazySusanMotor.forward(3000);
-  delay(1000);
+  lazySusanMotor.forward(2700);
+  delay(200);
   lazySusanMotor.off();
-  lazySusanMotor.backward(3000);
-  delay(1000);
+  lazySusanMotor.backward(2700);
+  delay(200);
 
   //localize();
 
