@@ -99,6 +99,13 @@ namespace digitalPins {
     #define BACK_TAPE_SENSOR_1 PA_0
     #define BACK_TAPE_SENSOR_2 PA_1
 
+    /* Station tape detectors */
+    #define RIGHT_TAPE_SENSOR_1 PA_5
+    #define RIGHT_TAPE_SENSOR_2 PA_4
+    #define LEFT_TAPE_SENSOR_1 PA_3
+    #define LEFT_TAPE_SENSOR_2 PA_2
+
+
     /* Limit switches for elevator */
     #define ELEVATOR_LOWER_LIMIT_SWITCH PB_12
     #define ELEVATOR_UPPER_LIMIT_SWITCH PB_15
