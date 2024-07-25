@@ -5,13 +5,12 @@
 #include <map>
 // #include "RotaryEncoder.h"
 
+#include <robotConstants.h>
 
 // #include <Motor.h>
 #include <RotaryEncoder.h>
 
 namespace movement {
-
-    #define MOTOR_FREQUENCY 1000
 
 
     /**
@@ -46,7 +45,7 @@ namespace movement {
     bool buttonPressed = false;
 
 
-    encoder::RotaryEncoder* encoder;
+    encoder::RotaryEncoder *encoder;
 
 
     #ifdef ESP32
@@ -124,7 +123,7 @@ namespace movement {
      * and saves the difference between the values. Sets one of the limit switches to 0 increments 
      * 
      */
-    void setupEncoder ();
+    void localize ();
 
 
     };
