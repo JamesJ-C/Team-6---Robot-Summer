@@ -256,6 +256,7 @@ if (button == true){
   Serial.println("button Pressed");
   display.println("lazySusan");
   display.display();
+  button = false;
 } else {
   setDisplay();
   Serial.println("no button");
