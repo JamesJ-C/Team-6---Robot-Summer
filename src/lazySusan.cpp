@@ -174,6 +174,7 @@ void localize() {
     do {
       lazySusanMotor.forward(motorSpeed);
       Serial.println("do while");
+      SerialPort.println("do while");
     }
     //while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
     while (SerialPort.readString() != "LazySusan");
