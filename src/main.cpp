@@ -13,7 +13,6 @@
 #include <RotaryEncoder.h>
 
 
-
 int callCount = 0;
 
 #define RX 9
@@ -138,6 +137,7 @@ void setup() {
 
   // Init Serial Monitor
   Serial.begin(115200);
+  Serial.println("Setup");
 }
 
 /*  Display setup  */
@@ -200,7 +200,10 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_A), ISRUpdateArmEncoder, CHANGE);
   attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_B), ISRUpdateArmEncoder, CHANGE);
 
-  attachInterrupt(digitalPinToInterrupt(19), ISRLazySusanLimitSwitch, RISING);
+
+  uint8_t n = 38;//5, 37 weird
+  pinMode(n, INPUT);
+  attachInterrupt(digitalPinToInterrupt(n), ISRLazySusanLimitSwitch, CHANGE);
 }
 
 
@@ -213,34 +216,24 @@ pinMode(armMotor.getPinB(), OUTPUT);
 
 // ledcAttachPin(elevatorMotor.getPinA(), 1);
 // ledcAttachPin(elevatorMotor.getPinB(), 2);
-
 // ledcAttachPin(armMotor.getPinA(), 3);
 // ledcAttachPin(armMotor.getPinB(), 4);
-
 // // ledcAttachPin(5, 5);
-
 // ledcSetup(1, 500, 12);
 // ledcSetup(2, 500, 12);
 // ledcSetup(3, 500, 12);
 // ledcSetup(4, 500, 12);
-
 // ledcSetup(5, 500, 12);
-
 // ledcAttachPin(MOTOR_1_a, 1);
 // ledcAttachPin(MOTOR_1_b, 2);
-
 // ledcAttachPin(elevatorMotor.getPinA(), 1);
 // ledcAttachPin(elevatorMotor.getPinB(), 2);
-
 // ledcSetup(1, 1000, 8);
 // ledcSetup(2, 1000, 8);
-
 // ledcAttachPin(MOTOR_2_a, 3);
 // ledcAttachPin(MOTOR_2_b, 4);
-
 // ledcAttachPin(armMotor.getPinA(), 3);
 // ledcAttachPin(armMotor.getPinB(), 4);
-
 // ledcSetup(3, 1000, 8);
 // ledcSetup(4, 1000, 8);
 
@@ -251,9 +244,23 @@ pinMode(armMotor.getPinB(), OUTPUT);
 int uartItemsDisplayed = 0;
 int wifiItemsDisplayed = 0;
 
+bool button = true;
+bool prevButton = true;
 
 void loop() {
 
+
+if (button != prevButton) {
+  SerialPort.println("lazySusan");
+  Serial.println("button Pressed");
+  setDisplay();
+  display.println("lazySusan");
+  display.display();
+  msg.strMsg = "button";
+  prevButton = button;
+} else {
+  prevButton = button;
+}
 
 // ledcWrite(1, 200);
 // ledcWrite(2, 200);
@@ -326,22 +333,22 @@ void updateDisplay(){
   //Serial.println("wifi items displayed: " + String( wifiItemsDisplayed ) );
 
   if (!incomingWifiInfoQueue.empty() && wifiItemsDisplayed < 3) {
-    Serial.println("1st if");
+    // Serial.println("1st if");
       display.println( "Wifi: " + incomingWifiInfoQueue.front() );
-      Serial.println( "Wifi: " + incomingWifiInfoQueue.front() );
+      // Serial.println( "Wifi: " + incomingWifiInfoQueue.front() );
       incomingWifiInfoQueue.pop();
       wifiItemsDisplayed++;
     } 
 
   if (!incomingUARTInfoQueue.empty() && uartItemsDisplayed < 3) {
       display.println( "UART: " + incomingUARTInfoQueue.front() );
-      Serial.println( "UART: " + incomingUARTInfoQueue.front() );
+      // Serial.println( "UART: " + incomingUARTInfoQueue.front() );
       incomingUARTInfoQueue.pop();
       uartItemsDisplayed++;
     } 
 
   if (uartItemsDisplayed >= 3 || wifiItemsDisplayed >= 3) {
-      Serial.println("disp if");
+      // Serial.println("disp if");
       wifiItemsDisplayed = uartItemsDisplayed = 0;
       display.display();
     display.clearDisplay();
@@ -353,7 +360,7 @@ void updateDisplay(){
 }
 
 
-void ISRUpdateElevatorEncoder(){
+void IRAM_ATTR ISRUpdateElevatorEncoder(){
 
   bool A = digitalRead(elevatorEncoder.getPinA());
   bool B = digitalRead(elevatorEncoder.getPinB());
@@ -362,7 +369,7 @@ void ISRUpdateElevatorEncoder(){
 
 }
 
-void ISRUpdateArmEncoder() {
+void IRAM_ATTR ISRUpdateArmEncoder() {
 
 
   bool A = digitalRead(armEncoder.getPinA());
@@ -372,12 +379,8 @@ void ISRUpdateArmEncoder() {
 
 }
 
-void ISRLazySusanLimitSwitch() {
+void IRAM_ATTR ISRLazySusanLimitSwitch() {
 
-  SerialPort.println("lazySusan");
-  Serial.println("button Pressed");
-  setDisplay();
-  display.println("lazySusan");
-  display.display();
+  button = !button;
 
 }
