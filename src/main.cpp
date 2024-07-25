@@ -203,7 +203,7 @@ delay(2000);
 
   uint8_t n = 8;//5, 37 weird
   pinMode(n, INPUT);
-  attachInterrupt(digitalPinToInterrupt(n), ISRLazySusanLimitSwitch, CHANGE);
+  attachInterrupt(digitalPinToInterrupt(n), ISRLazySusanLimitSwitch, RISING);
 }
 
 
