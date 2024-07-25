@@ -171,13 +171,17 @@ void localize() {
     lazySusanMotor.encoder->resetIncrement();
     start = lazySusanMotor.encoder->getIncrements();
 
+  String incomimingMsg = "f";
+
     do {
+      incomimingMsg = SerialPort.readString();
       lazySusanMotor.forward(motorSpeed);
       Serial.println("do while");
       SerialPort.println("do while");
+      SerialPort.println("msg: " + incomimingMsg);
     }
     //while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
-    while (SerialPort.readString() != "LazySusan");
+    while ( incomimingMsg != "LazySusan");
     
     // initialize end limit of movement
     lazySusanMotor.off();
