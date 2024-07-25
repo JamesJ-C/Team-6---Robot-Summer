@@ -64,8 +64,8 @@ void setup() {
 
 
   /*  Encoders  */
-	pinMode(elevatorEncoder.getPinA(), INPUT);
-	pinMode(elevatorEncoder.getPinB(), INPUT);
+	pinMode(elevatorEncoder.getPinA(), INPUT_PULLUP);
+	pinMode(elevatorEncoder.getPinB(), INPUT_PULLUP);
 
 
   attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinA() ), ISRUpdateElevatorEncoder, CHANGE);
@@ -89,16 +89,21 @@ void setup() {
 
 void loop() {
 
+Serial.println("Encoder: " + String(
+  elevatorEncoder.getIncrements() )
+
+);
+
 
   //localize();
-  lazySusanMotor.forward(2000);
-  delay(500);
-  lazySusanMotor.off();
-  delay(500);
-  lazySusanMotor.backward(2000);
-  delay(500);
-  lazySusanMotor.off();
-  delay(500);
+  // lazySusanMotor.forward(2000);
+  // delay(500);
+  // lazySusanMotor.off();
+  // delay(500);
+  // lazySusanMotor.backward(2000);
+  // delay(500);
+  // lazySusanMotor.off();
+  // delay(500);
 
   //localize();
 
@@ -197,7 +202,7 @@ void localize() {
     while (lazySusanMotor.encoder->getIncrements() != center) {
         lazySusanMotor.backward(motorSpeed);
         SerialPort.println("center");
-        Serial.println("center");
+        Serial.println("center: " + String ( lazySusanMotor.encoder->getIncrements() ) );
     }
     lazySusanMotor.stop();
 
