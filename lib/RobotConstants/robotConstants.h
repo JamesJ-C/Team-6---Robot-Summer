@@ -9,7 +9,7 @@ namespace robotConstants {
 
 
 /*  Motor constants  */
-#define MOTOR_FREQUENCY 1000
+#define MOTOR_FREQUENCY 500
 
 
 /*  OLED consts  */

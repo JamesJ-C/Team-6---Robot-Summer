@@ -126,10 +126,10 @@ void setup() {
   MotorR.off();
   delay(500);
   MotorL.forward(3000);
-  delay(100);
+  delay(1000);
   MotorL.off();
   MotorR.forward(3000);
-  delay(100);
+  delay(1000);
   MotorR.off();
 
   stopping = true;
