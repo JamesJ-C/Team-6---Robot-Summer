@@ -129,7 +129,7 @@ movement::Motor elevatorMotor(MOTOR_1_a, MOTOR_1_b, "elevator", 1, 2, &elevatorE
 movement::Motor armMotor(MOTOR_2_a, MOTOR_2_b, "arm", 3, 4, &armEncoder);
 
 void setup() {
-
+delay(2000);
 
 /*  Serial Setup  */
 {
@@ -201,7 +201,7 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt(ARM_ROTARY_B), ISRUpdateArmEncoder, CHANGE);
 
 
-  uint8_t n = 19;//5, 37 weird
+  uint8_t n = 8;//5, 37 weird
   pinMode(n, INPUT);
   attachInterrupt(digitalPinToInterrupt(n), ISRLazySusanLimitSwitch, CHANGE);
 }
@@ -249,27 +249,44 @@ bool prevButton = true;
 
 void loop() {
 
-
-if (button != prevButton) {
-  
-  Serial.println("button Pressed");
   setDisplay();
+  display.display();
+  
+if (button = true){
+  Serial.println("button Pressed");
   display.println("lazySusan");
   display.display();
-  msg.strMsg = "button";
-  prevButton = button;
 } else {
-  prevButton = button;
+  Serial.println("no button");
+  display.println("no button");
+  display.display();
 }
+
+// if (button != prevButton) {
+  
+//   Serial.println("button Pressed");
+//   display.println("lazySusan");
+//   display.display();
+//   //delay(100);
+
+//   msg.strMsg = "button";
+// } else {
+//   Serial.println("no button");
+//   display.println("no button");
+//   display.display();
+// }
+// prevButton = button;
+
+
 
 // ledcWrite(1, 200);
 // ledcWrite(2, 200);
 // ledcWrite(3, 200);
 // ledcWrite(4, 200);
 
-  elevatorMotor.forward(400);
+  // elevatorMotor.forward(400);
   
-  armMotor.forward(400);
+  // armMotor.forward(400);
   // ledcWrite(5, 500);
 
 /*  Wifi  */
