@@ -120,8 +120,7 @@ namespace digitalPins {
     #define ARM_LOWER_LIMIT_SWITCH PB_12
     #define ARM_UPPER_LIMIT_SWITCH PB_15
 
-    #define LAZY_SUSAN_LOWER_LIMIT_SWITCH PB_12
-    #define LAZY_SUSAN_UPPER_LIMIT_SWITCH PB_15
+    #define LAZY_SUSAN_LIMIT_SWITCH PB15
 
 
 }

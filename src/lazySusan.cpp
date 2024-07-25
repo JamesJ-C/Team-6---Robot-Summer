@@ -20,6 +20,7 @@ String msg;
 /*  Function Declerations  */
 void ISRUpdateElevatorEncoder();
 void localize();
+//void limit();
 
 /*  PID Control Values  */
 
@@ -36,6 +37,7 @@ double p_lazySusan_Val, d_lazySusan_Val, i_lazySusan_Val;
 
 double g_lazySusan_Val ;
 
+bool buttonPushed;
 
 /*  Object declerations  */
 
@@ -43,6 +45,7 @@ encoder::RotaryEncoder elevatorEncoder( LAZY_SUSAN_ROTARY_ENCODER_A, LAZY_SUSAN_
 movement::Motor lazySusanMotor(LAZY_SUSAN_MOTOR_P1, LAZY_SUSAN_MOTOR_P2, &elevatorEncoder);
 
 void setup() {
+  delay(2000);
 
   SerialPort.begin(115200);
 
@@ -57,6 +60,8 @@ void setup() {
   pinMode(lazySusanMotor.getPinA(), OUTPUT);
   pinMode(lazySusanMotor.getPinB(), OUTPUT);
 
+  pinMode(LAZY_SUSAN_LIMIT_SWITCH, INPUT);
+
 
   /*  Encoders  */
 	pinMode(elevatorEncoder.getPinA(), INPUT);
@@ -66,7 +71,9 @@ void setup() {
   attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinA() ), ISRUpdateElevatorEncoder, CHANGE);
 	attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinB() ), ISRUpdateElevatorEncoder, CHANGE);
 
+  //attachInterrupt(digitalPinToInterrupt(LAZY_SUSAN_LIMIT_SWITCH), limit, CHANGE);
 
+  buttonPushed = false;
 
   // lazySusanMotor.off();
   // delay(500);
@@ -75,7 +82,7 @@ void setup() {
   // lazySusanMotor.off();
   // delay(100);
   // perform motor sweep to initialize motion
-  //localize();
+  localize();
 
 }
 
@@ -83,13 +90,15 @@ void setup() {
 void loop() {
 
 
-  lazySusanMotor.forward(2700);
-  delay(200);
+  //localize();
+  lazySusanMotor.forward(2000);
+  delay(500);
   lazySusanMotor.off();
-  lazySusanMotor.backward(2700);
-  delay(200);
+  delay(500);
+  lazySusanMotor.backward(2000);
+  delay(500);
   lazySusanMotor.off();
-  delay(200);
+  delay(500);
 
   //localize();
 
@@ -153,38 +162,37 @@ void localize() {
 
   const int motorSpeed = 2000;
 
-    int bottom;
-    int top;
+    int start;
+    int end;
     int center;
 
-    // turn motor until elevator reaches bottom limit
-    while (!digitalRead(LAZY_SUSAN_LOWER_LIMIT_SWITCH)) {
-        lazySusanMotor.backward(motorSpeed);
-        SerialPort.println("backward");
-    }
-
-    // initialize bottom of elevator movement
+  // initialize start of lazy susan movement
     lazySusanMotor.off();
     lazySusanMotor.encoder->resetIncrement();
-    bottom = lazySusanMotor.encoder->getIncrements();
+    start = lazySusanMotor.encoder->getIncrements();
 
-    // turn motor in opposite direction until top limit reached
-    while (!digitalRead(LAZY_SUSAN_UPPER_LIMIT_SWITCH)) {
-        lazySusanMotor.forward(motorSpeed);
-        SerialPort.println("forward");
+    do {
+      lazySusanMotor.forward(motorSpeed);
     }
+    while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
 
-    // initialize top of elevator movement
+    // initialize end limit of movement
     lazySusanMotor.off();
-    top = lazySusanMotor.encoder->getIncrements();
-    lazySusanMotor.encoder->setMaxIncrement(top);
+    delay(1000);
+    end = lazySusanMotor.encoder->getIncrements();
+    lazySusanMotor.encoder->setMaxIncrement(end);
 
-    // turn motor and reach middle of motion
-    center = top / 2;
-    while (lazySusanMotor.encoder->getIncrements() != center) {
-        lazySusanMotor.backward(motorSpeed);
-        SerialPort.println("center");
-    }
-    lazySusanMotor.stop();
+    // // turn motor and reach middle of motion
+    // center = end / 2;
+    // while (lazySusanMotor.encoder->getIncrements() != center) {
+    //     lazySusanMotor.backward(motorSpeed);
+    //     SerialPort.println("center");
+    // }
+    // lazySusanMotor.stop();
 
 }
+
+// void limit() {
+//   buttonPushed = !buttonPushed;
+//   Serial.println("interrupt");
+// }
