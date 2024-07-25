@@ -11,8 +11,6 @@
 
 namespace movement {
 
-    #define MOTOR_FREQUENCY 1000
-
 
     /**
     * assumes forwardDirection and backward direction are never both true
