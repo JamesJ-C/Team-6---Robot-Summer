@@ -249,14 +249,15 @@ bool prevButton = false;
 
 void loop() {
 
-  setDisplay();
-  display.display();
+
   
 if (button = true){
+  setDisplay();
   Serial.println("button Pressed");
   display.println("lazySusan");
   display.display();
 } else {
+  setDisplay();
   Serial.println("no button");
   display.println("no button");
   display.display();
