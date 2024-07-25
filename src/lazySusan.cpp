@@ -68,14 +68,14 @@ void setup() {
 
 
 
-  lazySusanMotor.off();
-  delay(500);
-  lazySusanMotor.forward(3000);
-  delay(100);
-  lazySusanMotor.off();
-  delay(100);
+  // lazySusanMotor.off();
+  // delay(500);
+  // lazySusanMotor.forward(3000);
+  // delay(100);
+  // lazySusanMotor.off();
+  // delay(100);
   // perform motor sweep to initialize motion
-  localize();
+  //localize();
 
 }
 
@@ -83,46 +83,50 @@ void setup() {
 void loop() {
 
 
-  //lazySusanMotor.forward(2700);
+  lazySusanMotor.forward(2700);
   delay(200);
   lazySusanMotor.off();
   lazySusanMotor.backward(2700);
   delay(200);
+  lazySusanMotor.off();
+  delay(200);
 
   //localize();
 
-  delay(1000);
-  SerialPort.println("loop");
+////
 
-  int setVal = 32;
-  int measuredVal;
+//   delay(1000);
+//   SerialPort.println("loop");
+
+//   int setVal = 32;
+//   int measuredVal;
 
 
-  int readVal = SerialPort.read();
+//   int readVal = SerialPort.read();
 
-  setVal = map(readVal, 0, 1023, -500, 500);
+//   setVal = map(readVal, 0, 1023, -500, 500);
 
-  measuredVal = lazySusanMotor.encoder->getIncrements();
+//   measuredVal = lazySusanMotor.encoder->getIncrements();
 
-  plateError = setVal - measuredVal;
+//   plateError = setVal - measuredVal;
   
 
-  double PLATE_PID_TOTAL_GAIN = 1.0;
-  double P_LAZY_SUSAN_GAIN = 0.55;//1.4 goes very slowl
-  double I_LAZY_SUSAN_GAIN = 0.0;
-  double D_LAZY_SUSAN_GAIN = 0;
+//   double PLATE_PID_TOTAL_GAIN = 1.0;
+//   double P_LAZY_SUSAN_GAIN = 0.55;//1.4 goes very slowl
+//   double I_LAZY_SUSAN_GAIN = 0.0;
+//   double D_LAZY_SUSAN_GAIN = 0;
 
-  p_lazySusan_Val = P_LAZY_SUSAN_GAIN *plateError;
-  d_lazySusan_Val = D_LAZY_SUSAN_GAIN * (plateError - lastPlateError);
-  i_lazySusan_Val = I_LAZY_SUSAN_GAIN *plateError + i_lazySusan_Val; //const *plateError + previous int value
-  if (i_lazySusan_Val > MAX_I) {i_lazySusan_Val = MAX_I;}
-  if (i_lazySusan_Val < -MAX_I) {i_lazySusan_Val = -MAX_I;}
+//   p_lazySusan_Val = P_LAZY_SUSAN_GAIN *plateError;
+//   d_lazySusan_Val = D_LAZY_SUSAN_GAIN * (plateError - lastPlateError);
+//   i_lazySusan_Val = I_LAZY_SUSAN_GAIN *plateError + i_lazySusan_Val; //const *plateError + previous int value
+//   if (i_lazySusan_Val > MAX_I) {i_lazySusan_Val = MAX_I;}
+//   if (i_lazySusan_Val < -MAX_I) {i_lazySusan_Val = -MAX_I;}
 
-  g_lazySusan_Val = PLATE_PID_TOTAL_GAIN * ( p_lazySusan_Val + i_lazySusan_Val + d_lazySusan_Val ); 
-  lastPlateError =plateError; 
+//   g_lazySusan_Val = PLATE_PID_TOTAL_GAIN * ( p_lazySusan_Val + i_lazySusan_Val + d_lazySusan_Val ); 
+//   lastPlateError =plateError; 
 
-// PID hopefully
-  // lazySusanMotor.forward( g_lazySus_Val );
+// // PID hopefully
+//   // lazySusanMotor.forward( g_lazySus_Val );
 
 }
 
