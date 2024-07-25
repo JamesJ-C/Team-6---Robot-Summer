@@ -52,8 +52,9 @@ String msg;
 /* Variables for station detection */
 int currentStation = 0;
 int targetStation = 0;
-bool stopped = false;
-bool direction = true; // false is forward, true is backward
+int count = 0;
+bool stopping;
+bool direction; // false is forward, true is backward
 #define TAPE_THRESHOLD 800
 
 
@@ -87,6 +88,8 @@ double backward_g;
 movement::Motor MotorL(MotorL_P1, MotorL_P2);
 movement::Motor MotorR(MotorR_P1, MotorR_P2);
 
+/* function declarations */
+void drivePID(bool direction);
 
 void setup() {
 
@@ -129,79 +132,101 @@ void setup() {
   delay(100);
   MotorR.off();
 
+  stopping = true;
+  direction = false;
+
   
 }
 
 
 void loop() {
 
-const int forwardMidMotorSpeed = 3300;
-const int backwardMidMotorSpeed = 3300;
-
-/*  driving forwards  */
-if (false) {
-
-  forwardError = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
-
-
-  double FORWARD_LOOP_GAIN = 1.0;
-  double FORWARD_P_GAIN = 0.55;//1.4 goes very slowl
-  double FORWARD_I_GAIN = 0.0;
-  double FORWARD_D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
-
-  forward_p = FORWARD_P_GAIN * forwardError;
-  forward_d = FORWARD_D_GAIN * (forwardError - forwardLastError);
-  forward_i = FORWARD_I_GAIN * forwardError + forward_i; //const * error + previous int value
-  if (forward_i > max_I) {forward_i = max_I;}
-  if (forward_i < -max_I) {forward_i = -max_I;}
-
-  forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
-  forwardLastError = forwardError; 
-
-  //SEND MOTOR VALS
-
-  MotorL.forward( (forwardMidMotorSpeed - 1 * forward_g) );
-  MotorR.forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
-
-  MotorR.forward(3300);
-  MotorL.forward(3300);
-  /*  SerialPort & Serial Monitor prints  */
-  {
-
-  int mL = forwardMidMotorSpeed - forward_g;
-  int mR = forwardMidMotorSpeed + forward_g;
-  // SerialPort.println("g: " + String( g) );
-  // SerialPort.println("m1: " + String( midMotorSpeed - g) );
-  // SerialPort.println("m2: " + String( midMotorSpeed + g) );
-
-  // Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  // Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
-
-  Serial.println( "error: " + String( forwardError ));
-  Serial.println( "p: " + String( forward_p ));
-
-  //SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
-  //SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
-
-  Serial.print("g: ");
-  Serial.println(forward_g);
-
-  Serial.print("mL: ");
-  Serial.println(mL);
-
-  Serial.print("mR: ");
-  Serial.println(mR);
-
+  if (analogRead(RIGHT_TAPE_SENSOR_1) < TAPE_THRESHOLD && analogRead(LEFT_TAPE_SENSOR_1) < TAPE_THRESHOLD) {
+    drivePID(direction);
+  }
+  else {
+    if (stopping) {
+      MotorL.stop();
+      MotorR.stop();
+      delay(2000);
+      stopping = false;
+      if (count == 1) {
+        direction = !direction;
+        count = 0;
+      }
+      else {
+        count++;
+      }
+    }
+    else {
+      drivePID(direction);
+      delay(2000);
+    }
   }
 
+}
+
+
+void drivePID(bool direction) {
+
+  const int forwardMidMotorSpeed = 3300;
+  const int backwardMidMotorSpeed = 3300;
+
+  if (!direction) {
+    forwardError = (double) analogRead(FRONT_TAPE_SENSOR_1) - analogRead(FRONT_TAPE_SENSOR_2);
+
+
+    double FORWARD_LOOP_GAIN = 1.0;
+    double FORWARD_P_GAIN = 0.55;//1.4 goes very slowl
+    double FORWARD_I_GAIN = 0.0;
+    double FORWARD_D_GAIN = 1.36;//0.9;//0.4;//0.7;//0.9;//1.8;//1.9;//2.5;//2.0;//1.8;//0.9;//0.7
+
+    forward_p = FORWARD_P_GAIN * forwardError;
+    forward_d = FORWARD_D_GAIN * (forwardError - forwardLastError);
+    forward_i = FORWARD_I_GAIN * forwardError + forward_i; //const * error + previous int value
+    if (forward_i > max_I) {forward_i = max_I;}
+    if (forward_i < -max_I) {forward_i = -max_I;}
+
+    forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
+    forwardLastError = forwardError; 
+
+    //SEND MOTOR VALS
+
+    MotorL.forward( (forwardMidMotorSpeed - 1 * forward_g) );
+    MotorR.forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
+
+    MotorR.forward(3300);
+    MotorL.forward(3300);
+    /*  SerialPort & Serial Monitor prints  */
+    {
+
+    int mL = forwardMidMotorSpeed - forward_g;
+    int mR = forwardMidMotorSpeed + forward_g;
+    // SerialPort.println("g: " + String( g) );
+    // SerialPort.println("m1: " + String( midMotorSpeed - g) );
+    // SerialPort.println("m2: " + String( midMotorSpeed + g) );
+
+    // Serial.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+    // Serial.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+    Serial.println( "error: " + String( forwardError ));
+    Serial.println( "p: " + String( forward_p ));
+
+    //SerialPort.println( "tape 1: " + String( analogRead(FRONT_TAPE_SENSOR_1) ));
+    //SerialPort.println( "tape 2: " + String( analogRead(FRONT_TAPE_SENSOR_2 ) ));
+
+    Serial.print("g: ");
+    Serial.println(forward_g);
+
+    Serial.print("mL: ");
+    Serial.println(mL);
+
+    Serial.print("mR: ");
+    Serial.println(mR);
+
+    }
   }
-
-  /*  Driving backwards  */
-
-  if (true) {
-
-    SerialPort.println("Backwards!!");
-
+  else {
     backwardError = (double) analogRead(BACK_TAPE_SENSOR_1) - analogRead(BACK_TAPE_SENSOR_2);
 
 
@@ -253,8 +278,7 @@ if (false) {
     Serial.println(mR);
 
     }
-
-
+ 
   }
 
 }
