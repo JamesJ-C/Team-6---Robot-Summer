@@ -192,13 +192,14 @@ void localize() {
     end = lazySusanMotor.encoder->getIncrements();
     lazySusanMotor.encoder->setMaxIncrement(end);
 
-    // // turn motor and reach middle of motion
-    // center = end / 2;
-    // while (lazySusanMotor.encoder->getIncrements() != center) {
-    //     lazySusanMotor.backward(motorSpeed);
-    //     SerialPort.println("center");
-    // }
-    // lazySusanMotor.stop();
+    // turn motor and reach middle of motion
+    center = end / 2;
+    while (lazySusanMotor.encoder->getIncrements() != center) {
+        lazySusanMotor.backward(motorSpeed);
+        SerialPort.println("center");
+        Serial.println("center");
+    }
+    lazySusanMotor.stop();
 
 }
 

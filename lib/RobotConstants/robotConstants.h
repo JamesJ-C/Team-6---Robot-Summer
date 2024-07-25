@@ -39,8 +39,8 @@ namespace motorPins {
     #define ARM_MOTOR_P1 PB_6
     #define ARM_MOTOR_P2 PB_7
 
-    #define LAZY_SUSAN_MOTOR_P1 PB_6
-    #define LAZY_SUSAN_MOTOR_P2 PB_7
+    #define LAZY_SUSAN_MOTOR_P1 PB_9
+    #define LAZY_SUSAN_MOTOR_P2 PB_8
 
 
     /*  ESP PINS  */
