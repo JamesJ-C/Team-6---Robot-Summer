@@ -49,7 +49,6 @@ HardwareSerial SerialPort(USART3);
 String msg;
 
 
-
 /*  Function Declerations  */
 void updateEncoder();
 void ISRUpdateEncoder();
