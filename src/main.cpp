@@ -126,7 +126,7 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ROTARY_A, ELEVATOR_ROTARY_B);
 encoder::RotaryEncoder armEncoder(ARM_ROTARY_A, ARM_ROTARY_B);
 
 movement::Motor elevatorMotor(MOTOR_1_a, MOTOR_1_b, "elevator", 1, 2, &elevatorEncoder);
-movement::Motor armMotor(MOTOR_2_a, MOTOR_2_b, "arm", 1, 2, &armEncoder);
+movement::Motor armMotor(MOTOR_2_a, MOTOR_2_b, "arm", 3, 4, &armEncoder);
 
 void setup() {
 
@@ -201,28 +201,45 @@ void setup() {
 }
 
 
+pinMode(elevatorMotor.getPinA(), OUTPUT);
+pinMode(elevatorMotor.getPinB(), OUTPUT);
+
+pinMode(armMotor.getPinA(), OUTPUT);
+pinMode(armMotor.getPinB(), OUTPUT);
+
+
+ledcAttachPin(elevatorMotor.getPinA(), 1);
+ledcAttachPin(elevatorMotor.getPinB(), 2);
+
+ledcAttachPin(armMotor.getPinA(), 3);
+ledcAttachPin(armMotor.getPinB(), 4);
+
+// ledcAttachPin(5, 5);
+
+ledcSetup(1, 500, 12);
+ledcSetup(2, 500, 12);
+ledcSetup(3, 500, 12);
+ledcSetup(4, 500, 12);
+
+// ledcSetup(5, 500, 12);
+
+// ledcAttachPin(MOTOR_1_a, 1);
+// ledcAttachPin(MOTOR_1_b, 2);
+
 // ledcAttachPin(elevatorMotor.getPinA(), 1);
 // ledcAttachPin(elevatorMotor.getPinB(), 2);
+
+// ledcSetup(1, 1000, 8);
+// ledcSetup(2, 1000, 8);
+
+// ledcAttachPin(MOTOR_2_a, 3);
+// ledcAttachPin(MOTOR_2_b, 4);
 
 // ledcAttachPin(armMotor.getPinA(), 3);
 // ledcAttachPin(armMotor.getPinB(), 4);
 
-// ledcSetup(1, 500, 12);
-// ledcSetup(2, 500, 12);
-// ledcSetup(3, 500, 12);
-// ledcSetup(4, 500, 12);
-
-ledcAttachPin(MOTOR_1_a, 1);
-ledcAttachPin(MOTOR_1_b, 2);
-
-ledcSetup(1, 1000, 8);
-ledcSetup(2, 1000, 8);
-
-ledcAttachPin(MOTOR_2_a, 3);
-ledcAttachPin(MOTOR_2_b, 4);
-
-ledcSetup(3, 1000, 8);
-ledcSetup(4, 1000, 8);
+// ledcSetup(3, 1000, 8);
+// ledcSetup(4, 1000, 8);
 
 
 }
@@ -235,14 +252,15 @@ int wifiItemsDisplayed = 0;
 void loop() {
 
 
-ledcWrite(1, 200);
-ledcWrite(2, 200);
-ledcWrite(3, 200);
-ledcWrite(4, 200);
+// ledcWrite(1, 200);
+// ledcWrite(2, 200);
+// ledcWrite(3, 200);
+// ledcWrite(4, 200);
 
-  // elevatorMotor.forward(3000);
+  elevatorMotor.forward(400);
   
-  // armMotor.forward(3000);
+  armMotor.forward(400);
+  // ledcWrite(5, 500);
 
 /*  Wifi  */
 {

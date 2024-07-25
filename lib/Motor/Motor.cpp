@@ -16,8 +16,11 @@ namespace movement {
 
       this->encoder = Encoder;
 
-      pwmMap.insert({outputName + "_1", channel_1});
-      pwmMap.insert({outputName + "_2", channel_2});
+      ch1 = channel_1;
+      ch2 = channel_2;
+
+      // pwmMap.insert({outputName + "_1", channel_1});
+      // pwmMap.insert({outputName + "_2", channel_2});
 
     }
 
@@ -108,8 +111,18 @@ namespace movement {
   #endif 
   #ifdef ESP32
 
-    ledcWrite( this->pwmMap.at(this->outputName + "_1") , PWM_Val );
-    ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_1") , PWM_Val );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+
+    ledcWrite( ch1 , PWM_Val );
+    ledcWrite( ch2 , 0 );
+
+    // analogWrite(this->PWM_pinA, PWM_Val);
+    // analogWrite(this->PWM_pinB, 0);
+
+    // Serial.println("item 1: " + String ( this->pwmMap.at(this->outputName + "_1") ) );
+    // Serial.println("item 2: " + String ( this->pwmMap.at(this->outputName + "_2") ) );
+
   #endif
 
   }
@@ -130,8 +143,10 @@ namespace movement {
   #endif
 
   #ifdef ESP32
-    ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
-    ledcWrite( this->pwmMap.at(this->outputName + "_2") , PWM_Val );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_2") , PWM_Val );
+    analogWrite(this->PWM_pinA, 0);
+    analogWrite(this->PWM_pinB, PWM_Val);
   #endif
   }
 
@@ -198,8 +213,11 @@ void Motor::stop() {
     #endif
 
   #ifdef ESP32
-    ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
-    ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_1") , 0 );
+    // ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
+
+    analogWrite(this->PWM_pinA, 0);
+    analogWrite(this->PWM_pinB, 0);
     #endif
   }
 

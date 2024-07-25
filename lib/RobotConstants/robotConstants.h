@@ -37,8 +37,8 @@ namespace motorPins {
         #define MOTOR_1_a 32
         #define MOTOR_1_b 33
 
-        #define MOTOR_2_a 12
-        #define MOTOR_2_b 13
+        #define MOTOR_2_a 5
+        #define MOTOR_2_b 19
     #endif
 
 }
