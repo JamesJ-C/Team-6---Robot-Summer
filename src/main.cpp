@@ -244,8 +244,8 @@ pinMode(armMotor.getPinB(), OUTPUT);
 int uartItemsDisplayed = 0;
 int wifiItemsDisplayed = 0;
 
-bool button = true;
-bool prevButton = true;
+bool button = false;
+bool prevButton = false;
 
 void loop() {
 
