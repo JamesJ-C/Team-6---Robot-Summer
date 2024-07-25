@@ -251,7 +251,7 @@ void loop() {
 
 
   
-if (button = true){
+if (button == true){
   setDisplay();
   Serial.println("button Pressed");
   display.println("lazySusan");
