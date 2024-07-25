@@ -250,19 +250,18 @@ bool prevButton = false;
 void loop() {
 
 
-  
-if (button == true){
-  setDisplay();
-  Serial.println("button Pressed");
-  display.println("lazySusan");
-  display.display();
-  button = false;
-} else {
-  setDisplay();
-  Serial.println("no button");
-  display.println("no button");
-  display.display();
-}
+// if (button == true){
+//   setDisplay();
+//   Serial.println("button Pressed");
+//   display.println("lazySusan");
+//   display.display();
+//   button = false;
+// } else {
+//   setDisplay();
+//   Serial.println("no button");
+//   display.println("no button");
+//   display.display();
+// }
 
 // if (button != prevButton) {
   
