@@ -100,7 +100,7 @@ void loop() {
   lazySusanMotor.off();
   delay(500);
 
-  localize();
+  //localize();
 
 ////
 
@@ -172,17 +172,20 @@ void localize() {
     start = lazySusanMotor.encoder->getIncrements();
 
   String incomimingMsg = "f";
+  char a;
 
     do {
       incomimingMsg = SerialPort.readString();
+      a = incomimingMsg.charAt(0);
       lazySusanMotor.forward(motorSpeed);
       Serial.println("do while");
       SerialPort.println("do while");
       SerialPort.println("msg: " + incomimingMsg);
+      Serial.println("msg: " + incomimingMsg);
     }
     //while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
-    while ( incomimingMsg != "LazySusan");
-    
+    while ( a != 'L' );
+    Serial.println("out of loop");
     // initialize end limit of movement
     lazySusanMotor.off();
     delay(1000);
