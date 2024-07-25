@@ -380,7 +380,7 @@ void IRAM_ATTR ISRUpdateArmEncoder() {
 }
 
 void IRAM_ATTR ISRLazySusanLimitSwitch() {
-  SerialPort.println("lazySusan");
+  SerialPort.println("LazySusan");
   button = !button;
 
 }
