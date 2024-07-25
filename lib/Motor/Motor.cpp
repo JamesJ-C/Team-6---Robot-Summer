@@ -114,11 +114,11 @@ namespace movement {
     // ledcWrite( this->pwmMap.at(this->outputName + "_1") , PWM_Val );
     // ledcWrite( this->pwmMap.at(this->outputName + "_2") , 0 );
 
-    ledcWrite( ch1 , PWM_Val );
-    ledcWrite( ch2 , 0 );
+    // ledcWrite( ch1 , PWM_Val );
+    // ledcWrite( ch2 , 0 );
 
-    // analogWrite(this->PWM_pinA, PWM_Val);
-    // analogWrite(this->PWM_pinB, 0);
+    analogWrite(this->PWM_pinA, PWM_Val);
+    analogWrite(this->PWM_pinB, 0);
 
     // Serial.println("item 1: " + String ( this->pwmMap.at(this->outputName + "_1") ) );
     // Serial.println("item 2: " + String ( this->pwmMap.at(this->outputName + "_2") ) );
