@@ -93,7 +93,7 @@ void setup() {
     // delay(100);
 
     /*  perform motor sweep to initialize motion  */
-    // localizeArm();
+    localizeArm();
 
   }
 
