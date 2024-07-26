@@ -24,14 +24,14 @@ void localize();
 
 /*  PID Control Values  */
 
-int setVal = 32;
+// int setVal = 32;
 
 int measuredVal;
 
-double plateError = 0.0;
-double lastPlateError = 0.0;
+double lazySusanError = 0.0;
+double lastlazySusanError = 0.0;
 
-double MAX_I = 140;
+double MAX_I = 1400;
 
 double p_lazySusan_Val, d_lazySusan_Val, i_lazySusan_Val;
 
@@ -86,6 +86,9 @@ void setup() {
 
 }
 
+int loopCount = 0;
+int loopSetCount = 0;
+int setVal = 50;
 
 void loop() {
 
@@ -120,27 +123,28 @@ Serial.println("Encoder: " + String(
 
 //   setVal = map(readVal, 0, 1023, -500, 500);
 
-//   measuredVal = lazySusanMotor.encoder->getIncrements();
-
-//   plateError = setVal - measuredVal;
+int error = 100 - lazySusanMotor.encoder->getIncrements();
+const int motorSpeed = 2700;
+int errorCount = 0;
+while (lazySusanMotor.encoder->getIncrements() != 100 || errorCount != -1){
   
+  if (error < 0){
+    lazySusanMotor.setMotor(motorSpeed);
+  }
+  else if (error > 0){
+    lazySusanMotor.setMotor( -1 * motorSpeed);
+  }
+  else {
+    errorCount++;
+    Serial.println("break?");
+  }
+error = 100 - lazySusanMotor.encoder->getIncrements();
 
-//   double PLATE_PID_TOTAL_GAIN = 1.0;
-//   double P_LAZY_SUSAN_GAIN = 0.55;//1.4 goes very slowl
-//   double I_LAZY_SUSAN_GAIN = 0.0;
-//   double D_LAZY_SUSAN_GAIN = 0;
+Serial.println("encoder: " + String (lazySusanMotor.encoder->getIncrements() ));
+Serial.println("error: " + String (error ));
 
-//   p_lazySusan_Val = P_LAZY_SUSAN_GAIN *plateError;
-//   d_lazySusan_Val = D_LAZY_SUSAN_GAIN * (plateError - lastPlateError);
-//   i_lazySusan_Val = I_LAZY_SUSAN_GAIN *plateError + i_lazySusan_Val; //const *plateError + previous int value
-//   if (i_lazySusan_Val > MAX_I) {i_lazySusan_Val = MAX_I;}
-//   if (i_lazySusan_Val < -MAX_I) {i_lazySusan_Val = -MAX_I;}
 
-//   g_lazySusan_Val = PLATE_PID_TOTAL_GAIN * ( p_lazySusan_Val + i_lazySusan_Val + d_lazySusan_Val ); 
-//   lastPlateError =plateError; 
-
-// // PID hopefully
-//   // lazySusanMotor.forward( g_lazySus_Val );
+}
 
 }
 

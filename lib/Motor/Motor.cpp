@@ -60,15 +60,24 @@ namespace movement {
   void Motor::setMotor(int val){
 
 
-    const int maxMotorSpeed = 3500;
+    if (val > 0){
+      this->forward(val);
+    }
+    if (val < 0){
+      this->backward(val);
+    } else {
+      this->off();
+    }
 
-    const int midMotorSpeed = 3800;
+    // const int maxMotorSpeed = 3500;
 
-    motorSpeed = constrain(val + midMotorSpeed, 3500, 4095);
+    // const int midMotorSpeed = 3800;
 
-    this->forward(motorSpeed);
+    // motorSpeed = constrain(val + midMotorSpeed, 3500, 4095);
 
-    Serial.println("Motor " + String(PWM_pinA) + ": " + String(motorSpeed));
+    // this->forward(motorSpeed);
+
+    // Serial.println("Motor " + String(PWM_pinA) + ": " + String(motorSpeed));
 
 
 
