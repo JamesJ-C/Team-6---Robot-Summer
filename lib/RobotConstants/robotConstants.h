@@ -32,8 +32,8 @@ namespace motorPins {
     #define MotorL_P2 PB_8
 
     /*  Elevator motor  */
-    #define MOTOR_ELEVATOR_P1 PB_6
-    #define MOTOR_ELEVATOR_P2 PB_7
+    #define MOTOR_ELEVATOR_P1 PB_8
+    #define MOTOR_ELEVATOR_P2 PB_9
 
     /*  Linear arm motion pins  */
     #define ARM_MOTOR_P1 PB_8
