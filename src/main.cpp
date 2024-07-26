@@ -49,9 +49,9 @@ String success;
 
 typedef struct struct_message {
 
-  int reflectance1;
-  int reflectance2;
-  double transferFunction;
+  // int reflectance1;
+  // int reflectance2;
+  // double transferFunction;
   String strMsg;
 
 
@@ -72,10 +72,10 @@ esp_now_peer_info_t peerInfo;
 
 
 void setDisplay() {
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
+  // // display.clearDisplay();
+  // // display.setTextSize(1);
+  // // display.setTextColor(SSD1306_WHITE);
+  // // display.setCursor(0,0);
 }
 
 
@@ -96,15 +96,15 @@ void OnDataRecv(const uint8_t * mac, const uint8_t *incomingData, int len) {
   memcpy(&incomingReadings, incomingData, sizeof(incomingReadings));
   // Serial.print("Bytes received: ");
   // Serial.println(len);
-  incomingReflectance1 = incomingReadings.reflectance1;
-  incomingReflectance2 = incomingReadings.reflectance2;
-  incomingTransferFunction = incomingReadings.transferFunction;
+  // incomingReflectance1 = incomingReadings.reflectance1;
+  // incomingReflectance2 = incomingReadings.reflectance2;
+  // incomingTransferFunction = incomingReadings.transferFunction;
   incomingStrMsg = incomingReadings.strMsg;
   // // // Serial.println("incoming msg: " + String(incomingReadings.strMsg));
 
   // setDisplay();
-  // display.println(incomingReadings.strMsg);
-  // display.display();
+  // // display.println(incomingReadings.strMsg);
+  // // display.display();
 
   incomingWifiInfoQueue.push(incomingReadings.strMsg);
 
@@ -142,17 +142,17 @@ delay(2000);
 
 /*  Display setup  */
 {
-  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
-  display.display();
+  // display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  // display.display();
   delay(2000);
 
   // Displays "Hello world!" on the screen
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-  display.println("Setting up...");
-  display.display();
+  // display.clearDisplay();
+  // display.setTextSize(1);
+  // display.setTextColor(SSD1306_WHITE);
+  // display.setCursor(0,0);
+  // display.println("Setting up...");
+  // display.display();
 
 }
 
@@ -166,8 +166,8 @@ delay(2000);
   if (esp_now_init() != ESP_OK) {
     Serial.println("Error initializing ESP-NOW");
     setDisplay();
-    display.println("Error initializing ESP-NOW");
-    display.display();
+    // display.println("Error initializing ESP-NOW");
+    // display.display();
     return;
   }
 
@@ -214,29 +214,6 @@ pinMode(armMotor.getPinA(), OUTPUT);
 pinMode(armMotor.getPinB(), OUTPUT);
 
 
-// ledcAttachPin(elevatorMotor.getPinA(), 1);
-// ledcAttachPin(elevatorMotor.getPinB(), 2);
-// ledcAttachPin(armMotor.getPinA(), 3);
-// ledcAttachPin(armMotor.getPinB(), 4);
-// // ledcAttachPin(5, 5);
-// ledcSetup(1, 500, 12);
-// ledcSetup(2, 500, 12);
-// ledcSetup(3, 500, 12);
-// ledcSetup(4, 500, 12);
-// ledcSetup(5, 500, 12);
-// ledcAttachPin(MOTOR_1_a, 1);
-// ledcAttachPin(MOTOR_1_b, 2);
-// ledcAttachPin(elevatorMotor.getPinA(), 1);
-// ledcAttachPin(elevatorMotor.getPinB(), 2);
-// ledcSetup(1, 1000, 8);
-// ledcSetup(2, 1000, 8);
-// ledcAttachPin(MOTOR_2_a, 3);
-// ledcAttachPin(MOTOR_2_b, 4);
-// ledcAttachPin(armMotor.getPinA(), 3);
-// ledcAttachPin(armMotor.getPinB(), 4);
-// ledcSetup(3, 1000, 8);
-// ledcSetup(4, 1000, 8);
-
 
 }
 
@@ -253,28 +230,28 @@ void loop() {
 // if (button == true){
 //   setDisplay();
 //   Serial.println("button Pressed");
-//   display.println("lazySusan");
-//   display.display();
+//   // display.println("lazySusan");
+//   // display.display();
 //   button = false;
 // } else {
 //   setDisplay();
 //   Serial.println("no button");
-//   display.println("no button");
-//   display.display();
+//   // display.println("no button");
+//   // display.display();
 // }
 
 // if (button != prevButton) {
   
 //   Serial.println("button Pressed");
-//   display.println("lazySusan");
-//   display.display();
+//   // display.println("lazySusan");
+//   // display.display();
 //   //delay(100);
 
 //   msg.strMsg = "button";
 // } else {
 //   Serial.println("no button");
-//   display.println("no button");
-//   display.display();
+//   // display.println("no button");
+//   // display.display();
 // }
 // prevButton = button;
 
@@ -295,20 +272,20 @@ void loop() {
   getReadings();
  
   // Set values to send
-  msg.reflectance1 = reflectance1;
-  msg.reflectance2 = reflectance2;
-  msg.transferFunction = transferFunction;
+  // msg.reflectance1 = reflectance1;
+  // msg.reflectance2 = reflectance2;
+  // msg.transferFunction = transferFunction;
   msg.strMsg = strMsg;
 
   // Send message via ESP-NOW
   esp_err_t result = esp_now_send(broadcastAddress, (uint8_t *) &msg, sizeof(msg));
-   
-  if (result == ESP_OK) {
-    // / // /Serial.println("Sent with success");
-  }
-  else {
-    // // / // Serial.println("Error sending the data");
-  }
+  //esp_err_t result;
+  // if (result == ESP_OK) {
+  //   // / // /Serial.println("Sent with success");
+  // }
+  // else {
+  //   // // / // Serial.println("Error sending the data");
+  // }
   
   updateDisplay();
   //Serial.println("incoming msg: " + String(incomingReadings.strMsg));
@@ -332,8 +309,8 @@ void getReadings(){
       
       strMsg = received;
       incomingUARTInfoQueue.push(received);
-      // display.println("msg: " + String(received));
-      // display.println("msg: " + String(received));
+      // // display.println("msg: " + String(received));
+      // // display.println("msg: " + String(received));
 
     } else {
       //Serial.println("else statmen");
@@ -352,14 +329,14 @@ void updateDisplay(){
 
   if (!incomingWifiInfoQueue.empty() && wifiItemsDisplayed < 3) {
     // Serial.println("1st if");
-      display.println( "Wifi: " + incomingWifiInfoQueue.front() );
+      // display.println( "Wifi: " + incomingWifiInfoQueue.front() );
       // Serial.println( "Wifi: " + incomingWifiInfoQueue.front() );
       incomingWifiInfoQueue.pop();
       wifiItemsDisplayed++;
     } 
 
   if (!incomingUARTInfoQueue.empty() && uartItemsDisplayed < 3) {
-      display.println( "UART: " + incomingUARTInfoQueue.front() );
+      // display.println( "UART: " + incomingUARTInfoQueue.front() );
       // Serial.println( "UART: " + incomingUARTInfoQueue.front() );
       incomingUARTInfoQueue.pop();
       uartItemsDisplayed++;
@@ -368,11 +345,11 @@ void updateDisplay(){
   if (uartItemsDisplayed >= 3 || wifiItemsDisplayed >= 3) {
       // Serial.println("disp if");
       wifiItemsDisplayed = uartItemsDisplayed = 0;
-      display.display();
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
+      // display.display();
+    // display.clearDisplay();
+    // display.setTextSize(1);
+    // display.setTextColor(SSD1306_WHITE);
+    // display.setCursor(0,0);
   }
 
 }
