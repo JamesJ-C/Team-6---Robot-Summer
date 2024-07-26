@@ -36,8 +36,8 @@ namespace motorPins {
     #define MOTOR_ELEVATOR_P2 PB_7
 
     /*  Linear arm motion pins  */
-    #define ARM_MOTOR_P1 PB_6
-    #define ARM_MOTOR_P2 PB_7
+    #define ARM_MOTOR_P1 PB_8
+    #define ARM_MOTOR_P2 PB_9
 
     #define LAZY_SUSAN_MOTOR_P1 PB_9
     #define LAZY_SUSAN_MOTOR_P2 PB_8
@@ -117,8 +117,8 @@ namespace digitalPins {
     #define ELEVATOR_UPPER_LIMIT_SWITCH PB_15
 
     /* Limit switches for elevator */
-    #define ARM_LOWER_LIMIT_SWITCH PB_12
-    #define ARM_UPPER_LIMIT_SWITCH PB_15
+    #define ARM_LOWER_LIMIT_SWITCH PB12
+    #define ARM_UPPER_LIMIT_SWITCH PB15
 
     #define LAZY_SUSAN_LIMIT_SWITCH PB15
 
