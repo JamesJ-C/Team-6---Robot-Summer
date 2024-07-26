@@ -19,7 +19,7 @@ String msg;
 
 /*  Function Declerations  */
 void ISRUpdateElevatorEncoder();
-void localize();
+void localizeLazySusan();
 //void limit();
 
 /*  PID Control Values  */
@@ -82,7 +82,7 @@ void setup() {
   // lazySusanMotor.off();
   // delay(100);
   // perform motor sweep to initialize motion
-  localize();
+  localizeLazySusan();
 
 }
 
@@ -98,7 +98,7 @@ Serial.println("Encoder: " + String(
 );
 
 
-  //localize();
+  //localizeLazySusan();
   // lazySusanMotor.forward(2000);
   // delay(500);
   // lazySusanMotor.off();
@@ -108,7 +108,7 @@ Serial.println("Encoder: " + String(
   // lazySusanMotor.off();
   // delay(500);
 
-  //localize();
+  //localizeLazySusan();
 
 ////
 
@@ -163,11 +163,11 @@ void ISRUpdateElevatorEncoder(){
 }
 
 /**
- * @brief performs motor sweep to localize range of elevator motion 
+ * @brief performs motor sweep to localizeLazySusan range of elevator motion 
  * updates encoder range values and sends the motor to the center once completed
  * 
  */
-void localize() {
+void localizeLazySusan() {
 
   const int motorSpeed = 2000;
 

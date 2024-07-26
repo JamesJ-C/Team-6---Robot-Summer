@@ -19,7 +19,7 @@ String msg;
 
 /*  Function Declerations  */
 void ISRUpdateElevatorEncoder();
-void localize();
+void localizeElevator();
 
 /*  PID Control Values  */
 
@@ -75,7 +75,7 @@ void setup() {
   MotorElevator.off();
   delay(100);
   // perform motor sweep to initialize motion
-  localize();
+  localizeElevator();
 
 }
 
@@ -129,11 +129,11 @@ void ISRUpdateElevatorEncoder(){
 }
 
 /**
- * @brief performs motor sweep to localize range of elevator motion 
+ * @brief performs motor sweep to localizeElevator range of elevator motion 
  * updates encoder range values and sends the motor to the center once completed
  * 
  */
-void localize() {
+void localizeElevator() {
 
     int bottom;
     int top;

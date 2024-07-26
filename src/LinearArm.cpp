@@ -20,7 +20,7 @@ String msg;
 /*  Function Declerations  */
 void ISRUpdateLinearArmEncoder();
 void ISRButton();
-void localize();
+void localizeArm();
 
 
 /*  PID Control Values  */
@@ -93,7 +93,7 @@ void setup() {
     // delay(100);
 
     /*  perform motor sweep to initialize motion  */
-    // localize();
+    // localizeArm();
 
   }
 
@@ -159,11 +159,11 @@ void ISRUpdateLinearArmEncoder(){
 
 
 /**
- * @brief performs motor sweep to localize range of elevator motion 
+ * @brief performs motor sweep to localizeArm range of elevator motion 
  * updates encoder range values and sends the motor to the center once completed
  * 
  */
-void localize() {
+void localizeArm() {
 
     int bottom;
     int top;
