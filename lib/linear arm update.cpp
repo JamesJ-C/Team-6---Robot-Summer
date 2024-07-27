@@ -19,7 +19,7 @@ String msg;
 
 /*  Function Declerations  */
 void ISRUpdateElevatorEncoder();
-voidlocalizeLazySusan();
+void localizeLazySusan();
 
 void localizeArm();
 //void limit();
@@ -237,7 +237,7 @@ void localizeArm() {
 
     do {
     //while (!digitalRead(ARM_LOWER_LIMIT_SWITCH)) {
-        lazySusanMotor.forward(1500);
+        lazySusanMotor.forward(3000);
         Serial.print("1: ");
         Serial.println(digitalRead(ARM_LOWER_LIMIT_SWITCH));
     } while (!digitalRead(ARM_LOWER_LIMIT_SWITCH));
@@ -251,7 +251,7 @@ void localizeArm() {
           Serial.println("dr2: " + String(digitalRead(ARM_UPPER_LIMIT_SWITCH) ) );
     // turn motor in opposite direction until top limit reached
     do {
-        lazySusanMotor.backward(1500);
+        lazySusanMotor.backward(3000);
         Serial.print("2: ");
         Serial.println(digitalRead(ARM_UPPER_LIMIT_SWITCH));
     } while (!digitalRead(ARM_UPPER_LIMIT_SWITCH));
@@ -267,7 +267,7 @@ void localizeArm() {
     Serial.println("center: " + String( center ) );
     while (lazySusanMotor.encoder->getIncrements() != center) {
           Serial.println("enc: " + String (lazySusanMotor.encoder->getIncrements() ));
-        lazySusanMotor.forward(2000);
+        lazySusanMotor.forward(3000);
         Serial.print("3: ");
         Serial.println(lazySusanMotor.encoder->getIncrements());
     }
