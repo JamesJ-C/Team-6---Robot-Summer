@@ -5,10 +5,12 @@
 
 
 namespace constants {
-/*  OLED consts  */
-#define SCREEN_WIDTH 128 // OLED display width, in pixels
-#define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET 	-1 // This display does not have a reset pin accessible
+
+    #define MOTOR_FREQUENCY 500
+    /*  OLED consts  */
+    #define SCREEN_WIDTH 128 // OLED display width, in pixels
+    #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+    #define OLED_RESET 	-1 // This display does not have a reset pin accessible
 
 }
 
@@ -82,7 +84,7 @@ namespace uartPins {
 namespace irPins {
 
     #define IR_SENSOR_1 34
-    #define IR_SENSOR_1 38
+    #define IR_SENSOR_2 38
 
 }
 

@@ -23,7 +23,7 @@ namespace movement {
 
     class Motor {
 
-    private:
+    protected:
     uint8_t PWM_pinA;
     uint8_t PWM_pinB;
 
@@ -45,7 +45,7 @@ namespace movement {
     bool buttonPressed = false;
 
 
-    encoder::RotaryEncoder *encoder;
+    // encoder::RotaryEncoder *encoder;
 
 
     #ifdef ESP32
@@ -65,14 +65,14 @@ namespace movement {
      */
     Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB);
 
-    /**
-     * @brief Construct a new Motor object
-     * 
-     * @param PWM_pinA first PWM pin controlling the motor
-     * @param L_PWM_pinB Second PWM pin controlling the motor
-     * @param Encoder encoder object to attach to the motor
-     */
-    Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder* Encoder);
+    // /**
+    //  * @brief Construct a new Motor object
+    //  * 
+    //  * @param PWM_pinA first PWM pin controlling the motor
+    //  * @param L_PWM_pinB Second PWM pin controlling the motor
+    //  * @param Encoder encoder object to attach to the motor
+    //  */
+    // Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder* Encoder);
 
     /** 
      * @brief Returns the first of 2 PWM pins
@@ -118,12 +118,22 @@ namespace movement {
      */
     void off();
 
-    /**
-     * @brief sets up the encoder by going to the limits of the switches 
-     * and saves the difference between the values. Sets one of the limit switches to 0 increments 
-     * 
-     */
-    void localize ();
+
+    };
+
+
+    class EncodedMotor : public Motor {
+
+        encoder::RotaryEncoder *encoder;
+
+        /**
+         * @brief Construct a new Motor object
+         * 
+         * @param PWM_pinA first PWM pin controlling the motor
+         * @param L_PWM_pinB Second PWM pin controlling the motor
+         * @param Encoder encoder object to attach to the motor
+         */
+        EncodedMotor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder* Encoder);
 
 
     };
