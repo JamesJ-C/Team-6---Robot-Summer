@@ -123,7 +123,7 @@ namespace movement {
 
 
     class EncodedMotor : public Motor {
-
+        public:
         encoder::RotaryEncoder *encoder;
 
         /**
