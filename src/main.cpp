@@ -9,6 +9,7 @@
 #include <RotaryEncoder.h>
 #include <RobotSubSystem.h> 
 #include <robotConstants.h>
+#include <claw.h>
 
 //#ifdef ESP32
 #include <ESp32Servo.h>
