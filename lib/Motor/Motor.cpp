@@ -156,15 +156,16 @@ namespace movement {
 //func stop
 //updated stop function
 void Motor::stop() {
+  delay(10);
   if (forwardDirection){
     this->backward(this->motorSpeed);
 
-    delay(100);
+    delay(10);
   }
   else if (backwardDirection){
     this->forward(this->motorSpeed);
 
-    delay(100);    
+    delay(10);    
   }
 
   this->off();
