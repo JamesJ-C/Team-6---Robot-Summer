@@ -38,17 +38,17 @@ namespace rotaryEncoderPins {
 namespace tapeSensorPins {
 
 /*  A forward; B right; C backward; D left  */
-#define TAPE_SENSOR_FORWARD_P1 PA6
-#define TAPE_SENSOR_FORWARD_P2 PA7
+#define TAPE_SENSOR_FORWARD_1 PA6
+#define TAPE_SENSOR_FORWARD_2 PA7
 
-#define TAPE_SENSOR_BACKWARD_P1 PA2
-#define TAPE_SENSOR_BACKWARD_P2 PA3
+#define TAPE_SENSOR_BACKWARD_1 PA2
+#define TAPE_SENSOR_BACKWARD_2 PA3
 
-#define TAPE_SENSOR_RIGHT_P1 PA4
-#define TAPE_SENSOR_RIGHT_P1 PA5
+#define TAPE_SENSOR_RIGHT_1 PA4
+#define TAPE_SENSOR_RIGHT_2 PA5
 
-#define TAPE_SENSOR_LEFT_P1 PA0
-#define TAPE_SENSOR_LEFT_P1 PA1
+#define TAPE_SENSOR_LEFT_1 PA0
+#define TAPE_SENSOR_LEFT_2 PA1
 
 
 }
