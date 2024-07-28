@@ -55,7 +55,7 @@ namespace tapeSensorPins {
 
 namespace limitSwitchPins {
 
-    //A bottom; B top
+    //limit witch A is bottom; B is top
     #define ELEVATOR_LIMIT_BOTTOM PB12
     #define ELEVATOR_LIMIT_TOP PB15
 
