@@ -163,6 +163,16 @@ namespace robot {
     };
 
 
+    class IRSensor {
+
+
+
+
+
+    };
+
+
+
 
 }
 
