@@ -84,7 +84,7 @@ namespace uartPins {
 namespace irPins {
 
     #define IR_SENSOR_1 34
-    #define IR_SENSOR_1 38
+    #define IR_SENSOR_2 38
 
 }
 

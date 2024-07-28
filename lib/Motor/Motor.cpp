@@ -39,8 +39,10 @@ namespace movement {
     return PWM_pinB;
   }
 
-  /** ##this function is still being worked on
-   * @brief 
+  /**
+   * @brief if val > 0, motor will go forward, 
+   * if val < 0, motor will go backward, 
+   * if val = 0, motor will be off 
    * 
    * @param val 
    */
