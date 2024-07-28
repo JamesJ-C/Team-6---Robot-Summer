@@ -13,7 +13,7 @@ namespace robot {
          * @param limit1 first limit switch attatched to movement
          * @param limit2 second limit switched attatched to movement
          */
-        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::Motor *motor) { 
+        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor) { 
             this->limit1 = limit1;
             this->limit2 = limit2;
             this->motor = motor;
@@ -93,7 +93,7 @@ namespace robot {
          * 
          */
         void RobotSubSystem::updatePID(int current, int target) {
-            
+
             // calculate difference between current encoder value and target encoder value
             int error = target - current;
 

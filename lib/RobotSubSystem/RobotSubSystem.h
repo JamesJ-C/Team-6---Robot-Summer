@@ -32,7 +32,7 @@ namespace robot {
         double maxI = 140;
 
         public:
-        movement::Motor *motor;
+        movement::EncodedMotor *motor;
 
         /**
          * @brief Construct a new Robot Sub System object
@@ -41,7 +41,7 @@ namespace robot {
          * @param limit1 first limit switch attatched to movement
          * @param limit2 second limit switched attatched to movement
          */
-        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::Motor *motor);
+        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor);
 
         /**
          * @brief Returns the first limit switch pin
