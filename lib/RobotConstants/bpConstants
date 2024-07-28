@@ -4,7 +4,16 @@
 #include <Arduino.h>
 
 
+namespace cosntants {
+    
+    #define MOTOR_FREQUENCY 500
+}
 
+
+namespace driveMotorPins {
+
+
+}
 
 
 
