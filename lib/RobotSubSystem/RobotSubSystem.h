@@ -5,16 +5,10 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 #include <Motor.h>
+#include <robotConstants.h>
 
 namespace robot {
 
-    #ifdef ESP32
-        #include <espConstants.h>
-    #endif
-
-    #ifndef ESP32
-        #include <bpConstants.h>
-    #endif
 
     class RobotSubSystem {
 
