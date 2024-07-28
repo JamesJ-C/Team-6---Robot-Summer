@@ -31,11 +31,11 @@ namespace movement {
    */
   Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
 
-  Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder *Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
+  // Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder *Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
 
-    this->encoder = Encoder;
+  //   this->encoder = Encoder;
 
-  }
+  // }
 
   /** 
    * @brief Returns the first of 2 PWM pins
@@ -228,38 +228,10 @@ void Motor::stop() {
 #endif
 
 
-  /** ##this function is still being worked on
-   * @brief sets up the encoder by going to the limits of the switches 
-   * and saves the difference between the values. Sets one of the limit switches to 0 increments 
-   * 
-   */
-  void Motor::localize (){
-
-    int firstStop;
-    int secondStop;
-
-    //turn all the way one way until switch is hit
-    this->backward(3000);
-    while (true) {
-      if (buttonPressed){
-        this->off();
-        firstStop = this->encoder->getIncrements();
-        this->encoder->resetIncrement();
-        break;
-      }
-    }
-    this->forward(3000);
-    while (true) {
-      if (buttonPressed){
-        this->off();
-        secondStop = this->encoder->getIncrements();
-        //this->encoder->resetIncrement();
-        break;
-      }
-    }
-
-    this->encoder->setMaxIncrement(secondStop);
+  EncodedMotor::EncodedMotor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder *Encoder) 
+  : Motor(PWM_pinA, PWM_pinB), encoder(Encoder) {
 
   }
+
 
 }
