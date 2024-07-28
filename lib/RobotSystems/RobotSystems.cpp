@@ -151,4 +151,22 @@ namespace robot {
             driveMotorR.backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
         }
 
+        void DrivePID::updateIRDrive(double irError){
+            
+            /*  Dont need to do this. Just need to tape follow until the ir error is effectively 0  */
+            
+            double backwardError = irError;
+
+            ir_p = IR_P_GAIN * irError;
+            ir_d = IR_D_GAIN * (irError - irLastError);
+            ir_i = IR_I_GAIN * irError + ir_i; //const * error + previous int value
+            if (ir_i > MAX_IR_I) {ir_i = MAX_IR_I;}
+            if (ir_i < -MAX_IR_I) {ir_i = -MAX_IR_I;}
+
+            ir_g = BACKWARD_LOOP_GAIN * ( ir_p + ir_i + ir_d ); 
+ 
+            driveMotorL.backward( ir_g );
+            driveMotorR.backward(  1 * ir_g );
+        }
+
 }

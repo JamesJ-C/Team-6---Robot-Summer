@@ -7,6 +7,8 @@
 #include <Motor.h>
 #include <robotConstants.h>
 
+#include <vector>
+
 namespace robot {
 
 
@@ -116,49 +118,30 @@ namespace robot {
         const double BACKWARD_D_GAIN = 1.36;
         const double MAX_BACKWARD_I = 1400.0;
 
+        double ir_p;
+        double ir_i;
+        double ir_d;
+        double ir_g;
+        double irLastError;
+
+        const double IR_LOOP_GAIN = 1.0;
+        const double IR_P_GAIN = 0.55;
+        const double IR_I_GAIN = 0.0;
+        const double IR_D_GAIN = 1.36;
+        const double MAX_IR_I = 1400.0;
+
 
 
         public:
 
         DrivePID(uint8_t forwardTape1, uint8_t forwardTape2, uint8_t backwardTape1, uint8_t backwardTape2,
         movement::Motor &motorL, movement::Motor motorR); 
-        // : forwardTapeSensorPin1(forwardTape1), forwardTapeSensorPin2(forwardTape2), backwardTapeSensorPin1(backwardTape1), 
-        // backwardTapeSensorPin2(backwardTape2), driveMotorL(motorL), driveMotorR(motorR) {}
 
-        void updateForwardDrivePID();// {
-        //     double forwardError = (double) analogRead(this->forwardTapeSensorPin1) - analogRead(this->forwardTapeSensorPin1);
+        void updateForwardDrivePID();
 
-        //     forward_p = FORWARD_P_GAIN * forwardError;
-        //     forward_d = FORWARD_D_GAIN * (forwardError - forwardLastError);
-        //     forward_i = FORWARD_I_GAIN * forwardError + forward_i; //const * error + previous int value
+        void updateBackwardPID(); 
 
-        //     if (forward_i > MAX_FORWARD_I) {forward_i = MAX_FORWARD_I;}
-        //     if (forward_i < -MAX_FORWARD_I) {forward_i = -MAX_FORWARD_I;}
-
-        //     forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
-        //     forwardLastError = forwardError; 
-
-        //     driveMotorL.forward( (forwardMidMotorSpeed - 1 * forward_g) );
-        //     driveMotorR.forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
-
-        // }
-
-        void updateBackwardPID(); //{
-        //     double backwardError = (double) analogRead(backwardTapeSensorPin1) - analogRead(backwardTapeSensorPin2);
-
-        //     backward_p = BACKWARD_P_GAIN * backwardError;
-        //     backward_d = BACKWARD_D_GAIN * (backwardError - backwardLastError);
-        //     backward_i = BACKWARD_I_GAIN * backwardError + backward_i; //const * error + previous int value
-        //     if (backward_i > MAX_BACKWARD_I) {backward_i = MAX_BACKWARD_I;}
-        //     if (backward_i < -MAX_BACKWARD_I) {backward_i = -MAX_BACKWARD_I;}
-
-        //     backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
- 
-        //     driveMotorL.backward( (backwardMidMotorSpeed - 1 * backward_g) );
-        //     driveMotorR.backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
-        // }
-
-
+        void updateIRDrive(double irError);
 
     };
 
@@ -167,6 +150,132 @@ namespace robot {
 
 
 
+        double crossCorrelation (uint8_t analogPin){
+
+            std::vector<double> IRsignal;
+
+            int numSamples = 0;
+            unsigned long finishTime = 0;
+            unsigned long startTime = millis();
+
+            while (millis() - startTime < 10){
+
+                IRsignal.push_back(analogRead(analogPin));
+                numSamples++;
+                finishTime = millis();
+            }
+
+
+            double oneK[2* numSamples] = {0};
+            double oneKCorr[numSamples] = {0};
+
+            int dt = ( finishTime - startTime );
+            double oneKT = (double) numSamples / ( (double) dt );
+
+            for(int i = 0; i < 2 * numSamples;  i++) {
+            
+                oneK[i] = sin(i * TWO_PI / oneKT);
+            
+            }
+
+            for (int k = 0; k < numSamples; k++){
+
+                oneKCorr[k] = 0;
+
+                for (int i = 0; i < numSamples; i++){      
+                oneKCorr[k] += IRsignal.at(i) * oneK[k+i];
+                }
+
+            }
+
+            double max = oneKCorr[0];
+
+            for (int i=0; i< numSamples; i++) {
+
+                if (oneKCorr[i]>max){
+                max = oneKCorr[i];
+                }
+            }
+
+            // if (max < minTot){
+            //     minTot = max;
+            // }
+            // if (max > maxTot){
+            //     maxTot = max;
+            // }
+            // // avg = ( (loopCount - 1) * avg + max ) / loopCount;
+
+            return max;
+
+            }
+
+
+
+        std:: vector<double> bothCrossCorrelation (uint8_t analogPin1, uint8_t analogPin2){
+
+            std::vector<double> IRsignal1;
+            std::vector<double> IRsignal2;
+
+            int numSamples = 0;
+            unsigned long finishTime = 0;
+            unsigned long startTime = millis();
+
+            while (millis() - startTime < 10){
+
+                IRsignal1.push_back(analogRead(analogPin1));
+                IRsignal2.push_back(analogRead(analogPin2));
+
+                numSamples++;
+                finishTime = millis();
+            }
+
+
+            double oneK[2 * numSamples] = {0};
+            double oneKCorr1[numSamples] = {0};
+            double oneKCorr2[numSamples] = {0};
+
+
+            int dt = ( finishTime - startTime );
+            double oneKT = (double) numSamples / ( (double) dt );
+
+            for(int i = 0; i < 2 * numSamples;  i++) {
+            
+                oneK[i] = sin(i * TWO_PI / oneKT);
+            
+            }
+
+            for (int k = 0; k < numSamples; k++){
+
+                oneKCorr1[k] = 0;
+
+                for (int i = 0; i < numSamples; i++){      
+                oneKCorr1[k] += IRsignal1.at(i) * oneK[k+i];
+                oneKCorr2[k] += IRsignal2.at(i) * oneK[k+i];
+                }
+
+            }
+
+            double max1 = oneKCorr1[0];
+            double max2 = oneKCorr2[0];
+
+            for (int i=0; i< numSamples; i++) {
+
+                if (oneKCorr1[i]>max1){
+                max1 = oneKCorr1[i];
+                }
+                if (oneKCorr2[i]>max2){
+                max2 = oneKCorr2[i];
+                }
+            }
+
+            std::vector<double> result;
+
+            result.push_back(max1);
+            result.push_back(max2);
+
+            return result;
+
+        }
 
 
     };
