@@ -35,16 +35,16 @@ Servo forkliftServo;
 clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, CLAW_LIMIT_SWITCH_B);
 
 
-HardwareSerial SerialPort(3);
+HardwareSerial SerialPort(1);
 
 void setup() {
 
     delay(2000);
 
     /*  Serial setup  */
-    //Serial.begin(115200);
-    //SerialPort.begin(115200);
-
+    Serial.begin(115200);
+    Serial.println("Setup");
+    SerialPort.begin(115200, SERIAL_8N1, RX, TX);
 
 
     /*  Servos  */
@@ -74,10 +74,16 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
     lazySusanSystem.localize();
+    delay(100);
     linearArmSystem.localize();
+    delay(100);
+    // while (true){ 
+    //     if ( (int) SerialPort.read() = 1){
+    //         break;
+    //     }
+    // }
+    delay(1000);
 }
-
-
 
 
 void loop() {

@@ -26,9 +26,15 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 //robot::RobotSubSystem Elevator();
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
+
+HardwareSerial SerialPort(USART3);
+
 void setup() {
 
+    delay(2000);
+
     Serial.begin(115200);
+    SerialPort.begin(115200);
 
     pinMode(elevatorEncoder.getPinA(), INPUT);
     pinMode(elevatorEncoder.getPinB(), INPUT);
@@ -43,6 +49,8 @@ void setup() {
 
 
 void loop() {
+
+    ElevatorSystem.updatePID(80);
 
 }
 
