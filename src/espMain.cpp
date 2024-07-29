@@ -28,7 +28,7 @@ movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEn
 robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor);
 
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM_ROTARY_ENCODER_PB);
-movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);
+movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, linearArm::linearArmP1, &linearArmEncoder);
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
 
@@ -81,6 +81,10 @@ void setup() {
     pinMode(linearArmMotor.getPinA(), OUTPUT);
     pinMode(linearArmMotor.getPinB(), OUTPUT);
 
+    pinMode(25, OUTPUT);
+    pinMode(12, OUTPUT);
+    pinMode(26, OUTPUT);
+
 
     /*  Interrupts  */
     attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
@@ -101,6 +105,15 @@ void setup() {
     //         break;
     //     }
     // }
+
+
+    // movement::Motor linearArmMotor2(13, 25);
+
+    // linearArmMotor2.forward(2000);
+    // delay(1000);
+    // linearArmMotor2.forward(2000);
+    // delay(1000);
+
     delay(1000);
     linearArmMotor.off();
 }
@@ -117,16 +130,26 @@ void loop() {
     // lazySusanSystem.updatePID(80);
     //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
 
-    // analogWrite(12, 200);
+    //analogWrite(12, 200);
     //     analogWrite(25, 200);
 
     //linearArmSystem.updatePID(80);
-    Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+    // Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+
+        // linearArmMotor.espForward(200);
+        // delay(1000);
+        // linearArmMotor.espBackward(200);
+        // delay(1000);
 
         linearArmMotor.forward(200);
         delay(1000);
         linearArmMotor.backward(200);
         delay(1000);
+
+        // movement::Motor::pwmForward(LINEAR_ARM_P1, LINEAR_ARM_P2, 200);
+        // delay(1000);
+        // movement::Motor::pwmBackward(LINEAR_ARM_P1, LINEAR_ARM_P2, 200);
+        // delay(1000);
 
         // forward();
         // delay(1000);

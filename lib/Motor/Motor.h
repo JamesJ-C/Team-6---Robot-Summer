@@ -49,22 +49,6 @@ namespace movement {
 
     public:
 
-    //need to update this variables access. 
-    bool buttonPressed = false;
-
-
-    // encoder::RotaryEncoder *encoder;
-
-
-    #ifdef ESP32
-
-        Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder);
-
-    #endif
-
-
-
-
     /**
      * @brief Construct a new Motor object
      * 
@@ -106,12 +90,16 @@ namespace movement {
      */
     void forward(int PWM_Val);
 
+    void espForward(int PWM_Val);
+
     /**
      * @brief moves the motor backward at a given pwm signal
      * 
      * @param PWM_Val PWM to send to the motor 
      */
     void backward(int PWM_Val);
+
+    void espBackward(int PWM_Val);
 
     /**
      * @brief Stops the motor from turning. If the motor is spinning, it pulses quickly in the opposite direction
@@ -125,6 +113,16 @@ namespace movement {
      * 
      */
     void off();
+
+    static void pwmForward(int pin1, int pin2, int speed){
+        analogWrite(pin1, speed);
+        analogWrite(pin2, 0);
+        Serial.println("1: " + String(pin1) + ". 2: " + String (pin2));
+    }
+    static void pwmBackward(int pin1, int pin2, int speed){
+        analogWrite(pin2, speed);
+        analogWrite(pin1, 0);
+    }
 
 
     };

@@ -99,12 +99,26 @@ namespace movement {
       pwm_start( (PinName) PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     #endif 
     #ifdef ESP32
-      //analogWrite(this->PWM_pinA, PWM_Val);
-      analogWrite(this->PWM_pinA, 0);
-      analogWrite(this->PWM_pinB, 0);
+      // analogWrite(this->PWM_pinA, PWM_Val);
+      // //analogWrite(this->PWM_pinA, 0);
+      // analogWrite(this->PWM_pinB, 0);
+      Serial.println("ESP stuff");
+      pwmForward(this->PWM_pinA,this->PWM_pinB, PWM_Val );
     #endif
 
   }
+
+
+void Motor::espForward(int PWM_Val){
+    forwardDirection = true;
+    backwardDirection = false;
+    this->motorSpeed = PWM_Val;
+
+    analogWrite(this->PWM_pinA, PWM_Val);
+    analogWrite(25, 0);
+
+  }
+
 
   /**
    * @brief moves the motor backward at a given pwm signal
@@ -121,10 +135,22 @@ namespace movement {
       pwm_start( (PinName) PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
     #endif 
     #ifdef ESP32
-      analogWrite(this->PWM_pinA, 0);
-      analogWrite(this->PWM_pinA, 0);
+      // analogWrite(this->PWM_pinA, 0);
+      // // analogWrite(this->PWM_pinB, 0);
       // analogWrite(this->PWM_pinB, PWM_Val);
+
+      pwmBackward(this->PWM_pinA,this->PWM_pinB, PWM_Val );
     #endif
+  }
+
+    void Motor::espBackward(int PWM_Val){
+    forwardDirection = false;
+    backwardDirection = true;
+    this->motorSpeed = PWM_Val;
+    
+    analogWrite(this->PWM_pinA, 0);
+  //  analogWrite(this->PWM_pinB, PWM_Val);
+    analogWrite(25, PWM_Val);
   }
 
 
@@ -168,8 +194,11 @@ void Motor::stop() {
 
 
 
-  EncodedMotor::EncodedMotor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder *Encoder) 
+  EncodedMotor::EncodedMotor(uint8_t PWM_pinA, uint8_t PWM_pinB, encoder::RotaryEncoder *Encoder) 
   : Motor(PWM_pinA, PWM_pinB), encoder(Encoder) {
+
+    // Serial.println("cons - 1: " + String(PWM_pinA) + ". 2: " + String (PWM_pinB));
+    
 
   }
 
