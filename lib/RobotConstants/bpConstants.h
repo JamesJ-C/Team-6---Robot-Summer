@@ -62,10 +62,10 @@ namespace limitSwitchPins {
 }
 
 namespace uartPins {
-
+#ifndef ESP32
     #define RX PB11
     #define TX PB10
-
+#endif
 }
 
 

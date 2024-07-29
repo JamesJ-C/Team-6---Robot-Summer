@@ -4,6 +4,14 @@
 #include<Arduino.h>
 
 
+#ifdef ESP32
+#include <bpConstants.h>
+#endif
+
+#ifndef ESP32
+#include <espConstants.h>
+#endif
+
 namespace encoder {
 
 

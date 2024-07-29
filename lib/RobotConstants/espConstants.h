@@ -83,9 +83,10 @@ namespace uartPins {
 
 namespace irPins {
 
+#ifdef ESP32
     #define IR_SENSOR_1 34
     #define IR_SENSOR_2 38
-
+#endif
 }
 
 #endif

@@ -5,7 +5,14 @@
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 #include <Motor.h>
-#include <robotConstants.h>
+
+#ifdef ESP32
+#include <bpConstants.h>
+#endif
+
+#ifndef ESP32
+#include <espConstants.h>
+#endif
 
 #include <vector>
 
