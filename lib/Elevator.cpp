@@ -36,6 +36,8 @@ double p_elevator_Val, d_elevator_Val, i_elevator_Val;
 
 double g_elevator_Val ;
 
+const int motorSpeed = 2000;
+
 
 /*  Object declerations  */
 
@@ -43,6 +45,7 @@ encoder::RotaryEncoder elevatorEncoder( ELEVATOR_ROTARY_ENCODER_A, ELEVATOR_ROTA
 movement::Motor MotorElevator(MOTOR_ELEVATOR_P1, MOTOR_ELEVATOR_P2, &elevatorEncoder);
 
 void setup() {
+  delay(2000);
 
   SerialPort.begin(115200);
 
@@ -68,12 +71,12 @@ void setup() {
 
 
 
-  MotorElevator.off();
-  delay(500);
-  MotorElevator.forward(3000);
-  delay(100);
-  MotorElevator.off();
-  delay(100);
+  // MotorElevator.off();
+  // delay(500);
+  // MotorElevator.forward(3000);
+  // delay(100);
+  // MotorElevator.off();
+  // delay(100);
   // perform motor sweep to initialize motion
   localize();
 
@@ -110,7 +113,7 @@ void loop() {
   lastPlateError =plateError; 
 
 // PID hopefully
-  MotorElevator.forward( g_elevator_Val );
+  // MotorElevator.forward( g_elevator_Val );
 
 }
 
@@ -134,14 +137,14 @@ void ISRUpdateElevatorEncoder(){
  * 
  */
 void localize() {
-
+    Serial.println('beginning localize function'); 
     int bottom;
     int top;
     int center;
 
     // turn motor until elevator reaches bottom limit
     while (!digitalRead(ELEVATOR_LOWER_LIMIT_SWITCH)) {
-        MotorElevator.backward(2000);
+        MotorElevator.backward(motorSpeed);
     }
 
     // initialize bottom of elevator movement
@@ -151,7 +154,7 @@ void localize() {
 
     // turn motor in opposite direction until top limit reached
     while (!digitalRead(ELEVATOR_UPPER_LIMIT_SWITCH)) {
-        MotorElevator.forward(2000);
+        MotorElevator.forward(motorSpeed);
     }
 
     // initialize top of elevator movement
@@ -162,7 +165,7 @@ void localize() {
     // turn motor and reach middle of motion
     center = top / 2;
     while (MotorElevator.encoder->getIncrements() != center) {
-        MotorElevator.backward(3000);
+        MotorElevator.backward(motorSpeed);
     }
     MotorElevator.stop();
 
