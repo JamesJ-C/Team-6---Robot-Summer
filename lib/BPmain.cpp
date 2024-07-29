@@ -1,4 +1,6 @@
 
+#ifndef ESP32
+
 #include <Arduino.h>
 #include <Wire.h>
 #include <HardwareSerial.h>
@@ -63,3 +65,5 @@ void isrUpdateElevatorEncoder(){
 
 }
 
+
+#endif

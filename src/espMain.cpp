@@ -1,3 +1,5 @@
+#ifdef ESP32
+
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -21,7 +23,7 @@ void isrUpdateLinearArmEncoder();
 void isrUpdateLazySusanEncoder();
 
 
-encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PA, LAZY_SUSAN_ROTARY_ENCODER_PA);
+encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PA, LAZY_SUSAN_ROTARY_ENCODER_PB);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
 robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor);
 
@@ -52,18 +54,18 @@ void setup() {
     forkliftServo.attach(FORKLIFT_SERVO_PIN);
 
     /*  Encoders  */
-    pinMode(lazySusanEncoder.getPinA(), INPUT);
-    pinMode(lazySusanEncoder.getPinB(), INPUT);
+    pinMode(lazySusanEncoder.getPinA(), INPUT_PULLUP);
+    pinMode(lazySusanEncoder.getPinB(), INPUT_PULLUP);
 
-    pinMode(linearArmEncoder.getPinA(), INPUT);
-    pinMode(linearArmEncoder.getPinB(), INPUT);
+    pinMode(linearArmEncoder.getPinA(), INPUT_PULLUP);
+    pinMode(linearArmEncoder.getPinB(), INPUT_PULLUP);
 
     /*  Motors  */
     pinMode(lazySusanMotor.getPinA(), OUTPUT);
-    pinMode(lazySusanMotor.getPinA(), OUTPUT);
+    pinMode(lazySusanMotor.getPinB(), OUTPUT);
 
     pinMode(linearArmMotor.getPinA(), OUTPUT);
-    pinMode(linearArmMotor.getPinA(), OUTPUT);
+    pinMode(linearArmMotor.getPinB(), OUTPUT);
 
 
     /*  Interrupts  */
@@ -73,10 +75,10 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
-    lazySusanSystem.localize();
-    delay(100);
-    linearArmSystem.localize();
-    delay(100);
+    // lazySusanSystem.localize();
+    // delay(100);
+    // linearArmSystem.localize();
+    // delay(100);
     // while (true){ 
     //     if ( (int) SerialPort.read() = 1){
     //         break;
@@ -88,23 +90,31 @@ void setup() {
 
 void loop() {
 
-    linearArmSystem.updatePID(80);
-    linearArmSystem.updatePID(80);
+    // Serial.println("enc: " + String( linearArmEncoder.getIncrements() ) );
+        Serial.println("enc: " + String( lazySusanEncoder.getIncrements() ) );
+
+
+    // linearArmSystem.updatePID(80);
+    // linearArmSystem.updatePID(80);
 
 }
 
 
-void isrUpdateLinearArmEncoder(){
+void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
     bool A = digitalRead(linearArmEncoder.getPinA());
     bool B = digitalRead(linearArmEncoder.getPinB());
     linearArmEncoder.updateEncoder(A, B);
 }
 
-void isrUpdateLazySusanEncoder(){
+void IRAM_ATTR isrUpdateLazySusanEncoder(){
 
     bool A = digitalRead(lazySusanEncoder.getPinA());
     bool B = digitalRead(lazySusanEncoder.getPinB());
     linearArmEncoder.updateEncoder(A, B);
     
 }
+
+
+
+#endif
