@@ -83,7 +83,7 @@ namespace robot {
             // get current rotary value and compare to target value
             int currentRotaryVal = this->motor->encoder->getIncrements();
             while (currentRotaryVal != rotaryVal) {
-                updatePID(currentRotaryVal, rotaryVal);
+                updatePID(rotaryVal);
                 int currentRotaryVal = this->motor->encoder->getIncrements();
             }
         }
@@ -92,12 +92,13 @@ namespace robot {
         /**
          * @brief update PID transfer function and send value to motors
          * 
+         * @returns current error computed
          */
-        void RobotSubSystem::updatePID(int current, int target) {
+        int RobotSubSystem::updatePID(int target) {
 
             // calculate difference between current encoder value and target encoder value
-            int error = target - current;
-
+            //int error = target - current;
+            double error = (double) target - this->motor->encoder->getIncrements();
             // calculate PID transfer function to send to motor
             double motor_p = pGain * error;
             double motor_d = dGain * (error - lastError);
@@ -110,6 +111,7 @@ namespace robot {
 
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
+            return (int) error;
         }
 
 

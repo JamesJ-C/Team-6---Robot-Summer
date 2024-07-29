@@ -77,7 +77,7 @@ namespace robot {
          * @param current current rotary encoder value
          * @param target target encoder value to reach
          */
-        void updatePID(int current, int target);
+        int updatePID(int target);
 
     };
 
