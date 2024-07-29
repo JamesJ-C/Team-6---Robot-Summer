@@ -25,7 +25,7 @@ namespace linearArm {
     
     //Need to verify 7 works as a pin
     #define LINEAR_ARM_P1 13
-    #define LINEAR_ARM_P2 7 
+    #define LINEAR_ARM_P2 25//12//7 
 }
 
 namespace rotaryEncoders {

@@ -39,6 +39,17 @@ clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, 
 
 HardwareSerial SerialPort(1);
 
+
+void forward(){
+    analogWrite(LINEAR_ARM_P1, 200);
+    analogWrite(LINEAR_ARM_P2, 0);
+}
+
+void backward(){
+    analogWrite(LINEAR_ARM_P2, 200);
+    analogWrite(LINEAR_ARM_P1, 0);
+}
+
 void setup() {
 
     delay(2000);
@@ -57,6 +68,9 @@ void setup() {
     pinMode(lazySusanEncoder.getPinA(), INPUT_PULLUP);
     pinMode(lazySusanEncoder.getPinB(), INPUT_PULLUP);
 
+    // pinMode(lazySusanEncoder.getPinA(), INPUT);
+    // pinMode(lazySusanEncoder.getPinB(), INPUT);
+
     pinMode(linearArmEncoder.getPinA(), INPUT_PULLUP);
     pinMode(linearArmEncoder.getPinB(), INPUT_PULLUP);
 
@@ -69,33 +83,57 @@ void setup() {
 
 
     /*  Interrupts  */
-    attachInterrupt(digitalPinToInterrupt(lazySusanEncoder.getPinA()), isrUpdateLazySusanEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(lazySusanEncoder.getPinB()), isrUpdateLazySusanEncoder, CHANGE);
+    attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
+    attachInterrupt(lazySusanEncoder.getPinB(), isrUpdateLazySusanEncoder, CHANGE);
 
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
+
+
     // lazySusanSystem.localize();
     // delay(100);
-    // linearArmSystem.localize();
-    // delay(100);
+    //linearArmSystem.localize();
+    delay(100);
+    //}
     // while (true){ 
     //     if ( (int) SerialPort.read() = 1){
     //         break;
     //     }
     // }
     delay(1000);
+    linearArmMotor.off();
 }
 
+int val = 0;
+bool A;
+bool B;
+
+int lastEncoded = 0x00;
+int increments = 0;
 
 void loop() {
 
-    // Serial.println("enc: " + String( linearArmEncoder.getIncrements() ) );
-        Serial.println("enc: " + String( lazySusanEncoder.getIncrements() ) );
+    // lazySusanSystem.updatePID(80);
+    //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
 
+    // analogWrite(12, 200);
+    //     analogWrite(25, 200);
 
-    // linearArmSystem.updatePID(80);
-    // linearArmSystem.updatePID(80);
+    //linearArmSystem.updatePID(80);
+    Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+
+        linearArmMotor.forward(200);
+        delay(1000);
+        linearArmMotor.backward(200);
+        delay(1000);
+
+        // forward();
+        // delay(1000);
+        // backward();
+        // delay(1000);
+    //}
+
 
 }
 
@@ -109,12 +147,44 @@ void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
 void IRAM_ATTR isrUpdateLazySusanEncoder(){
 
-    bool A = digitalRead(lazySusanEncoder.getPinA());
-    bool B = digitalRead(lazySusanEncoder.getPinB());
-    linearArmEncoder.updateEncoder(A, B);
-    
+    A = digitalRead(lazySusanEncoder.getPinA());
+    B = digitalRead(lazySusanEncoder.getPinB());
+    lazySusanEncoder.updateEncoder(A, B);
+
+    //val++;
 }
 
+
+void isrupdateEncoder(){
+        bool A = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PA);
+        bool B = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PB);
+
+        /*	encodes 2 bit current state  */
+        int encoded = ( A << 1 ) | B;
+
+        // Serial.println("encoded: " + encoded);
+        // Serial.println(encoded, BIN);
+        /*	encodes the last states bits, concat the current states bits  */
+        int concat = ( lastEncoded << 2 ) | encoded;
+        // Serial.print("concat: ");
+        // Serial.println(concat, BIN);
+
+        //Serial.println("concat: " + String(concat));
+        /*	hard codes all the possibilities of encoded data  */
+        if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+            increments++;
+        }
+        
+        if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+            increments--;
+        }
+
+
+        /*	the current states bits become the next states previous bits  */
+        lastEncoded = encoded;
+
+
+    }
 
 
 #endif

@@ -67,8 +67,7 @@ namespace encoder {
         this->updateSpeed();
         return angularVelocity;
     }
-
-    
+ 
     /**
      * @brief Updates the time of the most recent ISR call 
      * and the time between the 3 most recent calls
@@ -80,8 +79,7 @@ namespace encoder {
         deltaT = time - this->lastUpdateTime;
         this->lastUpdateTime = time;
     }
-
-    
+  
     /** ### this function does not work properly
      * @brief updates the speed of the encoder. Must be called after the ISR call, but before the next ISR call
      * 
@@ -102,18 +100,20 @@ namespace encoder {
      * @param B digital read of pin B
      */
     void RotaryEncoder::updateEncoder(bool A, bool B){
-
-        // bool A = digitalRead(ROTARY_A);
-        // bool B = digitalRead(ROTARY_B);
+        // bool A = digitalRead(pinA);
+        // bool B = digitalRead(pinB);
 
         /*	encodes 2 bit current state  */
         int encoded = ( A << 1 ) | B;
+
+        // Serial.println("encoded: " + encoded);
+        // Serial.println(encoded, BIN);
         /*	encodes the last states bits, concat the current states bits  */
         int concat = ( lastEncoded << 2 ) | encoded;
-
+        // Serial.print("concat: ");
+        // Serial.println(concat, BIN);
 
         //Serial.println("concat: " + String(concat));
-
         /*	hard codes all the possibilities of encoded data  */
         if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
           this->increments++;
@@ -121,6 +121,7 @@ namespace encoder {
         if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
           this->increments--;
         }
+
 
         /*	the current states bits become the next states previous bits  */
         this->lastEncoded = encoded;

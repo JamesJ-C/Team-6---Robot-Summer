@@ -44,9 +44,11 @@ namespace robot {
             int top;
             int center;
 
+            const int motorSpeed = 2800;
+
             // turn motor until elevator reaches first limit
             do {
-                this->motor->forward(1500);
+                this->motor->forward(motorSpeed);
             } while (!digitalRead(limit1));
             
             // initialize first limit of motion
@@ -56,7 +58,7 @@ namespace robot {
 
             // turn motor in opposite direction until second limit reached
             do {
-                this->motor->backward(1500);
+                this->motor->backward(motorSpeed);
             } while (!digitalRead(limit2));
 
             // initialize second limit of motion
@@ -67,7 +69,7 @@ namespace robot {
             // turn motor and reach center of motion
             center = top / 2;
             while (this->motor->encoder->getIncrements() != center) {
-                this->motor->forward(2000);
+                this->motor->forward(motorSpeed);
             }
             this->motor->stop();
         }

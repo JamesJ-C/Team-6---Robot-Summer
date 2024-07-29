@@ -36,23 +36,26 @@ void setup() {
     delay(2000);
 
     Serial.begin(115200);
+    Serial.println("setup");
     SerialPort.begin(115200);
 
-    pinMode(elevatorEncoder.getPinA(), INPUT);
-    pinMode(elevatorEncoder.getPinB(), INPUT);
+    pinMode(elevatorEncoder.getPinA(), INPUT_PULLUP);
+    pinMode(elevatorEncoder.getPinB(), INPUT_PULLUP);
 
 
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
-    ElevatorSystem.localize();
+    // ElevatorSystem.localize();
 
 }
 
 
 void loop() {
 
-    ElevatorSystem.updatePID(80);
+
+    Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
+    // ElevatorSystem.updatePID(80);
 
 }
 

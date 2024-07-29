@@ -99,7 +99,8 @@ namespace movement {
       pwm_start( (PinName) PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
     #endif 
     #ifdef ESP32
-      analogWrite(this->PWM_pinA, PWM_Val);
+      //analogWrite(this->PWM_pinA, PWM_Val);
+      analogWrite(this->PWM_pinA, 0);
       analogWrite(this->PWM_pinB, 0);
     #endif
 
@@ -121,7 +122,8 @@ namespace movement {
     #endif 
     #ifdef ESP32
       analogWrite(this->PWM_pinA, 0);
-      analogWrite(this->PWM_pinB, PWM_Val);
+      analogWrite(this->PWM_pinA, 0);
+      // analogWrite(this->PWM_pinB, PWM_Val);
     #endif
   }
 
