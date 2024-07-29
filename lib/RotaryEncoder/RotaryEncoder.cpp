@@ -12,22 +12,22 @@ namespace encoder {
      * @param pinA pin attached to one terminal of the encoder
      * @param pinB pin attached to the other terminal of the encoder
      */
-    RotaryEncoder::RotaryEncoder(PinName pinA, PinName pinB) : pinA(pinA), pinB(pinB) {}
+    RotaryEncoder::RotaryEncoder(uint8_t pinA, uint8_t pinB) : pinA(pinA), pinB(pinB) {}
 
     /**
      * @brief Get the Pin A object
      * 
-     * @return PinName pin attached to the first terminal
+     * @return uint8_t pin attached to the first terminal
      */
-    PinName RotaryEncoder::getPinA(){
+    uint8_t RotaryEncoder::getPinA(){
         return pinA;
     }
     /**
      * @brief Get the Pin B object
      * 
-     * @return PinName pin attached to the second terminal
+     * @return uint8_t pin attached to the second terminal
      */
-    PinName RotaryEncoder::getPinB(){
+    uint8_t RotaryEncoder::getPinB(){
         return pinB;
     }
     /**

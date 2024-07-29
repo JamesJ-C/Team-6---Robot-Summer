@@ -19,19 +19,19 @@ String msg;
 
 /*  Function Declerations  */
 void ISRUpdateElevatorEncoder();
-void localize();
+void localizeLazySusan();
 //void limit();
 
 /*  PID Control Values  */
 
-int setVal = 32;
+// int setVal = 32;
 
 int measuredVal;
 
-double plateError = 0.0;
-double lastPlateError = 0.0;
+double lazySusanError = 0.0;
+double lastlazySusanError = 0.0;
 
-double MAX_I = 140;
+double MAX_I = 1400;
 
 double p_lazySusan_Val, d_lazySusan_Val, i_lazySusan_Val;
 
@@ -64,8 +64,8 @@ void setup() {
 
 
   /*  Encoders  */
-	pinMode(elevatorEncoder.getPinA(), INPUT);
-	pinMode(elevatorEncoder.getPinB(), INPUT);
+	pinMode(elevatorEncoder.getPinA(), INPUT_PULLUP);
+	pinMode(elevatorEncoder.getPinB(), INPUT_PULLUP);
 
 
   attachInterrupt(digitalPinToInterrupt( elevatorEncoder.getPinA() ), ISRUpdateElevatorEncoder, CHANGE);
@@ -82,25 +82,33 @@ void setup() {
   // lazySusanMotor.off();
   // delay(100);
   // perform motor sweep to initialize motion
-  localize();
+  localizeLazySusan();
 
 }
 
+int loopCount = 0;
+int loopSetCount = 0;
+int setVal = 50;
 
 void loop() {
 
+Serial.println("Encoder: " + String(
+  elevatorEncoder.getIncrements() )
 
-  //localize();
-  lazySusanMotor.forward(2000);
-  delay(500);
-  lazySusanMotor.off();
-  delay(500);
-  lazySusanMotor.backward(2000);
-  delay(500);
-  lazySusanMotor.off();
-  delay(500);
+);
 
-  //localize();
+
+  //localizeLazySusan();
+  // lazySusanMotor.forward(2000);
+  // delay(500);
+  // lazySusanMotor.off();
+  // delay(500);
+  // lazySusanMotor.backward(2000);
+  // delay(500);
+  // lazySusanMotor.off();
+  // delay(500);
+
+  //localizeLazySusan();
 
 ////
 
@@ -115,27 +123,28 @@ void loop() {
 
 //   setVal = map(readVal, 0, 1023, -500, 500);
 
-//   measuredVal = lazySusanMotor.encoder->getIncrements();
-
-//   plateError = setVal - measuredVal;
+int error = 100 - lazySusanMotor.encoder->getIncrements();
+const int motorSpeed = 2700;
+int errorCount = 0;
+while (lazySusanMotor.encoder->getIncrements() != 100 || errorCount != -1){
   
+  if (error < 0){
+    lazySusanMotor.setMotor(motorSpeed);
+  }
+  else if (error > 0){
+    lazySusanMotor.setMotor( -1 * motorSpeed);
+  }
+  else {
+    errorCount++;
+    Serial.println("break?");
+  }
+error = 100 - lazySusanMotor.encoder->getIncrements();
 
-//   double PLATE_PID_TOTAL_GAIN = 1.0;
-//   double P_LAZY_SUSAN_GAIN = 0.55;//1.4 goes very slowl
-//   double I_LAZY_SUSAN_GAIN = 0.0;
-//   double D_LAZY_SUSAN_GAIN = 0;
+Serial.println("encoder: " + String (lazySusanMotor.encoder->getIncrements() ));
+Serial.println("error: " + String (error ));
 
-//   p_lazySusan_Val = P_LAZY_SUSAN_GAIN *plateError;
-//   d_lazySusan_Val = D_LAZY_SUSAN_GAIN * (plateError - lastPlateError);
-//   i_lazySusan_Val = I_LAZY_SUSAN_GAIN *plateError + i_lazySusan_Val; //const *plateError + previous int value
-//   if (i_lazySusan_Val > MAX_I) {i_lazySusan_Val = MAX_I;}
-//   if (i_lazySusan_Val < -MAX_I) {i_lazySusan_Val = -MAX_I;}
 
-//   g_lazySusan_Val = PLATE_PID_TOTAL_GAIN * ( p_lazySusan_Val + i_lazySusan_Val + d_lazySusan_Val ); 
-//   lastPlateError =plateError; 
-
-// // PID hopefully
-//   // lazySusanMotor.forward( g_lazySus_Val );
+}
 
 }
 
@@ -154,11 +163,11 @@ void ISRUpdateElevatorEncoder(){
 }
 
 /**
- * @brief performs motor sweep to localize range of elevator motion 
+ * @brief performs motor sweep to localizeLazySusan range of elevator motion 
  * updates encoder range values and sends the motor to the center once completed
  * 
  */
-void localize() {
+void localizeLazySusan() {
 
   const int motorSpeed = 2000;
 
@@ -171,24 +180,35 @@ void localize() {
     lazySusanMotor.encoder->resetIncrement();
     start = lazySusanMotor.encoder->getIncrements();
 
-    do {
-      lazySusanMotor.forward(motorSpeed);
-    }
-    while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
+  String incomimingMsg = "f";
+  char a;
 
+    do {
+      incomimingMsg = SerialPort.readString();
+      a = incomimingMsg.charAt(0);
+      lazySusanMotor.forward(motorSpeed);
+      Serial.println("do while");
+      SerialPort.println("do while");
+      SerialPort.println("msg: " + incomimingMsg);
+      Serial.println("msg: " + incomimingMsg);
+    }
+    //while (!digitalRead(LAZY_SUSAN_LIMIT_SWITCH));
+    while ( a != 'L' );
+    Serial.println("out of loop");
     // initialize end limit of movement
     lazySusanMotor.off();
     delay(1000);
     end = lazySusanMotor.encoder->getIncrements();
     lazySusanMotor.encoder->setMaxIncrement(end);
 
-    // // turn motor and reach middle of motion
-    // center = end / 2;
-    // while (lazySusanMotor.encoder->getIncrements() != center) {
-    //     lazySusanMotor.backward(motorSpeed);
-    //     SerialPort.println("center");
-    // }
-    // lazySusanMotor.stop();
+    // turn motor and reach middle of motion
+    center = end / 2;
+    while (lazySusanMotor.encoder->getIncrements() != center) {
+        lazySusanMotor.backward(motorSpeed);
+        SerialPort.println("center");
+        Serial.println("center: " + String ( lazySusanMotor.encoder->getIncrements() ) );
+    }
+    lazySusanMotor.stop();
 
 }
 

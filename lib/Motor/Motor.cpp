@@ -11,7 +11,7 @@
 namespace movement {
 
   #ifdef ESP32
-    Motor::Motor(PinName PWM_pinA, PinName L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder)
+    Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder)
     : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB){
 
       this->encoder = Encoder;
@@ -29,9 +29,9 @@ namespace movement {
    * @param PWM_pinA first PWM pin controlling the motor
    * @param L_PWM_pinB Second PWM pin controlling the motor
    */
-  Motor::Motor(PinName PWM_pinA, PinName L_PWM_pinB) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
+  Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {}
 
-  Motor::Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder *Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
+  Motor::Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder *Encoder) : PWM_pinA(PWM_pinA), PWM_pinB(L_PWM_pinB) {
 
     this->encoder = Encoder;
 
@@ -40,14 +40,14 @@ namespace movement {
   /** 
    * @brief Returns the first of 2 PWM pins
    */
-  PinName Motor::getPinA(){
+  uint8_t Motor::getPinA(){
     return PWM_pinA;
   }
 
   /**
    * @brief Returns the second of the 2 PWM pins
    */
-  PinName Motor::getPinB(){
+  uint8_t Motor::getPinB(){
 
     return PWM_pinB;
   }
@@ -60,15 +60,24 @@ namespace movement {
   void Motor::setMotor(int val){
 
 
-    const int maxMotorSpeed = 3500;
+    if (val > 0){
+      this->forward(val);
+    }
+    if (val < 0){
+      this->backward(val);
+    } else {
+      this->off();
+    }
 
-    const int midMotorSpeed = 3800;
+    // const int maxMotorSpeed = 3500;
 
-    motorSpeed = constrain(val + midMotorSpeed, 3500, 4095);
+    // const int midMotorSpeed = 3800;
 
-    this->forward(motorSpeed);
+    // motorSpeed = constrain(val + midMotorSpeed, 3500, 4095);
 
-    Serial.println("Motor " + String(PWM_pinA) + ": " + String(motorSpeed));
+    // this->forward(motorSpeed);
+
+    // Serial.println("Motor " + String(PWM_pinA) + ": " + String(motorSpeed));
 
 
 
@@ -109,8 +118,8 @@ namespace movement {
     backwardDirection = false;
     this->motorSpeed = PWM_Val;
 
-    pwm_start(PWM_pinA, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
-    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start( (PinName) PWM_pinA, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start( (PinName) PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
 
   }
 
@@ -138,8 +147,8 @@ namespace movement {
     backwardDirection = true;
     this->motorSpeed = PWM_Val;
 
-    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-    pwm_start(PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start((PinName) PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start((PinName) PWM_pinB, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
   }
 
 #endif
@@ -212,8 +221,8 @@ void Motor::stop() {
     backwardDirection = false;
     this->motorSpeed = 0;
 
-    pwm_start(PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
-    pwm_start(PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start((PinName) PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
+    pwm_start((PinName) PWM_pinB, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);
   }
 
 #endif

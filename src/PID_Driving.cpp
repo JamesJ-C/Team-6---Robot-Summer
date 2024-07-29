@@ -85,7 +85,8 @@ double backward_g;
 
 /*  Object declerations  */
 
-movement::Motor MotorL(MotorL_P1, MotorL_P2);
+//movement::Motor MotorL(MotorL_P1, MotorL_P2);
+movement::Motor MotorL(MotorL_P2, MotorL_P1);
 movement::Motor MotorR(MotorR_P1, MotorR_P2);
 
 /* function declarations */

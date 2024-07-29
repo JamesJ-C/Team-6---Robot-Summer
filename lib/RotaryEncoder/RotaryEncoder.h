@@ -14,8 +14,8 @@ namespace encoder {
 
     const int clicksPerRotation = 20; //depending on each encoder
 
-    PinName pinA;
-    PinName pinB;
+    uint8_t pinA;
+    uint8_t pinB;
 
 
     /*  for calculating direction. This value seems to make 0 position work on startup 
@@ -49,22 +49,22 @@ namespace encoder {
      * @param pinA pin attached to one terminal of the encoder
      * @param pinB pin attached to the other terminal of the encoder
      */
-    RotaryEncoder(PinName pinA, PinName pinB);
+    RotaryEncoder(uint8_t pinA, uint8_t pinB);
 
     /**
      * @brief Get the Pin A object
      * 
-     * @return PinName pin attached to the first terminal
+     * @return uint8_t pin attached to the first terminal
      */
-    PinName getPinA();
+    uint8_t getPinA();
 
 
     /**
      * @brief Get the Pin B object
      * 
-     * @return PinName pin attached to the second terminal
+     * @return uint8_t pin attached to the second terminal
      */
-    PinName getPinB();
+    uint8_t getPinB();
 
     /**
      * @brief Get the number of increments offset the encoder has

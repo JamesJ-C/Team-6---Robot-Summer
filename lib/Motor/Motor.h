@@ -24,8 +24,8 @@ namespace movement {
     class Motor {
 
     private:
-    PinName PWM_pinA;
-    PinName PWM_pinB;
+    uint8_t PWM_pinA;
+    uint8_t PWM_pinB;
 
     int motorSpeed = 0;
 
@@ -50,7 +50,7 @@ namespace movement {
 
     #ifdef ESP32
 
-        Motor(PinName PWM_pinA, PinName L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder);
+        Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, String outputName, int channel_1, int channel_2, encoder::RotaryEncoder* Encoder);
 
     #endif
 
@@ -63,7 +63,7 @@ namespace movement {
      * @param PWM_pinA first PWM pin controlling the motor
      * @param L_PWM_pinB Second PWM pin controlling the motor
      */
-    Motor(PinName PWM_pinA, PinName L_PWM_pinB);
+    Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB);
 
     /**
      * @brief Construct a new Motor object
@@ -72,17 +72,17 @@ namespace movement {
      * @param L_PWM_pinB Second PWM pin controlling the motor
      * @param Encoder encoder object to attach to the motor
      */
-    Motor(PinName PWM_pinA, PinName L_PWM_pinB, encoder::RotaryEncoder* Encoder);
+    Motor(uint8_t PWM_pinA, uint8_t L_PWM_pinB, encoder::RotaryEncoder* Encoder);
 
     /** 
      * @brief Returns the first of 2 PWM pins
      */
-    PinName getPinA();
+    uint8_t getPinA();
 
     /**
      * @brief Returns the second of the 2 PWM pins
      */
-    PinName getPinB();
+    uint8_t getPinB();
 
     /**
      * @brief Set the speed of the motor.
