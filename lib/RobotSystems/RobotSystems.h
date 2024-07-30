@@ -155,8 +155,38 @@ namespace robot {
 
     class IRSensor {
 
+        protected:
 
+        uint8_t analogPin1;
+        uint8_t analogPin2;
 
+        std::vector<int> IRsignalPin1;
+        std::vector<int> IRsignalPin2;
+        int numSamples = 0;
+        unsigned long startTime;
+        unsigned long finishTime;
+
+        double maxPin1;
+        double maxPin2;
+
+        public:
+        const int MAX_NUM_SAMPLES = 600;
+
+        public:
+        /**
+         * @brief Construct a new IRSensor object
+         * 
+         * @param pin1 analogPin 1
+         * @param pin2 analogPin 2
+         */
+        IRSensor(uint8_t pin1, uint8_t pin2) : analogPin1(pin1), analogPin2(pin2) {}
+
+        /**
+         * @brief Calculates the cross correlation of 1 analog pin
+         * 
+         * @param analogPin analog pin to read from
+         * @return double cross correlation value 
+         */
         double crossCorrelation (uint8_t analogPin){
 
             std::vector<double> IRsignal;
@@ -217,8 +247,14 @@ namespace robot {
             }
 
 
-
-        std:: vector<double> bothCrossCorrelation (uint8_t analogPin1, uint8_t analogPin2){
+        /**
+         * @brief calculates the cross correlation values for 2 pins 
+         * 
+         * @param analogPin1 pin 1 connected to IR sensor
+         * @param analogPin2 pin 2 connected to the IR sensor
+         * @return std::vector<double> 2 item vector with pin1's reading first followed by pin2's reading
+         */
+        std::vector<double> bothCrossCorrelation (uint8_t analogPin1, uint8_t analogPin2){
 
             std::vector<double> IRsignal1;
             std::vector<double> IRsignal2;
@@ -284,7 +320,96 @@ namespace robot {
 
         }
 
+        /**
+         * @brief samples or calcualtes the cross correlation of 2 analog pins
+         * 
+         * @return int 0 if the data has not been updated, 1 if the data has been updated
+         */
+        int updateEncoder(){
+            if (numSamples = 0){
+                startTime = millis();
+                IRsignalPin1.push_back(analogRead(analogPin1));
+                IRsignalPin2.push_back(analogRead(analogPin2));
+                numSamples++;
+            }
+            else if (numSamples < MAX_NUM_SAMPLES){
+                IRsignalPin1.push_back(analogRead(analogPin1));
+                IRsignalPin2.push_back(analogRead(analogPin2));
+                numSamples++;
+            }
+            if (numSamples >= MAX_NUM_SAMPLES){
+                finishTime = millis();
+                calcCrossCorrelation();
+                resetNums();
+                return 1;
+            }
+        return 0;
 
+        }
+
+       protected: 
+        /**
+         * @brief calculates the crosscorrelation for the IRsignalPinX vectors
+         * 
+         */
+        void calcCrossCorrelation() {
+
+            double oneK[2 * numSamples] = {0};
+            double oneKCorr1[numSamples] = {0};
+            double oneKCorr2[numSamples] = {0};
+
+
+            int dt = ( finishTime - startTime );
+            double oneKT = (double) numSamples / ( (double) dt );
+
+            for(int i = 0; i < 2 * numSamples;  i++) {
+            
+                oneK[i] = sin(i * TWO_PI / oneKT);
+            
+            }
+
+            for (int k = 0; k < numSamples; k++){
+
+                oneKCorr1[k] = 0;
+
+                for (int i = 0; i < numSamples; i++){      
+                oneKCorr1[k] += IRsignalPin1.at(i) * oneK[k+i];
+                oneKCorr2[k] += IRsignalPin2.at(i) * oneK[k+i];
+                }
+
+            }
+
+            double max1 = oneKCorr1[0];
+            double max2 = oneKCorr2[0];
+
+            for (int i=0; i< numSamples; i++) {
+
+                if (oneKCorr1[i]>max1){
+                max1 = oneKCorr1[i];
+                }
+                if (oneKCorr2[i]>max2){
+                max2 = oneKCorr2[i];
+                }
+            }
+
+            maxPin1 = max1;
+            maxPin2 = max2;
+                      
+        }
+
+        /**
+         * @brief resets all the nums used in the cross correlation code
+         * 
+         */
+        void resetNums(){
+
+            IRsignalPin1.clear();
+            IRsignalPin2.clear();
+            numSamples = 0;
+            startTime = 0;
+            finishTime = 0;
+
+        }
     };
 
 

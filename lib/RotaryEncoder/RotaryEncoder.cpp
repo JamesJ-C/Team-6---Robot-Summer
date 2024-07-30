@@ -99,9 +99,9 @@ namespace encoder {
      * @param A digital read of pin A
      * @param B digital read of pin B
      */
-    void RotaryEncoder::updateEncoder(bool A, bool B){
-        // bool A = digitalRead(pinA);
-        // bool B = digitalRead(pinB);
+    void RotaryEncoder::updateEncoder(bool aA, bool bB){
+        bool A = digitalRead(pinA);
+        bool B = digitalRead(pinB);
 
         /*	encodes 2 bit current state  */
         int encoded = ( A << 1 ) | B;
@@ -118,9 +118,10 @@ namespace encoder {
         if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
           this->increments++;
         }
-        if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+        else if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
           this->increments--;
         }
+        else {Serial.println(concat);}
 
 
         /*	the current states bits become the next states previous bits  */
