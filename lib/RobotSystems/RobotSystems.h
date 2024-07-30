@@ -181,11 +181,19 @@ namespace robot {
          */
         IRSensor(uint8_t pin1, uint8_t pin2) : analogPin1(pin1), analogPin2(pin2) {}
 
-        uint8_t getmax1() {
+        uint8_t getPin1() const {
+            return analogPin1;
+        }
+
+        uint8_t getPin2() const {
+            return analogPin2;
+        }
+
+        uint8_t getmax1() const {
             return maxPin1;
         }
 
-        uint8_t getmax2() {
+        uint8_t getmax2() const {
             return maxPin2;
         }
 
@@ -203,11 +211,12 @@ namespace robot {
             unsigned long finishTime = 0;
             unsigned long startTime = millis();
 
-            while (millis() - startTime < 10){
+            while (millis() - startTime < 100){
 
                 IRsignal.push_back(analogRead(analogPin));
                 numSamples++;
                 finishTime = millis();
+                Serial.println(IRsignal.at(numSamples-1));
             }
 
 
@@ -250,6 +259,8 @@ namespace robot {
             // }
             // // avg = ( (loopCount - 1) * avg + max ) / loopCount;
 
+
+            Serial.println("max: " + String (max));
             return max;
 
             }
@@ -262,7 +273,7 @@ namespace robot {
          * @param analogPin2 pin 2 connected to the IR sensor
          * @return std::vector<double> 2 item vector with pin1's reading first followed by pin2's reading
          */
-        std::vector<double> bothCrossCorrelation (uint8_t analogPin1, uint8_t analogPin2){
+        std::vector<double>* bothCrossCorrelation (uint8_t analogPin1, uint8_t analogPin2){
 
             std::vector<double> IRsignal1;
             std::vector<double> IRsignal2;
@@ -309,7 +320,7 @@ namespace robot {
             double max1 = oneKCorr1[0];
             double max2 = oneKCorr2[0];
 
-            for (int i=0; i< numSamples; i++) {
+            for (int i=0; i < numSamples; i++) {
 
                 if (oneKCorr1[i]>max1){
                 max1 = oneKCorr1[i];
@@ -319,10 +330,15 @@ namespace robot {
                 }
             }
 
-            std::vector<double> result;
+    Serial.println("result1 act: " + String ( max1 ));
+    Serial.println("result2 act: " + String ( max2) );
+    Serial.println();
 
-            result.push_back(max1);
-            result.push_back(max2);
+            std::vector<double> *result = new std::vector<double>;// = {max1, max2};
+
+            //std::vector<double> *result = &vec;
+            result->push_back(max1);
+            result->push_back(max2);
 
             return result;
 

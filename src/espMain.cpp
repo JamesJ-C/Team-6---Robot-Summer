@@ -5,6 +5,9 @@
 #include <Wire.h>
 #include <HardwareSerial.h>
 
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+
 
 /*  libraries we wrote  */
 #include <Motor.h>
@@ -22,6 +25,8 @@
 void isrUpdateLinearArmEncoder();
 void isrUpdateLazySusanEncoder();
 
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
 
 encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PA, LAZY_SUSAN_ROTARY_ENCODER_PB);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
@@ -30,6 +35,12 @@ robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMot
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM_ROTARY_ENCODER_PB);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
+
+
+robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
+
+//IR1 - 34
+//IR2 - 38
 
 
 Servo clawServo;
@@ -46,7 +57,21 @@ void setup() {
     /*  Serial setup  */
     Serial.begin(115200);
     Serial.println("Setup");
+    display.begin();
     SerialPort.begin(115200, SERIAL_8N1, RX, TX);
+
+
+  display.begin(SSD1306_SWITCHCAPVCC, 0x3C);
+  display.display();
+  delay(2000);
+
+//   Displays "Hello world!" on the screen
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("Setting up...");
+  display.display();
 
 
     /*  Servos  */
@@ -70,17 +95,31 @@ void setup() {
     pinMode(linearArmMotor.getPinA(), OUTPUT);
     pinMode(linearArmMotor.getPinB(), OUTPUT);
 
-    pinMode(25, OUTPUT);
-    pinMode(12, OUTPUT);
-    pinMode(26, OUTPUT);
+    // pinMode(25, OUTPUT);
+    // pinMode(12, OUTPUT);
+    // pinMode(26, OUTPUT);
+
+
+    pinMode(beaconSensor.getPin1(), INPUT);
+    pinMode(beaconSensor.getPin2(), INPUT);
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println("1: " + String (beaconSensor.getPin1() ) );
+    display.println("2: " + String (beaconSensor.getPin2() ) );
+    display.display();
+
+    delay(1000);
 
 
     /*  Interrupts  */
-    attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
-    attachInterrupt(lazySusanEncoder.getPinB(), isrUpdateLazySusanEncoder, CHANGE);
+    // attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
+    // attachInterrupt(lazySusanEncoder.getPinB(), isrUpdateLazySusanEncoder, CHANGE);
 
-    attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
-    attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
+    // attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
 
     /*  Setup systems  */
@@ -111,10 +150,37 @@ int increments = 0;
 void loop() {
 
 {
-    std::vector<double> irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
-    Serial.println("result1: " + String ( irResult.at(0) ));
-    Serial.println("result2: " + String ( irResult.at(1) ));
+    std::vector<double> *irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
+    Serial.println("result1a: " + String ( irResult->at(0) ));
+    Serial.println("result2a: " + String ( irResult->at(1) ));
     Serial.println();
+
+    std::vector<double> *irResult2 = beaconSensor.bothCrossCorrelation(IR_SENSOR_2, IR_SENSOR_1);
+    Serial.println("result1b: " + String ( irResult2->at(0) ));
+    Serial.println("result2b: " + String ( irResult2->at(1) ));
+    Serial.println();
+
+    double singleX = beaconSensor.crossCorrelation(IR_SENSOR_1);
+
+    //double singleX2 = beaconSensor.crossCorrelation(IR_SENSOR_2);
+
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println("result1a: " + String ( irResult->at(0) ));
+    display.println("result2a: " + String ( irResult->at(1) ));
+
+    display.println("result1b: " + String ( irResult2->at(0) ));
+    display.println("result2b: " + String ( irResult2->at(1) ));
+
+    //display.println("singleX: " + String ( singleX ));
+    display.display();
+
+    delete irResult;
+    delete irResult2;
+
 
 }
 delay(500);
@@ -122,6 +188,10 @@ delay(500);
     //     Serial.println("max1: " + String (beaconSensor.getmax1() ));
     //     Serial.println("max2: " + String (beaconSensor.getmax2() ));
     // }
+
+
+
+
 
     // lazySusanSystem.updatePID(80);
     //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
