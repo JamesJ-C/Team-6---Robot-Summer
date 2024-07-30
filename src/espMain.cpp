@@ -32,6 +32,9 @@ movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEn
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
 
+robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
+
+
 Servo clawServo;
 Servo forkliftServo;
 clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, CLAW_LIMIT_SWITCH_B);
@@ -70,9 +73,13 @@ void setup() {
     pinMode(linearArmMotor.getPinA(), OUTPUT);
     pinMode(linearArmMotor.getPinB(), OUTPUT);
 
-    pinMode(25, OUTPUT);
-    pinMode(12, OUTPUT);
-    pinMode(26, OUTPUT);
+    // pinMode(25, OUTPUT);
+    // pinMode(12, OUTPUT);
+    // pinMode(26, OUTPUT);
+
+
+    pinMode(IR_SENSOR_1, INPUT);
+    pinMode(IR_SENSOR_2, INPUT);
 
 
     /*  Interrupts  */
@@ -107,8 +114,21 @@ bool B;
 
 int lastEncoded = 0x00;
 int increments = 0;
-
+int numberCount = 0;
 void loop() {
+
+{
+    std::vector<double> irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
+    Serial.println("result1: " + String ( irResult.at(0) ));
+    Serial.println("result2: " + String ( irResult.at(1) ));
+    Serial.println();
+
+}
+
+    if (beaconSensor.updateCorrelation() == 1 ){
+        Serial.println("max1: " + String (beaconSensor.getmax1() ));
+        Serial.println("max2: " + String (beaconSensor.getmax2() ));
+    }
 
     // lazySusanSystem.updatePID(80);
     //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
@@ -120,8 +140,8 @@ void loop() {
 
 
     //if (SerialPort.available()) {
-        String msg = SerialPort.readString();
-        Serial.println(msg);
+        // String msg = SerialPort.readString();
+        // Serial.println(msg);
     //}
 
 
