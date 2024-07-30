@@ -5,7 +5,6 @@
 #include <Wire.h>
 #include <HardwareSerial.h>
 
-
 /*  libraries we wrote  */
 #include <Motor.h>
 #include <RotaryEncoder.h>
@@ -18,10 +17,26 @@
 #include <ESp32Servo.h>
 //#endif
 
+//Encoder values for different rotational positions, arbitary values needs tuning 
+#define NINETY_LAZYSUSAN 666
+#define ONE_EIGHTY_LAZYSUSAN 667
+#define TWO_SEVENTY_LAZYSUSAN 668
+
+//Encoder values for different positions of the linear arm movement 
+#define CLAW_FORWARD 100 
+#define CLAW_NEUTRAL 50 
+
+//Servo Positions
+#define FORKLIFTSERVO_READY_POS 90
+#define CLAWSERVO_OPEN_POS 120
+#define CLAWSERVO_CLOSED_POS 0
+
+//Receive and transmit pins 
+#define RX_PIN PA 
+#define TX_PIN PA 
 
 void isrUpdateLinearArmEncoder();
 void isrUpdateLazySusanEncoder();
-
 
 encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PA, LAZY_SUSAN_ROTARY_ENCODER_PB);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
@@ -31,14 +46,20 @@ encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
-
 Servo clawServo;
 Servo forkliftServo;
 clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, CLAW_LIMIT_SWITCH_B);
 
+enum State{
+    START, 
+    PROCESS_STATION_4, 
+    PROCESS_STATION_6,
+    PROCESS_STATION_5
+    FINISHED
+}
+State currentState = IDLE; 
 
 HardwareSerial SerialPort(1);
-
 
 void forward(){
     analogWrite(LINEAR_ARM_P1, 200);
@@ -58,7 +79,6 @@ void setup() {
     Serial.begin(115200);
     Serial.println("Setup");
     SerialPort.begin(115200, SERIAL_8N1, RX, TX);
-
 
     /*  Servos  */
     clawServo.attach(CLAW_SERVO_PIN);
@@ -114,6 +134,79 @@ int increments = 0;
 
 void loop() {
 
+switch (currentState)
+{
+case START:
+forkliftServo.write(FORKLIFTSERVO_READY_POS);
+if(SerialPort.available()){
+    int receivedVal = SerialPort.parseInt();
+    if(receivedVal == 1){ // 1 is the signal indicating that the BP has finished driving 
+    currentState = PROCESS_STATION_4; 
+    }
+    break; 
+}
+case PROCESS_STATION_4: 
+ lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
+ SerialPort.println(2); 
+ //wait for bp to adjust height 
+ if(SerialPort.available()){
+    int receivedVal = SerialPort.parseInt();
+    if(receivedVal == 3){
+    linearArmSystem.moveToValue(CLAW_FORWARD); 
+    Serial.println(4); 
+    }
+ }
+ if(SerialPort.available()){
+    int receivedVal = SerialPort.parseInt();
+    if(receivedVal == 1)
+    {
+        currentState = PROCESS_STATION_6;
+    }
+case PROCESS_STATION_6:
+    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+    Serial.println(2);
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 3){
+            linearArmSystem.moveToValue(CLAW_NEUTRAL);
+            Serial.println(4);
+        }
+    }
+    f(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 1){
+            currentState = PROCESS_STATION_5; 
+        }
+    break;
+case PROCESS_STATION_5:
+    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+    clawServo.write(CLAW_OPEN_POS);
+    SerialPort.println(2); 
+    }
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt();
+        if(receivedVal == 3){
+            linearArmSystem.moveToValue(CLAW_FORWARD); 
+            clawServo.write(CLAWSERVO_CLOSED_POS);
+            SerialPort.write(5); 
+        }
+    }
+    if(SerialPort.avaliable()){
+    receivedVal = SerialPort.parseInt(); 
+    if(receivedVal == 1){
+        currentState = PROCESS_STATION_62;
+    }
+}
+case PROCESS_STATION_62:
+    clawServo.write(CLAW_OPEN_POS); 
+    linearArmSystem.moveToValue(CLAW_NEUTRAL); 
+    currentState = FINISHED; 
+
+case FINISHED: 
+// tbd 
+}
+
+
     // lazySusanSystem.updatePID(80);
     //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
 
@@ -137,6 +230,9 @@ void loop() {
 
 }
 
+
+//  put a if statement on the whole FSM if transitionisReady && ESP done 
+//usee wire and send 1, when ready. 
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
