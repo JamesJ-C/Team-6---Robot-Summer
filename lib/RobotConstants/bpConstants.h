@@ -4,6 +4,17 @@
 #include <Arduino.h>
 
 
+namespace robotControl {
+    #define TAPE_THRESHOLD 800
+
+    //Encoder values for different heights of the elevator 
+    #define FORKLIFT_COUNTER_HEIGHT 1000
+    #define FORKLIFT_SECURE_HEIGHT 1001 //A height that is just a little bit taller than counter height
+    #define CLAW_COUNTER_HEIGHT 900
+    #define CLAW_SECURE_HEIGHT 901
+
+}
+
 namespace constants {
 
     #define MOTOR_FREQUENCY 500

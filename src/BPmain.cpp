@@ -13,15 +13,15 @@
 //#include <robotConstants.h>
 #include <bpConstants.h>
 
-#define TAPE_THRESHOLD 800 
-
-//Encoder values for different heights of the elevator 
-#define FORKLIFT_COUNTER_HEIGHT 1000
-#define FORKLIFT_SECURE_HEIGHT 1001 //A height that is just a little bit taller than counter height
-#define CLAW_COUNTER_HEIGHT 900
-#define CLAW_SECURE_HEIGHT 901
-
 void isrUpdateElevatorEncoder();
+bool stopConditionsMet();
+int lineCountLeft();
+int lineCountRight();
+bool markerDetected();
+
+bool stopConditionsMet_TRANS_TO_4();
+bool stopConditionsMet_TRANS_TO_5();
+bool stopConditionsMet();
 
 
 /*  Object declerations  */
@@ -89,7 +89,6 @@ void setup() {
 }
 
 
-
 void loop(){
 
 
@@ -100,13 +99,12 @@ case START:
     break;
 
 case TRANSITION_TO_4:
-    bool stopConditionsMet() {
-        return lineCountRight() >= 2 || lineCountLeft() >= 4; 
-    }
 
-    while(!stopConditionsMet()){
-        pidDriving(); // to the right 
+
+    while(!stopConditionsMet_TRANS_TO_4()){
+        
         driveSystem.updateForwardDrivePID();
+        // pidDriving(); // to the right 
     }
 
     motorL.stop();
@@ -155,11 +153,11 @@ case PROCESS_STATION_6:
         }
     }
 case TRANSITION_TO_5:
-bool stopConditionsMet() {
-    return lineCountRight() >= 1 || lineCountLeft() >= 2; 
-}
-while(!stopConditionsMet){
-    pidDriving(); //to the left
+
+while(!stopConditionsMet_TRANS_TO_5){
+    
+    driveSystem.updateForwardDrivePID();
+    //pidDriving(); //to the left
 }
 motorL.stop();
 motorR.stop(); 
@@ -194,10 +192,8 @@ case TRANSITION_TO_62:
         currentState = FINISHED; 
     }
 case FINISHED: //aka transition to 4.2 
-    bool stopConditionsMet() {
-        return lineCountRight() >= 1 || lineCountLeft() >= 2; 
-    }
-    while(!stopCondiionsMet){
+    
+    while(!stopConditionsMet()){
         //pidDriving();
         driveSystem.updateForwardDrivePID(); 
     }
@@ -210,8 +206,12 @@ case FINISHED: //aka transition to 4.2
 
 }
 
+
+
+
+
 bool markerDetected(){
-    return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD)
+    return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD);
 }
 
 int lineCountLeft(){
@@ -228,6 +228,18 @@ int lineCountRight(){
         count++; 
     }
     return count; 
+}
+
+bool stopConditionsMet_TRANS_TO_4() {
+    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
+}
+
+bool stopConditionsMet_TRANS_TO_5() {
+    return lineCountRight() >= 1 || lineCountLeft() >= 2; 
+}
+
+bool stopConditionsMet() {
+    return lineCountRight() >= 1 || lineCountLeft() >= 2; 
 }
 
 void isrUpdateElevatorEncoder(){
