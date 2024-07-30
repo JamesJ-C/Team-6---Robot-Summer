@@ -28,7 +28,7 @@ movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEn
 robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor);
 
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM_ROTARY_ENCODER_PB);
-movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, linearArm::linearArmP1, &linearArmEncoder);
+movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, 7, &linearArmEncoder);
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
 
@@ -38,17 +38,6 @@ clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, 
 
 
 HardwareSerial SerialPort(1);
-
-
-void forward(){
-    analogWrite(LINEAR_ARM_P1, 200);
-    analogWrite(LINEAR_ARM_P2, 0);
-}
-
-void backward(){
-    analogWrite(LINEAR_ARM_P2, 200);
-    analogWrite(LINEAR_ARM_P1, 0);
-}
 
 void setup() {
 
@@ -94,28 +83,22 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
 
-
+    /*  Setup systems  */
     // lazySusanSystem.localize();
     // delay(100);
     //linearArmSystem.localize();
-    delay(100);
-    //}
+    // delay(100);
+    /*  Wait for confirmation from the BP that setup is good  */
+    //SerialPort.println(1);
     // while (true){ 
-    //     if ( (int) SerialPort.read() = 1){
+    //     if ( SerialPort.parseInt() == 1){
     //         break;
     //     }
     // }
 
-
-    // movement::Motor linearArmMotor2(13, 25);
-
-    // linearArmMotor2.forward(2000);
-    // delay(1000);
-    // linearArmMotor2.forward(2000);
-    // delay(1000);
-
     delay(1000);
     linearArmMotor.off();
+    Serial.println("setup done");
 }
 
 int val = 0;
@@ -133,30 +116,21 @@ void loop() {
     //analogWrite(12, 200);
     //     analogWrite(25, 200);
 
-    //linearArmSystem.updatePID(80);
-    // Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+    // linearArmSystem.updatePID(80);
 
-        // linearArmMotor.espForward(200);
-        // delay(1000);
-        // linearArmMotor.espBackward(200);
-        // delay(1000);
 
-        linearArmMotor.forward(200);
-        delay(1000);
-        linearArmMotor.backward(200);
-        delay(1000);
-
-        // movement::Motor::pwmForward(LINEAR_ARM_P1, LINEAR_ARM_P2, 200);
-        // delay(1000);
-        // movement::Motor::pwmBackward(LINEAR_ARM_P1, LINEAR_ARM_P2, 200);
-        // delay(1000);
-
-        // forward();
-        // delay(1000);
-        // backward();
-        // delay(1000);
+    //if (SerialPort.available()) {
+        String msg = SerialPort.readString();
+        Serial.println(msg);
     //}
 
+
+    // Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+
+    // linearArmMotor.forward(200);
+    // delay(1000);
+    // linearArmMotor.backward(200);
+    // delay(1000);
 
 }
 
