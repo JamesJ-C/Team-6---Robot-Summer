@@ -147,7 +147,7 @@ private:
 
         void updateForwardDrivePID();
 
-        void updateBackwardDrivePID(); 
+        void updateBackwardDrivePID();
 
         void updateIRDrive(double irError);
 

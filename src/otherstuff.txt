@@ -1,0 +1,35 @@
+
+{
+    std::vector<double> irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
+    Serial.println("result1: " + String ( irResult.at(0) ));
+    Serial.println("result2: " + String ( irResult.at(1) ));
+    Serial.println();
+
+}
+delay(500);
+    // if (beaconSensor.updateCorrelation() == 1 ){
+    //     Serial.println("max1: " + String (beaconSensor.getmax1() ));
+    //     Serial.println("max2: " + String (beaconSensor.getmax2() ));
+    // }
+
+    // lazySusanSystem.updatePID(80);
+    //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
+
+    //analogWrite(12, 200);
+    //     analogWrite(25, 200);
+
+    // linearArmSystem.updatePID(80);
+
+
+    //if (SerialPort.available()) {
+        String msg = SerialPort.readString();
+        Serial.println(msg);
+    //}
+
+
+    // Serial.println("LAenc: " + String( linearArmEncoder.getIncrements() ) );
+
+    // linearArmMotor.forward(200);
+    // delay(1000);
+    // linearArmMotor.backward(200);
+    // delay(1000);
