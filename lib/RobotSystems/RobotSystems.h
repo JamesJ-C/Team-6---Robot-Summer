@@ -181,6 +181,14 @@ namespace robot {
          */
         IRSensor(uint8_t pin1, uint8_t pin2) : analogPin1(pin1), analogPin2(pin2) {}
 
+        uint8_t getmax1() {
+            return maxPin1;
+        }
+
+        uint8_t getmax2() {
+            return maxPin2;
+        }
+
         /**
          * @brief Calculates the cross correlation of 1 analog pin
          * 
@@ -325,7 +333,7 @@ namespace robot {
          * 
          * @return int 0 if the data has not been updated, 1 if the data has been updated
          */
-        int updateEncoder(){
+        int updateCorrelation(){
             if (numSamples = 0){
                 startTime = millis();
                 IRsignalPin1.push_back(analogRead(analogPin1));
