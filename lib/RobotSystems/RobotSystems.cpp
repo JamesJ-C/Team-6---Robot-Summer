@@ -141,7 +141,7 @@ namespace robot {
 
         }
 
-        void DrivePID::updateBackwardPID(){
+        void DrivePID::updateBackwardDrivePID(){
             double backwardError = (double) analogRead(backwardTapeSensorPin1) - analogRead(backwardTapeSensorPin2);
 
             backward_p = BACKWARD_P_GAIN * backwardError;
