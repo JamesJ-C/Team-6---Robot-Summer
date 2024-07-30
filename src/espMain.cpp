@@ -32,9 +32,6 @@ movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEn
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
 
-robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
-
-
 Servo clawServo;
 Servo forkliftServo;
 clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, CLAW_LIMIT_SWITCH_B);
@@ -73,13 +70,9 @@ void setup() {
     pinMode(linearArmMotor.getPinA(), OUTPUT);
     pinMode(linearArmMotor.getPinB(), OUTPUT);
 
-    // pinMode(25, OUTPUT);
-    // pinMode(12, OUTPUT);
-    // pinMode(26, OUTPUT);
-
-
-    pinMode(IR_SENSOR_1, INPUT);
-    pinMode(IR_SENSOR_2, INPUT);
+    pinMode(25, OUTPUT);
+    pinMode(12, OUTPUT);
+    pinMode(26, OUTPUT);
 
 
     /*  Interrupts  */
@@ -114,7 +107,7 @@ bool B;
 
 int lastEncoded = 0x00;
 int increments = 0;
-int numberCount = 0;
+
 void loop() {
 
 {
@@ -140,8 +133,8 @@ delay(500);
 
 
     //if (SerialPort.available()) {
-        // String msg = SerialPort.readString();
-        // Serial.println(msg);
+        String msg = SerialPort.readString();
+        Serial.println(msg);
     //}
 
 
