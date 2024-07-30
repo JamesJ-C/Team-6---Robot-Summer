@@ -1,5 +1,5 @@
 
-#ifndef ESP32
+// #ifndef ESP32
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -14,9 +14,6 @@
 #include <bpConstants.h>
 
 #define TAPE_THRESHOLD 800 
-#define MARKER_SENSOR_L PB
-#define MARKER_SENSOR_R PB
-
 
 //Encoder values for different heights of the elevator 
 #define FORKLIFT_COUNTER_HEIGHT 1000
@@ -38,24 +35,26 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 //robot::RobotSubSystem Elevator();
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
+robot::DrivePID 
+driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
+
 
 HardwareSerial SerialPort(USART3);
-
-//Define Receive and Transmit Pins for UART communication
-#define RX_PIN PA 
-#define TX_PIN PA 
 
 enum State{
     START, 
     TRANSITION_TO_4,
-    PROCESS_STATION_4, 
+    PROCESS_STATION_4,
+    PROCESS_STATION_5, 
     TRANSITION_TO_6,
     PROCESS_STATION_6,
     TRANSITION_TO_5,
     TRANSITION_TO_62,
-    PROCESS_STATION_62
-}
-State currentState = IDLE; 
+    PROCESS_STATION_62,
+    IDLE,
+    FINISHED
+};
+State currentState = IDLE;
 
 
 void setup() {
@@ -66,31 +65,34 @@ void setup() {
     Serial.println("setup");
     SerialPort.begin(115200);
 
+
     pinMode(elevatorEncoder.getPinA(), INPUT_PULLUP);
     pinMode(elevatorEncoder.getPinB(), INPUT_PULLUP);
 
+    pinMode(motorL.getPinA(), OUTPUT);
+    pinMode(motorL.getPinB(), OUTPUT);
+
+    pinMode(motorR.getPinA(), OUTPUT);
+    pinMode(motorR.getPinB(), OUTPUT);
+
+    pinMode(ElevatorMotor.getPinA(), OUTPUT);
+    pinMode(ElevatorMotor.getPinB(), OUTPUT);
+    
 
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
+
+
     // ElevatorSystem.localize();
-    pinMode(RX_PIN, INPUT); 
-    pinMode(TX_PIN, OUTPUT);
-}
-
-
-void loop() {
-
-
-
-    Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
-    // ElevatorSystem.updatePID(80);
 
 }
 
 
 
 void loop(){
+
+
 switch (currentState){
 case START: 
     delay(1000); 
@@ -98,12 +100,13 @@ case START:
     break;
 
 case TRANSITION_TO_4:
-    bool stopConditionsMet(){
+    bool stopConditionsMet() {
         return lineCountRight() >= 2 || lineCountLeft() >= 4; 
     }
 
     while(!stopConditionsMet()){
         pidDriving(); // to the right 
+        driveSystem.updateForwardDrivePID();
     }
 
     motorL.stop();
@@ -115,14 +118,14 @@ case TRANSITION_TO_4:
     break; 
 
 case PROCESS_STATION_4:
-if(SerialPort.avaliable()){
+if( SerialPort.available() ){
     int receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 2){
         ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
         SerialPort.println(3); 
     }
 } 
-if(SerialPort.avaliable()){
+if( SerialPort.available() ){
     int receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 4){
     ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
@@ -131,10 +134,12 @@ if(SerialPort.avaliable()){
     // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
     // // ElevatorSystem.updatePID(80);
 case TRANSITION_TO_6:
-    pidDriving(); //to the left
+    
+    driveSystem.updateBackwardDrivePID();
+    //pidDriving(); //to the left
     //stopping at Serving area; 
     //once stopped Serial.println(1);
-    if(SerialPort.avaliable()){
+    if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 2){
             currentState = PROCESS_STATION_6; 
@@ -142,25 +147,25 @@ case TRANSITION_TO_6:
     }
 case PROCESS_STATION_6:
     ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT);
-    Serial.Println(3);
-    if(SerialPort.avaliable()){
+    Serial.println(3);
+    if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
-        if(receivedVall = 4){
+        if(receivedVal = 4){
             currentState = TRANSITION_TO_5; 
         }
     }
 case TRANSITION_TO_5:
-bool stopConditionsMet(){
+bool stopConditionsMet() {
     return lineCountRight() >= 1 || lineCountLeft() >= 2; 
 }
 while(!stopConditionsMet){
     pidDriving(); //to the left
 }
-MotorL.stop();
-MotorR.stop(); 
+motorL.stop();
+motorR.stop(); 
 SerialPort.println(1);
 
-if(SerialPort.avaliable()){
+if(SerialPort.available()){
     int receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 2){
         currentState = PROCESS_STATION_5;
@@ -170,7 +175,7 @@ case PROCESS_STATION_5:
     ElevatorSystem.moveToValue(CLAW_COUNTER_HEIGHT);
     SerialPort.println(3);
 
-    if(SerialPort.avaliable()){
+    if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 5){
             ElevatorSystem.moveToValue(CLAW_SECURE_HEIGHT);
@@ -178,20 +183,23 @@ case PROCESS_STATION_5:
         }
     }
 case TRANSITION_TO_62:
-pidDriving(); //to the right
+    
+    driveSystem.updateForwardDrivePID();
+    //pidDriving(); //to the right
     //stopping at Serving area; 
     //once stopped Serial.println(1);
-     if(SerialPort.avaliable()){
+     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 6)
         currentState = FINISHED; 
     }
 case FINISHED: //aka transition to 4.2 
-    bool stopConditionsMet(){
+    bool stopConditionsMet() {
         return lineCountRight() >= 1 || lineCountLeft() >= 2; 
     }
     while(!stopCondiionsMet){
-        pidDriving(); 
+        //pidDriving();
+        driveSystem.updateForwardDrivePID(); 
     }
     motorL.stop();
     motorR.stop(); 
@@ -199,13 +207,16 @@ case FINISHED: //aka transition to 4.2
     currentState = PROCESS_STATION_4; 
 }
 
+
+}
+
 bool markerDetected(){
-    return (analogRead(MARKER_SENSOR_L) >= TAPE_THRESHOLD || analogRead(MARKER_SENSOR_R) >= TAPE_THRESHOLD)
+    return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD)
 }
 
 int lineCountLeft(){
     int count = 0; 
-    if(analogRead(MARKER_SENSOR_L) >= THRESHOLD){
+    if(analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD){
         count++; 
     }
     return count; 
@@ -213,7 +224,7 @@ int lineCountLeft(){
 
 int lineCountRight(){
     int count = 0; 
-    if(analogRead(MARKER_SENSOR_R) >= THRESHOLD){
+    if(analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD){
         count++; 
     }
     return count; 
@@ -225,8 +236,6 @@ void isrUpdateElevatorEncoder(){
     bool B = digitalRead(elevatorEncoder.getPinA());
     elevatorEncoder.updateEncoder(A, B);
 
-}
-}
 }
 
 // #endif
