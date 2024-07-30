@@ -88,7 +88,7 @@ namespace robot {
     class DrivePID {
 
 
-        private:
+        public:
 
         uint8_t forwardTapeSensorPin1;
         uint8_t forwardTapeSensorPin2;
@@ -96,6 +96,7 @@ namespace robot {
         uint8_t backwardTapeSensorPin1;
         uint8_t backwardTapeSensorPin2;
 
+private:
         movement::Motor *driveMotorL;
         movement::Motor *driveMotorR;
 
@@ -146,7 +147,7 @@ namespace robot {
 
         void updateForwardDrivePID();
 
-        void updateBackwardPID(); 
+        void updateBackwardDrivePID(); 
 
         void updateIRDrive(double irError);
 
