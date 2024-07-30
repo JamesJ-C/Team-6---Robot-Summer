@@ -4,6 +4,13 @@
 #include <Arduino.h>
 
 
+namespace robotControl {
+
+
+
+    
+}
+
 namespace constants {
 
     #define MOTOR_FREQUENCY 500

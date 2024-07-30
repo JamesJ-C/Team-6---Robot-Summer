@@ -119,7 +119,7 @@ namespace robot {
 
 
         DrivePID::DrivePID(uint8_t forwardTape1, uint8_t forwardTape2, uint8_t backwardTape1, uint8_t backwardTape2,
-        movement::Motor &motorL, movement::Motor motorR) 
+        movement::Motor *motorL, movement::Motor *motorR) 
         : forwardTapeSensorPin1(forwardTape1), forwardTapeSensorPin2(forwardTape2), backwardTapeSensorPin1(backwardTape1), 
         backwardTapeSensorPin2(backwardTape2), driveMotorL(motorL), driveMotorR(motorR) {}
 
@@ -136,8 +136,8 @@ namespace robot {
             forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
             forwardLastError = forwardError; 
 
-            driveMotorL.forward( (forwardMidMotorSpeed - 1 * forward_g) );
-            driveMotorR.forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
+            driveMotorL->forward( (forwardMidMotorSpeed - 1 * forward_g) );
+            driveMotorR->forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
 
         }
 
@@ -152,8 +152,8 @@ namespace robot {
 
             backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
  
-            driveMotorL.backward( (backwardMidMotorSpeed - 1 * backward_g) );
-            driveMotorR.backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorL->backward( (backwardMidMotorSpeed - 1 * backward_g) );
+            driveMotorR->backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
         }
 
         void DrivePID::updateIRDrive(double irError){
@@ -170,8 +170,8 @@ namespace robot {
 
             ir_g = BACKWARD_LOOP_GAIN * ( ir_p + ir_i + ir_d ); 
  
-            driveMotorL.backward( ir_g );
-            driveMotorR.backward(  1 * ir_g );
+            driveMotorL->backward( ir_g );
+            driveMotorR->backward(  1 * ir_g );
         }
 
 }
