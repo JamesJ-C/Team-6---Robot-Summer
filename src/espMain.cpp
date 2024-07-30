@@ -124,11 +124,11 @@ void loop() {
     Serial.println();
 
 }
-
-    if (beaconSensor.updateCorrelation() == 1 ){
-        Serial.println("max1: " + String (beaconSensor.getmax1() ));
-        Serial.println("max2: " + String (beaconSensor.getmax2() ));
-    }
+delay(500);
+    // if (beaconSensor.updateCorrelation() == 1 ){
+    //     Serial.println("max1: " + String (beaconSensor.getmax1() ));
+    //     Serial.println("max2: " + String (beaconSensor.getmax2() ));
+    // }
 
     // lazySusanSystem.updatePID(80);
     //Serial.println("LS enc: " + String( lazySusanEncoder.getIncrements() ) );
