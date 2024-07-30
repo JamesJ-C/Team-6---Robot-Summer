@@ -1,4 +1,4 @@
-#ifdef ESP32
+//#ifdef ESP32
 
 
 #include <Arduino.h>
@@ -32,9 +32,6 @@
 #define CLAWSERVO_OPEN_POS 120
 #define CLAWSERVO_CLOSED_POS 0
 
-//Receive and transmit pins 
-#define RX_PIN PA 
-#define TX_PIN PA 
 
 void isrUpdateLinearArmEncoder();
 void isrUpdateLazySusanEncoder();
@@ -48,6 +45,8 @@ encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
 
+robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
+
 
 Servo clawServo;
 Servo forkliftServo;
@@ -55,11 +54,17 @@ clawActuation::Claw clawSystem(&clawServo, &forkliftServo, CLAW_LIMIT_SWITCH_A, 
 
 enum State{
     START, 
-    PROCESS_STATION_4, 
+    TRANSITION_TO_4,
+    PROCESS_STATION_4,
+    PROCESS_STATION_5, 
+    TRANSITION_TO_6,
     PROCESS_STATION_6,
-    PROCESS_STATION_5,
+    TRANSITION_TO_5,
+    TRANSITION_TO_62,
+    PROCESS_STATION_62,
+    IDLE,
     FINISHED
-}
+};
 State currentState = IDLE; 
 
 HardwareSerial SerialPort(1);
@@ -127,21 +132,16 @@ void setup() {
 }
 
 int val = 0;
-bool A;
-bool B;
-
-int lastEncoded = 0x00;
-int increments = 0;
 
 void loop() {
 
 {
-    std::vector<double> irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
-    Serial.println("result1: " + String ( irResult.at(0) ));
-    Serial.println("result2: " + String ( irResult.at(1) ));
+    std::vector<double> *irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
+    Serial.println("result1: " + String ( irResult->at(0) ));
+    Serial.println("result2: " + String ( irResult->at(1) ));
     Serial.println();
 
-}
+
 delay(500);
     // if (beaconSensor.updateCorrelation() == 1 ){
     //     Serial.println("max1: " + String (beaconSensor.getmax1() ));
@@ -169,8 +169,9 @@ delay(500);
     // delay(1000);
     // linearArmMotor.backward(200);
     // delay(1000);
+}
 
-    switch (currentState)
+switch (currentState)
 {
 case START:
 forkliftServo.write(FORKLIFTSERVO_READY_POS);
@@ -198,7 +199,9 @@ case PROCESS_STATION_4:
     {
         currentState = PROCESS_STATION_6;
     }
+    
 case PROCESS_STATION_6:
+
     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
     Serial.println(2);
     if(SerialPort.available()){
@@ -208,7 +211,7 @@ case PROCESS_STATION_6:
             Serial.println(4);
         }
     }
-    f(SerialPort.available()){
+    if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 1){
             currentState = PROCESS_STATION_5; 
@@ -227,7 +230,7 @@ case PROCESS_STATION_5:
             SerialPort.println(5); 
         }
     }
-    if(SerialPort.avaliable()){
+    if(SerialPort.available()){
     receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 1){
         currentState = PROCESS_STATION_62;
@@ -254,6 +257,12 @@ case FINISHED: //basically loops back to station
 }
 
 
+} //loop
+
+
+
+
+
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
     bool A = digitalRead(linearArmEncoder.getPinA());
@@ -263,44 +272,35 @@ void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
 void IRAM_ATTR isrUpdateLazySusanEncoder(){
 
-    A = digitalRead(lazySusanEncoder.getPinA());
-    B = digitalRead(lazySusanEncoder.getPinB());
+    bool A = digitalRead(lazySusanEncoder.getPinA());
+    bool B = digitalRead(lazySusanEncoder.getPinB());
     lazySusanEncoder.updateEncoder(A, B);
 
     //val++;
 }
 
-
-void isrupdateEncoder(){
-        bool A = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PA);
-        bool B = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PB);
-
-        /*	encodes 2 bit current state  */
-        int encoded = ( A << 1 ) | B;
-
-        // Serial.println("encoded: " + encoded);
-        // Serial.println(encoded, BIN);
-        /*	encodes the last states bits, concat the current states bits  */
-        int concat = ( lastEncoded << 2 ) | encoded;
-        // Serial.print("concat: ");
-        // Serial.println(concat, BIN);
-
-        //Serial.println("concat: " + String(concat));
-        /*	hard codes all the possibilities of encoded data  */
-        if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
-            increments++;
-        }
-        
-        if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
-            increments--;
-        }
+// void isrupdateEncoder() {
+//     bool A = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PA);
+//     bool B = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PB);
+//     /*	encodes 2 bit current state  */
+//     int encoded = ( A << 1 ) | B;
+//     // Serial.println("encoded: " + encoded);
+//     // Serial.println(encoded, BIN);
+//     /*	encodes the last states bits, concat the current states bits  */
+//     int concat = ( lastEncoded << 2 ) | encoded;
+//     // Serial.print("concat: ");
+//     // Serial.println(concat, BIN);
+//     //Serial.println("concat: " + String(concat));
+//     /*	hard codes all the possibilities of encoded data  */
+//     if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+//        increments++;
+//     }
+//     if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+//         increments--;
+//     }
+//     /*	the current states bits become the next states previous bits  */
+//     lastEncoded = encoded;
+// }
 
 
-        /*	the current states bits become the next states previous bits  */
-        lastEncoded = encoded;
-
-
-    }
-
-
-#endif
+//#endif

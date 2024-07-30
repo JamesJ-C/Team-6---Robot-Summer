@@ -6,9 +6,9 @@
 
 namespace robotControl {
 
+    #define CLAW_OPEN_POS 0
 
 
-    
 }
 
 namespace constants {
