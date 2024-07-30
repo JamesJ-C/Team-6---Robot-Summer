@@ -12,10 +12,11 @@
 #include <RobotSystems.h>
 #include <espConstants.h>
 //#include <robotConstants.h>
+#include <ESp32Servo.h>
 #include <claw.h>
 
 //#ifdef ESP32
-#include <ESp32Servo.h>
+
 //#endif
 
 //Encoder values for different rotational positions, arbitary values needs tuning 
@@ -174,54 +175,56 @@ delay(500);
 switch (currentState)
 {
 case START:
-forkliftServo.write(FORKLIFTSERVO_READY_POS);
-if(SerialPort.available()){
+    forkliftServo.write(FORKLIFTSERVO_READY_POS);
+    if(SerialPort.available()){
     int receivedVal = SerialPort.parseInt();
-    if(receivedVal == 1){ // 1 is the signal indicating that the BP has finished driving 
-    currentState = PROCESS_STATION_4; 
+        if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
+            currentState = PROCESS_STATION_4; 
+        }
     }
-    break; 
-}
-case PROCESS_STATION_4: 
- lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
- SerialPort.println(2); 
- //wait for bp to adjust height 
- if(SerialPort.available()){
-    int receivedVal = SerialPort.parseInt();
-    if(receivedVal == 3){
-    linearArmSystem.moveToValue(CLAW_FORWARD); 
-    Serial.println(4); 
-    }
- }
- if(SerialPort.available()){
-    int receivedVal = SerialPort.parseInt();
-    if(receivedVal == 1)
-    {
-        currentState = PROCESS_STATION_6;
-    }
-    
-case PROCESS_STATION_6:
+    break;
 
+case PROCESS_STATION_4:
+    lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
+    SerialPort.println(2); 
+    //wait for bp to adjust height 
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt();
+        if(receivedVal == 3) {
+            linearArmSystem.moveToValue(CLAW_FORWARD); 
+            Serial.println(4); 
+        }
+    }
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt();
+        if(receivedVal == 1) {
+            currentState = PROCESS_STATION_6;
+        }
+    }
+    break;
+
+    case PROCESS_STATION_6:
     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
     Serial.println(2);
-    if(SerialPort.available()){
+    if(SerialPort.available()) {
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 3){
             linearArmSystem.moveToValue(CLAW_NEUTRAL);
             Serial.println(4);
         }
     }
-    if(SerialPort.available()){
+    if( SerialPort.available() ) {
         int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 1){
+        if( receivedVal == 1 ){
             currentState = PROCESS_STATION_5; 
         }
+    }
     break;
-case PROCESS_STATION_5:
+
+    case PROCESS_STATION_5:
     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
     clawServo.write(CLAW_OPEN_POS);
     SerialPort.println(2); 
-    }
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
         if(receivedVal == 3){
@@ -231,28 +234,31 @@ case PROCESS_STATION_5:
         }
     }
     if(SerialPort.available()){
-    receivedVal = SerialPort.parseInt(); 
-    if(receivedVal == 1){
-        currentState = PROCESS_STATION_62;
-    }
-}
-case PROCESS_STATION_62:
-    clawServo.write(CLAW_OPEN_POS); 
-    linearArmSystem.moveToValue(CLAW_NEUTRAL); 
-    currentState = FINISHED; 
-    SerialPort.println(6);
-
-case FINISHED: //basically loops back to station 
-    if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 1){
-            currentState = PROCESS_STATION_4; 
+            currentState = PROCESS_STATION_62;
         }
     }
+        break;
 
+    case PROCESS_STATION_62:
+        clawServo.write(CLAW_OPEN_POS); 
+        linearArmSystem.moveToValue(CLAW_NEUTRAL); 
+        currentState = FINISHED; 
+        SerialPort.println(6);
+        break;
 
-}
-
+    case FINISHED: //basically loops back to station 
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
+            if(receivedVal == 1){
+                currentState = PROCESS_STATION_4; 
+            }
+        }
+        break;
+    default:
+        currentState = IDLE;
+    break;
 
 }
 
