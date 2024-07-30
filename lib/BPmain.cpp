@@ -181,8 +181,23 @@ case TRANSITION_TO_62:
 pidDriving(); //to the right
     //stopping at Serving area; 
     //once stopped Serial.println(1);
-
-
+     if(SerialPort.avaliable()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 6)
+        currentState = FINISHED; 
+    }
+case FINISHED: //aka transition to 4.2 
+    bool stopConditionsMet(){
+        return lineCountRight() >= 1 || lineCountLeft() >= 2; 
+    }
+    while(!stopCondiionsMet){
+        pidDriving(); 
+    }
+    motorL.stop();
+    motorR.stop(); 
+    SerialPort.println(1);
+    currentState = PROCESS_STATION_4; 
+}
 
 bool markerDetected(){
     return (analogRead(MARKER_SENSOR_L) >= TAPE_THRESHOLD || analogRead(MARKER_SENSOR_R) >= TAPE_THRESHOLD)
@@ -214,4 +229,4 @@ void isrUpdateElevatorEncoder(){
 }
 }
 
-#endif
+// #endif
