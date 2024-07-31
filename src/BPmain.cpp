@@ -89,10 +89,41 @@ void setup() {
 
 
 void loop(){
-    while(!stopConditionsMet_TRANS_TO_4()){
+    // while(!stopConditionsMet_TRANS_TO_4()){
         driveSystem.updateForwardDrivePID();
         // pidDriving(); // to the right 
-        }
+        // }
+}
+
+bool prevLeftState = false;
+bool prevRightState = false; 
+int leftLineCount = 0;
+int rightLineCount = 0; 
+
+void updateLineCounts(){
+    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD;
+    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD;
+
+    if(currentLeftState && !prevLeftState){
+        leftLineCount++;
+    }
+    if(currentRightState && !prevRightState){
+        rightLineCount++;
+    }
+    prevLeftState = currentLeftState;
+    prevRightState = currentRightState;
+}
+
+int lineCountRight(){
+    return rightLineCount; 
+}
+
+int lineCountLeft(){
+    return leftLineCount; 
+}
+
+bool stopConditionsMet_TRANS_TO_4() {
+    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
 }
 
 
@@ -214,36 +245,6 @@ void loop(){
 //     return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD);
 // }
 
-bool prevLeftState = false;
-bool prevRightState = false; 
-int leftLineCount = 0;
-int rightLineCount = 0; 
-
-void updateLineCounts(){
-    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD;
-    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD;
-
-    if(currentLeftState && !prevLeftState){
-        leftLineCount++;
-    }
-    if(currentRightState && !prevRightState){
-        rightLineCount++;
-    }
-    prevLeftState = currentLeftState;
-    prevRightState = currentRightState;
-}
-
-int lineCountRight(){
-    return rightLineCount; 
-}
-
-int lineCountLeft(){
-    return leftLineCount; 
-}
-
-bool stopConditionsMet_TRANS_TO_4() {
-    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
-}
 
 // bool stopConditionsMet_TRANS_TO_5() {
 //     return lineCountRight() >= 1 || lineCountLeft() >= 2; 
