@@ -6,9 +6,19 @@
 
 namespace robotControl {
 
-    #define CLAW_OPEN_POS 0
-
-
+    //Encoder values for different rotational positions, arbitary values needs tuning 
+    #define NINETY_LAZYSUSAN 666
+    #define ONE_EIGHTY_LAZYSUSAN 667
+    #define TWO_SEVENTY_LAZYSUSAN 668
+    
+    //Encoder values for different positions of the linear arm movement 
+    #define CLAW_FORWARD 100 
+    #define CLAW_NEUTRAL 50 
+    
+    //Servo Positions
+    #define FORKLIFTSERVO_READY_POS 90
+    #define CLAWSERVO_OPEN_POS 120
+    #define CLAWSERVO_CLOSED_POS 0
 }
 
 namespace constants {

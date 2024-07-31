@@ -92,6 +92,7 @@ void setup() {
 void loop(){
 
 
+
 switch (currentState){
 case START: 
     delay(1000); 
@@ -132,7 +133,7 @@ if( SerialPort.available() ){
     // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
     // // ElevatorSystem.updatePID(80);
 case TRANSITION_TO_6:
-    
+    updateLineCounts(); // <-- run this in a while lop while driving
     driveSystem.updateBackwardDrivePID();
     //pidDriving(); //to the left
     //stopping at Serving area; 
@@ -155,7 +156,7 @@ case PROCESS_STATION_6:
 case TRANSITION_TO_5:
 
 while(!stopConditionsMet_TRANS_TO_5){
-    
+    updateLineCounts();
     driveSystem.updateForwardDrivePID();
     //pidDriving(); //to the left
 }
@@ -184,6 +185,7 @@ case TRANSITION_TO_62:
     
     driveSystem.updateForwardDrivePID();
     //pidDriving(); //to the right
+    updateLineCounts();//run in drving while loop 
     //stopping at Serving area; 
     //once stopped Serial.println(1);
      if(SerialPort.available()){
@@ -195,6 +197,7 @@ case FINISHED: //aka transition to 4.2
     
     while(!stopConditionsMet()){
         //pidDriving();
+        updateLineCounts();
         driveSystem.updateForwardDrivePID(); 
     }
     motorL.stop();
@@ -205,29 +208,35 @@ case FINISHED: //aka transition to 4.2
 
 
 }
-
-
-
-
-
 bool markerDetected(){
     return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD);
 }
 
-int lineCountLeft(){
-    int count = 0; 
-    if(analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD){
-        count++; 
+bool prevLeftState = false;
+bool prevRightState = false; 
+int leftLineCount = 0;
+int rightLineCount = 0; 
+
+void updateLineCounts(){
+    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD;
+    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD;
+
+    if(currentLeftState && !prevLeftState){
+        leftLineCount++;
     }
-    return count; 
+    if(currentRightState && !prevRightState){
+        rightLineCount++;
+    }
+    prevLeftState = currentLeftState;
+    prevRightState = currentRightState;
 }
 
 int lineCountRight(){
-    int count = 0; 
-    if(analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD){
-        count++; 
-    }
-    return count; 
+    return rightLineCount; 
+}
+
+int lineCountLeft(){
+    return leftLineCount; 
 }
 
 bool stopConditionsMet_TRANS_TO_4() {
