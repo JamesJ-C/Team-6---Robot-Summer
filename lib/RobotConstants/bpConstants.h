@@ -45,7 +45,7 @@ namespace tapeSensorPins {
 #define TAPE_SENSOR_BACKWARD_2 PA3
 
 #define TAPE_SENSOR_RIGHT_1 PA4
-#define TAPE_SENSOR_RIGHT_2 PA5
+#define TAPE_SENSOR_RIGHT_2 PA5//not this one
 
 #define TAPE_SENSOR_LEFT_1 PA0
 #define TAPE_SENSOR_LEFT_2 PA1

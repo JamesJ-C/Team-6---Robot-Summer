@@ -124,7 +124,13 @@ namespace robot {
         backwardTapeSensorPin2(backwardTape2), driveMotorL(motorL), driveMotorR(motorR) {}
 
         void DrivePID::updateForwardDrivePID() {
-            double forwardError = (double) analogRead(this->forwardTapeSensorPin1) - analogRead(this->forwardTapeSensorPin1);
+            //int  = 9;
+            int forwardError = analogRead(this->forwardTapeSensorPin1) - analogRead(this->forwardTapeSensorPin2);
+
+            // Serial.println("tp1: " + String( analogRead(this-> forwardTapeSensorPin1)) );
+            // Serial.println("tp2: " + String( analogRead(this-> forwardTapeSensorPin2)) );
+            // Serial.print("error: " );
+            //Serial.println( forwardError );
 
             forward_p = FORWARD_P_GAIN * forwardError;
             forward_d = FORWARD_D_GAIN * (forwardError - forwardLastError);
@@ -136,8 +142,10 @@ namespace robot {
             forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
             forwardLastError = forwardError; 
 
-            driveMotorL->forward( (forwardMidMotorSpeed - 1 * forward_g) );
-            driveMotorR->forward(  1 / 1.3 * ( ( forwardMidMotorSpeed + 1 * forward_g) ) );
+            driveMotorL->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
+            driveMotorR->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
+
+            Serial.println(forward_g);
 
         }
 
