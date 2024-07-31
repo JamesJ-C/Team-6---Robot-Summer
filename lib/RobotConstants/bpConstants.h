@@ -5,7 +5,7 @@
 
 
 // robotControl 
-#define TAPE_THRESHOLD 800
+#define TAPE_THRESHOLD 500
 
 //Encoder values for different heights of the elevator 
 #define FORKLIFT_COUNTER_HEIGHT 1000
