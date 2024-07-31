@@ -16,6 +16,9 @@ namespace robot {
          */
         RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor) { 
             this->limit1 = limit1;
+            if (limit2 == 255){
+                singleLimitSwitch = true;    
+            }
             this->limit2 = limit2;
             this->motor = motor;
         }
@@ -55,6 +58,10 @@ namespace robot {
             this->motor->off();
             this->motor->encoder->resetIncrement();
             bottom = this->motor->encoder->getIncrements();
+
+            if (singleLimitSwitch){
+                return;
+            }
 
             // turn motor in opposite direction until second limit reached
             do {

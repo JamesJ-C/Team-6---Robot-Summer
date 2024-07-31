@@ -25,6 +25,8 @@ namespace robot {
         uint8_t limit1;
         uint8_t limit2;
 
+        bool singleLimitSwitch = false;
+
         const int loopGain = 1.0;
         const int pGain = 0.55;
         const int iGain = 0.0;
