@@ -38,7 +38,7 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 //robot::RobotSubSystem Elevator();
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
-robot::DrivePID driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR);
+robot::DrivePID driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_2, TAPE_SENSOR_BACKWARD_1, &motorL, &motorR);
 
 
 HardwareSerial SerialPort(USART3);
@@ -92,7 +92,10 @@ void setup() {
 
 void loop() {
 
-    driveSystem.updateForwardDrivePID();
+    // driveSystem.updateForwardDrivePID();
+
+    driveSystem.updateBackwardDrivePID();
+
     // motorL.forward(3500);
     // motorR.forward(3500 / 1.0);
 
