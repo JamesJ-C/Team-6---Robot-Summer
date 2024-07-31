@@ -121,9 +121,9 @@ private:
 
         const int backwardMidMotorSpeed = 3300;
         const double BACKWARD_LOOP_GAIN = 1.0;
-        const double BACKWARD_P_GAIN = 1.2;
+        const double BACKWARD_P_GAIN = 0.8;
         const double BACKWARD_I_GAIN = 0.0;
-        const double BACKWARD_D_GAIN = 1.4;
+        const double BACKWARD_D_GAIN = 1.5;
         const double MAX_BACKWARD_I = 1400.0;
 
         double ir_p;

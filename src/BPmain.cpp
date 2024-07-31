@@ -79,13 +79,13 @@ void setup() {
 
     // ElevatorSystem.localize();
 
-    // motorL.forward(3000);
-    // delay(200);
-    // motorR.forward(3000);
-    // delay(200);
-    // motorL.off();
-    // motorR.off();
-    // delay(1000);
+    motorL.forward(3000);
+    delay(700);
+    motorR.forward(3000);
+    delay(700);
+    motorL.off();
+    motorR.off();
+    delay(1000);
 
 }
 
@@ -93,11 +93,28 @@ void setup() {
 void loop() {
 
     // driveSystem.updateForwardDrivePID();
+    // motorL.forward(4000);
+    // motorR.forward(4000);
 
+    // delay(1000);
+
+    // motorL.off();
+    // motorR.off(); 
+
+    // delay(100);
+
+    // motorL.backward(4000);
+    // motorR.backward(4000);
+
+    // delay(1000);
+
+    
     driveSystem.updateBackwardDrivePID();
+    // motorR.backward(3500);
+    // motorL.backward(3500);
+    // motorR.backward(4096);
+    // motorL.backward(4096);
 
-    // motorL.forward(3500);
-    // motorR.forward(3500 / 1.0);
 
 }
 

@@ -6,7 +6,7 @@
 
 namespace constants {
 
-    #define MOTOR_FREQUENCY 500
+    #define MOTOR_FREQUENCY 100
 }
 
 
