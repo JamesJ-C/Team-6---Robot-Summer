@@ -108,7 +108,7 @@ private:
 
         const int forwardMidMotorSpeed = 3400;
         const double FORWARD_LOOP_GAIN = 1.0;
-        const double FORWARD_P_GAIN = 1.0;
+        const double FORWARD_P_GAIN = 1.2;
         const double FORWARD_I_GAIN = 0.0;
         const double FORWARD_D_GAIN = 1.4;
         const double MAX_FORWARD_I = 1400.0;
@@ -121,9 +121,9 @@ private:
 
         const int backwardMidMotorSpeed = 3300;
         const double BACKWARD_LOOP_GAIN = 1.0;
-        const double BACKWARD_P_GAIN = 0.55;
+        const double BACKWARD_P_GAIN = 1.2;
         const double BACKWARD_I_GAIN = 0.0;
-        const double BACKWARD_D_GAIN = 1.36;
+        const double BACKWARD_D_GAIN = 1.4;
         const double MAX_BACKWARD_I = 1400.0;
 
         double ir_p;
