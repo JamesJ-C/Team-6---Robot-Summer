@@ -89,18 +89,20 @@ void setup() {
 
 
 void loop(){
-    // Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
-    // while(!stopConditionsMet_TRANS_TO_4()){
-    //     updateLineCounts(); 
+//    Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
+    while(!stopConditionsMet_TRANS_TO_4()){
+        updateLineCounts(); 
         driveSystem.updateForwardDrivePID(); //to te right
-        // }
-        // motorL.off();  
-        // motorR.off(); 
-    // driveSystem.updateBackwardDrivePID(); 
-    // while(!stopConditionsMet_TRANS_TO_4){
-
-    // }
-        // delay(5000);
+        }
+    motorL.off();  
+    motorR.off(); 
+    delay(2000);
+    while(!stopConditionsMet_TRANS_TO_4){
+        driveSystem.updateBackwardDrivePID(); 
+    }
+    motorL.off();  
+    motorR.off(); 
+    delay(2000);
 }
 
 bool prevLeftState = false;
