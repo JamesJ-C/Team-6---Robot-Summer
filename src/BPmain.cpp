@@ -36,7 +36,7 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
 robot::DrivePID 
-driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
+driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
 
 HardwareSerial SerialPort(USART3);
 
@@ -89,10 +89,14 @@ void setup() {
 
 
 void loop(){
-    // while(!stopConditionsMet_TRANS_TO_4()){
+    while(!stopConditionsMet_TRANS_TO_4()){
+        //updateLineCounts();
         driveSystem.updateForwardDrivePID();
-        // pidDriving(); // to the right 
-        // }
+        
+    }
+    motorR.off();
+    motorL.off();
+    delay(5000);
 }
 
 bool prevLeftState = false;
@@ -123,7 +127,7 @@ int lineCountLeft(){
 }
 
 bool stopConditionsMet_TRANS_TO_4() {
-    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
+    return lineCountRight() >= 3; 
 }
 
 
