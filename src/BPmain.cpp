@@ -89,10 +89,18 @@ void setup() {
 
 
 void loop(){
+    // Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
     // while(!stopConditionsMet_TRANS_TO_4()){
-        driveSystem.updateForwardDrivePID();
-        // pidDriving(); // to the right 
+    //     updateLineCounts(); 
+        driveSystem.updateForwardDrivePID(); //to te right
         // }
+        // motorL.off();  
+        // motorR.off(); 
+    // driveSystem.updateBackwardDrivePID(); 
+    // while(!stopConditionsMet_TRANS_TO_4){
+
+    // }
+        // delay(5000);
 }
 
 bool prevLeftState = false;
@@ -123,7 +131,7 @@ int lineCountLeft(){
 }
 
 bool stopConditionsMet_TRANS_TO_4() {
-    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
+    return lineCountRight() >= 2; 
 }
 
 
