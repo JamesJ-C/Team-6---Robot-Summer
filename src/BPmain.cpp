@@ -36,7 +36,7 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
 robot::DrivePID 
-driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
+driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_2, TAPE_SENSOR_BACKWARD_1, &motorL, &motorR); 
 
 HardwareSerial SerialPort(USART3);
 
@@ -55,6 +55,11 @@ HardwareSerial SerialPort(USART3);
 // };
 // State currentState = IDLE;
 
+
+bool prevLeftState = false;
+bool prevRightState = false; 
+int leftLineCount = 0;
+int rightLineCount = 0; 
 
 void setup() {
 
@@ -87,28 +92,34 @@ void setup() {
 
 }
 
+int loopCount = 0;
 
 void loop(){
 //    Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
-    while(!stopConditionsMet_TRANS_TO_4()){
-        updateLineCounts(); 
+    while(!stopConditionsMet_TRANS_TO_4() && loopCount == 0){
+        updateLineCounts();
         driveSystem.updateForwardDrivePID(); //to te right
-        }
-    motorL.off();  
-    motorR.off(); 
-    delay(2000);
-    while(!stopConditionsMet_TRANS_TO_4){
-        driveSystem.updateBackwardDrivePID(); 
     }
     motorL.off();  
     motorR.off(); 
+    loopCount++;
+    leftLineCount = 0;
+    rightLineCount = 0;
     delay(2000);
+    while( !stopConditionsMet_TRANS_TO_4() ) {
+    
+        updateLineCounts();
+        driveSystem.updateBackwardDrivePID(); 
+    }
+    leftLineCount = 0;
+    rightLineCount = 0;
+    motorL.off();  
+    motorR.off(); 
+    delay(2000);
+    //driveSystem.updateBackwardDrivePID(); 
 }
 
-bool prevLeftState = false;
-bool prevRightState = false; 
-int leftLineCount = 0;
-int rightLineCount = 0; 
+
 
 void updateLineCounts(){
     bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD;
