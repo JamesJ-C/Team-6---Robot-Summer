@@ -94,6 +94,18 @@ void setup() {
 
     // ElevatorSystem.localize();
 
+    Serial.println("setup done");
+    while (true){ 
+        if ( SerialPort.available()){
+            if (SerialPort.parseInt() == 1){
+                SerialPort.println(1);
+                break;
+            }
+        }
+    }
+
+
+
 }
 
 int x;

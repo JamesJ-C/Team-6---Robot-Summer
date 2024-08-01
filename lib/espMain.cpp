@@ -105,15 +105,16 @@ void setup() {
     //linearArmSystem.localize();
     // delay(100);
     /*  Wait for confirmation from the BP that setup is good  */
-    //SerialPort.println(1);
-    // while (true){ 
-    //     if ( SerialPort.parseInt() == 1){
-    //         break;
-    //     }
-    // }
-
+    
     delay(1000);
     linearArmMotor.off();
+    
+    SerialPort.println(1);
+    while (true){ 
+        if ( SerialPort.parseInt() == 1){
+            break;
+        }
+    }
     Serial.println("setup done");
 }
 

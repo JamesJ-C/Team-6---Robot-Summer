@@ -115,11 +115,11 @@ void setup() {
     pinMode(linearArmMotor.getPinB(), OUTPUT);
 
     /*  Interrupts  */
-    // attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
-    // attachInterrupt(lazySusanEncoder.getPinB(), isrUpdateLazySusanEncoder, CHANGE);
+    attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
+    attachInterrupt(lazySusanEncoder.getPinB(), isrUpdateLazySusanEncoder, CHANGE);
 
-    // attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
-    // attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
+    attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
 
     /*  Setup systems  */
@@ -127,17 +127,24 @@ void setup() {
     // delay(100);
     //linearArmSystem.localize();
     // delay(100);
+    
     /*  Wait for confirmation from the BP that setup is good  */
-    //SerialPort.println(1);
-    // while (true){ 
-    //     if ( SerialPort.parseInt() == 1){
-    //         break;
-    //     }
-    // }
-
-    delay(1000);
-    linearArmMotor.off();
+    
     Serial.println("setup done");
+    SerialPort.println(1);
+    while (true){ 
+        if ( SerialPort.parseInt() == 1){
+            display.clearDisplay();
+                    display.setTextSize(1);
+                    display.setTextColor(SSD1306_WHITE);
+                    display.setCursor(0,0);
+                    display.print("confirmation complete");
+                    display.display();
+                    //delay(1000);
+            break;
+        }
+    }
+
 }
 
 int val = 0;
