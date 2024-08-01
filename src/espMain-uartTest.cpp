@@ -132,16 +132,20 @@ void setup() {
     
     Serial.println("setup done");
     SerialPort.println(1);
+    unsigned long startTime = millis();
     while (true){ 
         if ( SerialPort.parseInt() == 1){
             display.clearDisplay();
-                    display.setTextSize(1);
-                    display.setTextColor(SSD1306_WHITE);
-                    display.setCursor(0,0);
-                    display.print("confirmation complete");
-                    display.display();
-                    //delay(1000);
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("confirmation complete");                
+            display.display();
+            // delay(1000);
             break;
+        }
+        if (millis() - startTime > 3000){
+            SerialPort.println(1);
         }
     }
 
