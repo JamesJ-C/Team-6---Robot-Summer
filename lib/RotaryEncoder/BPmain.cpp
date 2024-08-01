@@ -36,7 +36,7 @@ movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder)
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
 robot::DrivePID 
-driveSystem(TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
+driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
 
 HardwareSerial SerialPort(USART3);
 
@@ -64,7 +64,6 @@ void setup() {
     Serial.println("setup");
     SerialPort.begin(115200);
 
-
     pinMode(elevatorEncoder.getPinA(), INPUT_PULLUP);
     pinMode(elevatorEncoder.getPinB(), INPUT_PULLUP);
 
@@ -81,28 +80,18 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
-
-
     // ElevatorSystem.localize();
-
 }
 
 
 void loop(){
-//    Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
+    // Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
     while(!stopConditionsMet_TRANS_TO_4()){
         updateLineCounts(); 
         driveSystem.updateForwardDrivePID(); //to te right
         }
-    motorL.off();  
-    motorR.off(); 
-    delay(2000);
-    while(!stopConditionsMet_TRANS_TO_4){
-        driveSystem.updateBackwardDrivePID(); 
-    }
-    motorL.off();  
-    motorR.off(); 
-    delay(2000);
+        motorL.off();  
+        motorR.off(); 
 }
 
 bool prevLeftState = false;

@@ -85,8 +85,6 @@ namespace limitSwitches {
 
 namespace servoPins {
 
-//25
-//26
     #define CLAW_SERVO_PIN 25
     #define FORKLIFT_SERVO_PIN 26
 

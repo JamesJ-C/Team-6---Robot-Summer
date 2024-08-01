@@ -120,15 +120,20 @@ void setup() {
 int val = 0;
 
 void loop() {
+    clawServo.write(0);
+    delay(5000);
+    clawServo.write(180); 
+    delay(5000);
+}
 
-{
-    std::vector<double> *irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
-    Serial.println("result1: " + String ( irResult->at(0) ));
-    Serial.println("result2: " + String ( irResult->at(1) ));
-    Serial.println();
+// {
+    // std::vector<double> *irResult = beaconSensor.bothCrossCorrelation(IR_SENSOR_1, IR_SENSOR_2);
+    // Serial.println("result1: " + String ( irResult->at(0) ));
+    // Serial.println("result2: " + String ( irResult->at(1) ));
+    // Serial.println();
 
 
-delay(500);
+// delay(500);
     // if (beaconSensor.updateCorrelation() == 1 ){
     //     Serial.println("max1: " + String (beaconSensor.getmax1() ));
     //     Serial.println("max2: " + String (beaconSensor.getmax2() ));
@@ -157,98 +162,97 @@ delay(500);
     // delay(1000);
 }
 
-switch (currentState)
-{
-case START:
-    forkliftServo.write(FORKLIFTSERVO_READY_POS);
-    if(SerialPort.available()){
-    int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
-            currentState = PROCESS_STATION_4; 
-        }
-    }
-    break;
+// switch (currentState)
+// {
+// case START:
+//     forkliftServo.write(FORKLIFTSERVO_READY_POS);
+//     if(SerialPort.available()){
+//     int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
+//             currentState = PROCESS_STATION_4; 
+//         }
+//     }
+//     break;
 
-case PROCESS_STATION_4:
-    lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
-    SerialPort.println(2); 
-    //wait for bp to adjust height 
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 3) {
-            linearArmSystem.moveToValue(CLAW_FORWARD); 
-            Serial.println(4); 
-        }
-    }
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 1) {
-            currentState = PROCESS_STATION_6;
-        }
-    }
-    break;
+// case PROCESS_STATION_4:
+//     lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
+//     SerialPort.println(2); 
+//     //wait for bp to adjust height 
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 3) {
+//             linearArmSystem.moveToValue(CLAW_FORWARD); 
+//             Serial.println(4); 
+//         }
+//     }
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 1) {
+//             currentState = PROCESS_STATION_6;
+//         }
+//     }
+//     break;
 
-    case PROCESS_STATION_6:
-    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
-    Serial.println(2);
-    if(SerialPort.available()) {
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 3){
-            linearArmSystem.moveToValue(CLAW_NEUTRAL);
-            Serial.println(4);
-        }
-    }
-    if( SerialPort.available() ) {
-        int receivedVal = SerialPort.parseInt(); 
-        if( receivedVal == 1 ){
-            currentState = PROCESS_STATION_5; 
-        }
-    }
-    break;
+//     case PROCESS_STATION_6:
+//     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+//     Serial.println(2);
+//     if(SerialPort.available()) {
+//         int receivedVal = SerialPort.parseInt(); 
+//         if(receivedVal == 3){
+//             linearArmSystem.moveToValue(CLAW_NEUTRAL);
+//             Serial.println(4);
+//         }
+//     }
+//     if( SerialPort.available() ) {
+//         int receivedVal = SerialPort.parseInt(); 
+//         if( receivedVal == 1 ){
+//             currentState = PROCESS_STATION_5; 
+//         }
+//     }
+//     break;
 
-    case PROCESS_STATION_5:
-    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
-    clawServo.write(CLAW_OPEN_POS);
-    SerialPort.println(2); 
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 3){
-            linearArmSystem.moveToValue(CLAW_FORWARD); 
-            clawServo.write(CLAWSERVO_CLOSED_POS);
-            SerialPort.println(5); 
-        }
-    }
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 1){
-            currentState = PROCESS_STATION_62;
-        }
-    }
-        break;
+//     case PROCESS_STATION_5:
+//     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+//     clawServo.write(CLAW_OPEN_POS);
+//     SerialPort.println(2); 
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 3){
+//             linearArmSystem.moveToValue(CLAW_FORWARD); 
+//             clawServo.write(CLAWSERVO_CLOSED_POS);
+//             SerialPort.println(5); 
+//         }
+//     }
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt(); 
+//         if(receivedVal == 1){
+//             currentState = PROCESS_STATION_62;
+//         }
+//     }
+//         break;
 
-    case PROCESS_STATION_62:
-        clawServo.write(CLAW_OPEN_POS); 
-        linearArmSystem.moveToValue(CLAW_NEUTRAL); 
-        currentState = FINISHED; 
-        SerialPort.println(6);
-        break;
+//     case PROCESS_STATION_62:
+//         clawServo.write(CLAW_OPEN_POS); 
+//         linearArmSystem.moveToValue(CLAW_NEUTRAL); 
+//         currentState = FINISHED; 
+//         SerialPort.println(6);
+//         break;
 
-    case FINISHED: //basically loops back to station 
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 1){
-                currentState = PROCESS_STATION_4; 
-            }
-        }
-        break;
-    default:
-        currentState = IDLE;
-    break;
+//     case FINISHED: //basically loops back to station 
+//         if(SerialPort.available()){
+//             int receivedVal = SerialPort.parseInt(); 
+//             if(receivedVal == 1){
+//                 currentState = PROCESS_STATION_4; 
+//             }
+//         }
+//         break;
+//     default:
+//         currentState = IDLE;
+//     break;
 
-}
+// }
 
-
-} //loop
+ //loop
 
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
