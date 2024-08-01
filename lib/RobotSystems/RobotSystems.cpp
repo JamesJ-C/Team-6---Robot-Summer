@@ -160,6 +160,10 @@ namespace robot {
         void DrivePID::updateBackwardDrivePID(){
             double backwardError = (double) analogRead(backwardTapeSensorPin1) - analogRead(backwardTapeSensorPin2);
 
+            Serial.println("tp1: " + String( analogRead(this-> backwardTapeSensorPin1)) );
+            Serial.println("tp2: " + String( analogRead(this-> backwardTapeSensorPin2)) );
+            // Serial.print("error: " );
+
             backward_p = BACKWARD_P_GAIN * backwardError;
             backward_d = BACKWARD_D_GAIN * (backwardError - backwardLastError);
             backward_i = BACKWARD_I_GAIN * backwardError + backward_i; //const * error + previous int value
@@ -168,8 +172,8 @@ namespace robot {
 
             backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
  
-            driveMotorL->backward( (backwardMidMotorSpeed - 1 * backward_g) );
-            driveMotorR->backward(  1 / 1.2 * ( ( backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorL->backward( 1 / 1.0 * ( (backwardMidMotorSpeed - 1 * backward_g) ) );
+            driveMotorR->backward( 1 / 1.0 * ( (backwardMidMotorSpeed + 1 * backward_g) ) );
         }
 
         void DrivePID::updateIRDrive(double irError){
