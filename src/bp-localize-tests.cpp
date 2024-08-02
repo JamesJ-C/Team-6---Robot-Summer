@@ -26,6 +26,8 @@ bool stopConditionsMet();
 
 /*  Object declerations  */
 
+HardwareSerial SerialPort(USART3);
+
 movement::Motor motorL(MOTOR_L_P1, MOTOR_L_P2);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
 
@@ -33,13 +35,12 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, &SerialPort);
 
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
 
 
-HardwareSerial SerialPort(USART3);
 
 enum State{
     START, 
@@ -61,8 +62,8 @@ void setup() {
 
     delay(2000);
 
-    Serial.begin(115200);
-    Serial.println("setup");
+    //Serial.begin(115200);
+    //Serial.println("setup");
     SerialPort.begin(115200);
 
 
@@ -77,6 +78,9 @@ void setup() {
 
     pinMode(ElevatorMotor.getPinA(), OUTPUT);
     pinMode(ElevatorMotor.getPinB(), OUTPUT);
+
+    pinMode(ElevatorSystem.getLimit1(), INPUT);
+    pinMode(ElevatorSystem.getLimit2(), INPUT);
     
 
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
@@ -84,16 +88,33 @@ void setup() {
 
 
 
-    //ElevatorSystem.localize();
+    ElevatorSystem.localize();
 
 }
 
 
 void loop(){
 
-    //ElevatorSystem.updatePID(10);
-    ElevatorMotor.forward(3800);
-    SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
+    // ElevatorSystem.updatePID(10);
+    // ElevatorMotor.forward(3800);
+    // delay(1000);
+    // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
+    // ElevatorMotor.backward(3000);
+    // delay(500);
+    // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
+
+    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+            SerialPort.println("bottom pushed");
+            ElevatorMotor.forward(3400);
+            //delay(800);
+    }
+
+    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+        SerialPort.println("top pushed");
+        ElevatorMotor.backward(2900);
+        //delay(800);
+    }
+
 
 }
 bool markerDetected(){

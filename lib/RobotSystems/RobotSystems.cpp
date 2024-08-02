@@ -2,6 +2,7 @@
 #include <RotaryEncoder.h>
 #include <Motor.h>
 #include <RobotSystems.h>
+#include <HardwareSerial.h>
 
 
 namespace robot {
@@ -14,13 +15,14 @@ namespace robot {
          * @param limit1 first limit switch attatched to movement
          * @param limit2 second limit switched attatched to movement
          */
-        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor) { 
+        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, HardwareSerial *SerialPort) { 
             this->limit1 = limit1;
             if (limit2 == 255){
                 singleLimitSwitch = true;    
             }
             this->limit2 = limit2;
             this->motor = motor;
+            this -> SerialPort = SerialPort;
         }
 
         /**
@@ -47,12 +49,14 @@ namespace robot {
             int top;
             int center;
 
-            const int motorSpeed = 3800;
+            const int motorSpeedForward = 3400;
+            const int motorSpeedbackward = 2500;
 
             // turn motor until elevator reaches first limit
             do {
-                this->motor->backward(motorSpeed);
-            } while (!digitalRead(limit1));
+                this->motor->forward(motorSpeedForward);
+                this->SerialPort->println("forward");
+            } while (!digitalRead(limit2));
             
             // initialize first limit of motion
             this->motor->off();
@@ -65,8 +69,9 @@ namespace robot {
 
             // turn motor in opposite direction until second limit reached
             do {
-                this->motor->forward(motorSpeed);
-            } while (!digitalRead(limit2));
+                this->motor->backward(motorSpeedbackward);
+                this->SerialPort->println("backward");
+            } while (!digitalRead(limit1));
 
             // initialize second limit of motion
             this->motor->off();
@@ -76,7 +81,8 @@ namespace robot {
             // turn motor and reach center of motion
             center = top / 2;
             while (this->motor->encoder->getIncrements() != center) {
-                this->motor->forward(motorSpeed);
+                this->motor->forward(motorSpeedForward);
+                this->SerialPort->println("go to center");
             }
             this->motor->stop();
         }
@@ -92,6 +98,7 @@ namespace robot {
             // get current rotary value and compare to target value
             int currentRotaryVal = this->motor->encoder->getIncrements();
             while (currentRotaryVal != rotaryVal) {
+                break;
                 updatePID(rotaryVal);
                 int currentRotaryVal = this->motor->encoder->getIncrements();
             }
