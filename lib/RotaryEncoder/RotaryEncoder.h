@@ -116,6 +116,8 @@ namespace encoder {
 
     void updateEncoder(bool A, bool B);
 
+    void updateEncoder();
+
     /**
      * @brief resets the increment to 0
      * 

@@ -99,7 +99,39 @@ namespace encoder {
      * @param A digital read of pin A
      * @param B digital read of pin B
      */
-    void RotaryEncoder::updateEncoder(bool aA, bool bB){
+    void RotaryEncoder::updateEncoder(bool A, bool B){
+        // bool A = digitalRead(pinA);
+        // bool B = digitalRead(pinB);
+
+        /*	encodes 2 bit current state  */
+        int encoded = ( A << 1 ) | B;
+
+        // Serial.println("encoded: " + encoded);
+        // Serial.println(encoded, BIN);
+        /*	encodes the last states bits, concat the current states bits  */
+        int concat = ( lastEncoded << 2 ) | encoded;
+        // Serial.print("concat: ");
+        // Serial.println(concat, BIN);
+
+        //Serial.println("concat: " + String(concat));
+        /*	hard codes all the possibilities of encoded data  */
+        if (concat == 0b1101 || concat == 0b0100 || concat == 0b0010 || concat == 0b1011){
+          this->increments++;
+        }
+        else if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
+          this->increments--;
+        }
+ 
+
+
+        /*	the current states bits become the next states previous bits  */
+        this->lastEncoded = encoded;
+
+
+    }
+
+
+    void RotaryEncoder::updateEncoder(){
         bool A = digitalRead(pinA);
         bool B = digitalRead(pinB);
 
@@ -121,7 +153,7 @@ namespace encoder {
         else if (concat == 0b1110 || concat == 0b0111 || concat == 0b0001 || concat == 0b1000) {
           this->increments--;
         }
-        else {Serial.println(concat);}
+        // else {Serial.println(concat);}
 
 
         /*	the current states bits become the next states previous bits  */
@@ -129,7 +161,6 @@ namespace encoder {
 
 
     }
-
     /**
      * @brief resets the increment to 0
      * 

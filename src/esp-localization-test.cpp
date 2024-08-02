@@ -24,6 +24,9 @@
 void isrUpdateLinearArmEncoder();
 void isrUpdateLazySusanEncoder();
 
+void isrUpdateRetractArmButton();
+void isrUpdateExtendArmButton();
+
 
 
 // Declaration for an SSD1306 display connected to I2C (SDA, SCL pins)
@@ -126,7 +129,28 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
 
-    linearArmSystem.localize(180, 180);
+    // attachInterrupt(digitalPinToInterrupt(linearArmSystem.getLimit1() ), isrUpdateExtendArmButton, RISING);    
+    // attachInterrupt(digitalPinToInterrupt(linearArmSystem.getLimit2() ), isrUpdateRetractArmButton, RISING);
+
+    
+
+display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("localizing...");
+  display.display();
+Serial.println("localizing");
+
+
+    linearArmSystem.localize(30, 30);
+
+  display.clearDisplay();
+  display.setTextSize(1);
+  display.setTextColor(SSD1306_WHITE);
+  display.setCursor(0,0);
+  display.println("done localize");
+  display.display();
 
 
 }
@@ -148,38 +172,56 @@ void loop() {
     //     display.print("backward");
     // }
 
-    if( digitalRead( LAZY_SUSAN_LIMIT_SWITCH) == HIGH){
-        lazySusanMotor.forward(130);
-        display.print("forward: ");
-        delay(200);
-    } else {
-        lazySusanMotor.backward(130);
-        display.print("backward");
-    }
+    // if( digitalRead( LAZY_SUSAN_LIMIT_SWITCH) == HIGH){
+    //     lazySusanMotor.forward(130);
+    //     display.print("forward: ");
+    //     delay(200);
+    // } else {
+    //     lazySusanMotor.backward(130);
+    //     display.print("backward");
+    // }f
 
     // linearArmMotor.forward(200);
+
+    //display.print("looping: ");
+
+    display.print(linearArmSystem.firstSwitchHit);
+    
+    display.print(", ");
+    display.println(linearArmSystem.secondSwitchHit);
+    
     display.println(linearArmMotor.encoder->getIncrements());
     display.display();
 
 
 } //loop
 
-
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
-    bool A = digitalRead(linearArmEncoder.getPinA());
-    bool B = digitalRead(linearArmEncoder.getPinB());
-    linearArmEncoder.updateEncoder(A, B);
+    // bool A = digitalRead(linearArmEncoder.getPinA());
+    // bool B = digitalRead(linearArmEncoder.getPinB());
+    // linearArmEncoder.updateEncoder(A, B);
+    linearArmEncoder.updateEncoder();
 }
 
 void IRAM_ATTR isrUpdateLazySusanEncoder(){
 
-    bool A = digitalRead(lazySusanEncoder.getPinA());
-    bool B = digitalRead(lazySusanEncoder.getPinB());
-    lazySusanEncoder.updateEncoder(A, B);
+    // bool A = digitalRead(lazySusanEncoder.getPinA());
+    // bool B = digitalRead(lazySusanEncoder.getPinB());
+    // lazySusanEncoder.updateEncoder(A, B);
+    lazySusanEncoder.updateEncoder();
 
     //val++;
 }
+
+void IRAM_ATTR isrUpdateExtendArmButton(){
+    linearArmSystem.firstSwitchHit = true;
+}
+
+void IRAM_ATTR isrUpdateRetractArmButton(){
+    linearArmSystem.secondSwitchHit = true;
+}
+
 
 // void isrupdateEncoder() {
 //     bool A = digitalRead(LAZY_SUSAN_ROTARY_ENCODER_PA);

@@ -39,6 +39,9 @@ namespace robot {
         public:
         movement::EncodedMotor *motor;
 
+        volatile bool firstSwitchHit = false;
+        volatile bool secondSwitchHit = false;
+
         /**
          * @brief Construct a new Robot Sub System object
          * 
