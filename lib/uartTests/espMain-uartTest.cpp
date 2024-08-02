@@ -155,8 +155,22 @@ int val = 0;
 
 void loop() {
 
+    String msg;
 
-    int msgReceived = -1;
+    if(SerialPort.available()){
+        msg = SerialPort.readString();
+    
+        display.clearDisplay();
+        display.setTextSize(1);
+        display.setTextColor(SSD1306_WHITE);
+        display.setCursor(0,0);
+        display.print("msg: ");
+        display.println(msg);
+        display.display();
+
+    }
+
+    // int msgReceived = -1;
     // if(SerialPort.available()){
     //     msgReceived = SerialPort.parseInt();
     
@@ -170,44 +184,44 @@ void loop() {
     // display.println(msgReceived);
     // display.display();
 
-    Serial.println(msgReceived);
-    switch (sig) {
-        case waitingForReception: 
-            if(SerialPort.available()){
-                msgReceived = SerialPort.parseInt();
-                if (msgReceived == 5){
-                    sig = finish;
-                    //Serial.println("msg recieved");
-                    display.clearDisplay();
-                    display.setTextSize(1);
-                    display.setTextColor(SSD1306_WHITE);
-                    display.setCursor(0,0);
-                    display.print("msg: ");
-                    display.println(msgReceived);
-                    display.display();
-                    sig = finish;
-                } else {
-                    display.clearDisplay();
-                    display.setTextSize(1);
-                    display.setTextColor(SSD1306_WHITE);
-                    display.setCursor(0,0);
-                    display.print("msg NOT: ");
-                    display.println(msgReceived);
-                    display.display();
-                    delay(1000);
-                }
-            }
-            break;
-        case sendingSignal:
-        delay(100);
-            SerialPort.println(2);
-            sig = waitingForReception;
-            break;
+    // Serial.println(msgReceived);
+    // switch (sig) {
+    //     case waitingForReception: 
+    //         if(SerialPort.available()){
+    //             msgReceived = SerialPort.parseInt();
+    //             if (msgReceived == 5){
+    //                 sig = finish;
+    //                 //Serial.println("msg recieved");
+    //                 display.clearDisplay();
+    //                 display.setTextSize(1);
+    //                 display.setTextColor(SSD1306_WHITE);
+    //                 display.setCursor(0,0);
+    //                 display.print("msg: ");
+    //                 display.println(msgReceived);
+    //                 display.display();
+    //                 sig = finish;
+    //             } else {
+    //                 display.clearDisplay();
+    //                 display.setTextSize(1);
+    //                 display.setTextColor(SSD1306_WHITE);
+    //                 display.setCursor(0,0);
+    //                 display.print("msg NOT: ");
+    //                 display.println(msgReceived);
+    //                 display.display();
+    //                 delay(1000);
+    //             }
+    //         }
+    //         break;
+    //     case sendingSignal:
+    //     delay(100);
+    //         SerialPort.println(2);
+    //         sig = waitingForReception;
+    //         break;
         
-        default:
-            break;
+    //     default:
+    //         break;
 
-    }
+    // }
 } //loop
 
 
