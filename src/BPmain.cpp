@@ -95,27 +95,33 @@ void setup() {
 int loopCount = 0;
 
 void loop(){
+
+    driveSystem.updateForwardDrivePID();
+
+    // motorL.forward(4096);
+    // motorR.forward(4096);
+
 //    Serial.println(analogRead(TAPE_SENSOR_RIGHT_1)); 
-    while(!stopConditionsMet_TRANS_TO_4() && loopCount == 0){
-        updateLineCounts();
-        driveSystem.updateForwardDrivePID(); //to te right
-    }
-    motorL.off();  
-    motorR.off(); 
-    loopCount++;
-    leftLineCount = 0;
-    rightLineCount = 0;
-    delay(2000);
-    while( !stopConditionsMet_TRANS_TO_4() ) {
+    // while(!stopConditionsMet_TRANS_TO_4()){
+    //     updateLineCounts();
+    //     driveSystem.updateForwardDrivePID(); //to te right
+    // }
+    // motorL.off();  
+    // motorR.off(); 
+    // loopCount++;
+    // leftLineCount = 0;
+    // rightLineCount = 0;
+    // delay(2000);
+    // while( !stopConditionsMet_TRANS_TO_4() ) {
     
-        updateLineCounts();
-        driveSystem.updateBackwardDrivePID(); 
-    }
-    leftLineCount = 0;
-    rightLineCount = 0;
-    motorL.off();  
-    motorR.off(); 
-    delay(2000);
+    //     updateLineCounts();
+    //     driveSystem.updateBackwardDrivePID(); 
+    // }
+    // leftLineCount = 0;
+    // rightLineCount = 0;
+    // motorL.off();  
+    // motorR.off(); 
+    // delay(2000);
     //driveSystem.updateBackwardDrivePID(); 
 }
 
