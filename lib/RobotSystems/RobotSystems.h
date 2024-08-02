@@ -15,7 +15,6 @@
 #endif
 
 #include <vector>
-#include <HardwareSerial.h>
 
 namespace robot {
 
@@ -25,7 +24,6 @@ namespace robot {
         private:
         uint8_t limit1;
         uint8_t limit2;
-        HardwareSerial *SerialPort;
 
         bool singleLimitSwitch = false;
 
@@ -48,7 +46,7 @@ namespace robot {
          * @param limit1 first limit switch attatched to movement
          * @param limit2 second limit switched attatched to movement
          */
-        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, HardwareSerial *SerialPort);
+        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor);
 
         /**
          * @brief Returns the first limit switch pin
@@ -64,7 +62,7 @@ namespace robot {
         /**
          * @brief performs full movement sweep and initializes rotary encoder values 
          */
-        void localize();
+        void localize(const int motorSpeedForward, const int motorSpeedBackward);
 
 
         /**

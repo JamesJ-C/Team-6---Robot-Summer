@@ -15,14 +15,13 @@ namespace robot {
          * @param limit1 first limit switch attatched to movement
          * @param limit2 second limit switched attatched to movement
          */
-        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, HardwareSerial *SerialPort) { 
+        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor) { 
             this->limit1 = limit1;
             if (limit2 == 255){
                 singleLimitSwitch = true;    
             }
             this->limit2 = limit2;
             this->motor = motor;
-            this -> SerialPort = SerialPort;
         }
 
         /**
@@ -43,19 +42,18 @@ namespace robot {
         /**
          * @brief performs full movement sweep and initializes rotary encoder values 
          */
-        void RobotSubSystem::localize() {
+        void RobotSubSystem::localize(const int motorSpeedForward, const int motorSpeedBackward) {
 
             int bottom;
             int top;
             int center;
 
-            const int motorSpeedForward = 3400;
-            const int motorSpeedbackward = 2500;
+            
 
             // turn motor until elevator reaches first limit
             do {
                 this->motor->forward(motorSpeedForward);
-                this->SerialPort->println("forward");
+                //this->SerialPort->println("forward");
             } while (!digitalRead(limit2));
             
             // initialize first limit of motion
@@ -69,8 +67,8 @@ namespace robot {
 
             // turn motor in opposite direction until second limit reached
             do {
-                this->motor->backward(motorSpeedbackward);
-                this->SerialPort->println("backward");
+                this->motor->backward(motorSpeedBackward);
+                //this->SerialPort->println("backward");
             } while (!digitalRead(limit1));
 
             // initialize second limit of motion
@@ -82,7 +80,7 @@ namespace robot {
             center = top / 2;
             while (this->motor->encoder->getIncrements() != center) {
                 this->motor->forward(motorSpeedForward);
-                this->SerialPort->println("go to center");
+                //this->SerialPort->println("go to center");
             }
             this->motor->stop();
         }
