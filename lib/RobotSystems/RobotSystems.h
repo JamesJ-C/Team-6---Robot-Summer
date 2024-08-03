@@ -27,7 +27,7 @@ namespace robot {
 
         bool singleLimitSwitch = false;
 
-        const double loopGain = 0.8;
+        const double loopGain = 10.0;//0.8; for the arm
         const double pGain = 1.3;
         const double iGain = 0.6;
         const double dGain = 1.8;

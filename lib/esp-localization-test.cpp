@@ -144,7 +144,7 @@ void setup() {
 
     Serial.println("localizing");
 
-    linearArmSystem.localize(125, 125);
+    // linearArmSystem.localize(125, 125);
     //lazySusanSystem.localize(70, 70);
 
     display.clearDisplay();
@@ -184,17 +184,19 @@ int loopCount = 0;
 int g = 0;
 void loop() {
 
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.println( "enc: " + String( linearArmEncoder.getIncrements() ) );
-    display.println( "g: " + String(g ) );
-    // display.println(lazySusanEncoder.getIncrements());
-    display.display();
+    // display.clearDisplay();
+    // display.setTextSize(1);
+    // display.setTextColor(SSD1306_WHITE);
+    // display.setCursor(0,0);
+    // display.println( "enc: " + String( linearArmEncoder.getIncrements() ) );
+    // display.println( "g: " + String(g ) );
+    // // display.println(lazySusanEncoder.getIncrements());
+    // display.display();
 
 
-    g = linearArmSystem.updatePID(-140);
+    // g = linearArmSystem.updatePID(-140);
+
+///////
 
     // if( digitalRead( LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
     //     linearArmMotor.forward(40);
@@ -312,15 +314,15 @@ void loop() {
 }
 
 
-// if (SerialPort.available()){
-//     int msg = SerialPort.parseInt();
-//     display.clearDisplay();
-//     display.setTextSize(1);
-//     display.setTextColor(SSD1306_WHITE);
-//     display.setCursor(0,0);
-//     display.println(msg);
-//     display.display();
-//     }
+if (SerialPort.available()){
+    int msg = SerialPort.parseInt();
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println(msg);
+    display.display();
+    }
 
 } //loop
 

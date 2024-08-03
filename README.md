@@ -4,6 +4,8 @@
 Linear arm has 160 encoder ticks between the limit switches. extended is -160, closed is 0
 
 
+Elevator has 515 encoder ticks between the limit switches. Top is 0, bottom is -515.
+
 
 
 

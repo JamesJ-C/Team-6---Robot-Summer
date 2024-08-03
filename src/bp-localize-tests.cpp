@@ -32,7 +32,7 @@ movement::Motor motorL(MOTOR_L_P1, MOTOR_L_P2);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
 
 encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB);
-movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
+movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
@@ -62,8 +62,9 @@ void setup() {
 
     delay(2000);
 
-    //Serial.begin(115200);
-    //Serial.println("setup");
+    // Serial.begin(115200);
+    // Serial.println("setup");
+
     SerialPort.begin(115200);
 
 
@@ -98,6 +99,12 @@ void setup() {
     //         }
     //     }
     // }
+
+// Serial.println(elevatorEncoder.getMaxIncrement());
+SerialPort.println(elevatorEncoder.getMaxIncrement());
+
+delay(1000);
+
 
 }
 
@@ -184,6 +191,10 @@ void loop(){
 SerialPort.println(elevatorEncoder.getIncrements());
 
 
+ElevatorSystem.updatePID(-100);
+
+// Serial.println(elevatorEncoder.getIncrements());
+
     // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
     //     SerialPort.println("bottom pushed");
     //     ElevatorMotor.forward(3300);
@@ -266,9 +277,11 @@ bool stopConditionsMet() {
 
 void isrUpdateElevatorEncoder(){
 
-    bool A = digitalRead(elevatorEncoder.getPinA());
-    bool B = digitalRead(elevatorEncoder.getPinA());
-    elevatorEncoder.updateEncoder(A, B);
+    // bool A = digitalRead(elevatorEncoder.getPinA());
+    // bool B = digitalRead(elevatorEncoder.getPinA());
+    // elevatorEncoder.updateEncoder(A, B);
+
+    elevatorEncoder.updateEncoder();
 
 }
 
