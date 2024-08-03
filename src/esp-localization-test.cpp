@@ -194,7 +194,7 @@ void loop() {
     display.display();
 
 
-    //g = linearArmSystem.updatePID(-140);
+    g = linearArmSystem.updatePID(-140);
 
     // if( digitalRead( LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
     //     linearArmMotor.forward(40);

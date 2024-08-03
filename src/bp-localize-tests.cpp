@@ -90,14 +90,14 @@ void setup() {
 
     ElevatorSystem.localize(3400, 2500);
 
-    while (true){ 
-        if ( SerialPort.available()){
-            if (SerialPort.parseInt() == 1){
-                SerialPort.println(1);
-                break;
-            }
-        }
-    }
+    // while (true){ 
+    //     if ( SerialPort.available()){
+    //         if (SerialPort.parseInt() == 1){
+    //             SerialPort.println(1);
+    //             break;
+    //         }
+    //     }
+    // }
 
 }
 
@@ -184,15 +184,15 @@ void loop(){
 SerialPort.println(elevatorEncoder.getIncrements());
 
 
-    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-        SerialPort.println("bottom pushed");
-        ElevatorMotor.forward(3300);
-    }
+    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+    //     SerialPort.println("bottom pushed");
+    //     ElevatorMotor.forward(3300);
+    // }
 
-    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-        SerialPort.println("top pushed");
-        ElevatorMotor.backward(2500);  
-    }
+    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+    //     SerialPort.println("top pushed");
+    //     ElevatorMotor.backward(2500);  
+    // }
 
 
 
