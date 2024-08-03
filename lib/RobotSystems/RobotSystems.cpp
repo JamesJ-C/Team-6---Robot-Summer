@@ -49,12 +49,12 @@ namespace robot {
             int center;
 
             // turn motor until elevator reaches first limit
-            do {
-                Serial.println("fwd");
-                this->motor->forward(motorSpeedForward);
-                //this->SerialPort->println("forward");
-            } while (!digitalRead(limit2)); //while (!secondSwitchHit); 
             
+            this->motor->forward(motorSpeedForward);
+            do {
+                
+            } while (!digitalRead(limit2)); //while (!secondSwitchHit); 
+            //Serial.println("after first loop");
             
             // initialize first limit of motion
             this->motor->off();
@@ -66,11 +66,13 @@ namespace robot {
             // }
 
             // turn motor in opposite direction until second limit reached
-            do {
-                Serial.println("bckwd");
                 this->motor->backward(motorSpeedBackward);
-                //this->SerialPort->println("backward");
+            do {
+                //Serial.println("bckwd");
+
             } while (!digitalRead(limit1)); //while (!firstSwitchHit);
+
+            //Serial.println("after 2nd loop");
 
             // initialize second limit of motion
             this->motor->off();
@@ -81,10 +83,12 @@ namespace robot {
             center = top / 2;
             while (this->motor->encoder->getIncrements() != center) {
                 //break;
-                this->motor->forward(0);
-                //this->SerialPort->println("go to center");
+                this->motor->forward(motorSpeedForward);
+
             }
+            Serial.println(center);
             this->motor->stop();
+            //Serial.println("after last loop");
         }
 
 

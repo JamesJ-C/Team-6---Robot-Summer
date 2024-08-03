@@ -104,6 +104,7 @@ namespace movement {
       analogWrite(this->PWM_pinB, 0);
       // Serial.println("ESP stuff");
       // pwmForward(this->PWM_pinA,this->PWM_pinB, PWM_Val );
+      Serial.println("fwd");
     #endif
 
   }
@@ -138,6 +139,7 @@ void Motor::espForward(int PWM_Val){
       analogWrite(this->PWM_pinA, 0);
       // analogWrite(this->PWM_pinB, 0);
       analogWrite(this->PWM_pinB, PWM_Val);
+      Serial.println("bckwd");
 
       // pwmBackward(this->PWM_pinA,this->PWM_pinB, PWM_Val );
     #endif
@@ -185,6 +187,7 @@ void Motor::stop() {
     #ifdef ESP32
       analogWrite(this->PWM_pinA, 0);
       analogWrite(this->PWM_pinB, 0);
+      Serial.println("off");
     #endif
   }
 

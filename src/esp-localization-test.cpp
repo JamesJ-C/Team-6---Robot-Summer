@@ -134,64 +134,89 @@ void setup() {
 
     
 
-display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-  display.println("localizing...");
-  display.display();
-Serial.println("localizing");
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println("localizing...");
+    display.display();
 
 
-    linearArmSystem.localize(30, 30);
+    Serial.println("localizing");
 
-  display.clearDisplay();
-  display.setTextSize(1);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(0,0);
-  display.println("done localize");
-  display.display();
+    linearArmSystem.localize(25, 25);
+
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println("done localize");
+    display.display();
 
 
 }
 
 int val = 0;
-
+int loopCount = 0;
 void loop() {
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
+    // display.clearDisplay();
+    // display.setTextSize(1);
+    // display.setTextColor(SSD1306_WHITE);
+    // display.setCursor(0,0);
+
+if (loopCount == 0){
+    loopCount++;
+    Serial.println("doing the thing");
+    delay(1000);
+    linearArmSystem.localize(30, 30);
+}
+
+
+
+linearArmMotor.forward(80);
+delay(3000);
+linearArmMotor.backward(80);
+delay(3000);
 
     // if( digitalRead( LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
-    //     linearArmMotor.forward(180);
-    //     display.print("forward: ");
+    //     linearArmMotor.forward(40);
+    //     display.print("forward:");
     // }
     // if (digitalRead( LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
-    //     linearArmMotor.backward(180);
+    //     linearArmMotor.backward(40);
     //     display.print("backward");
     // }
 
     // if( digitalRead( LAZY_SUSAN_LIMIT_SWITCH) == HIGH){
-    //     lazySusanMotor.forward(130);
+    //     lazySusanMotor.forward(180);
     //     display.print("forward: ");
     //     delay(200);
     // } else {
-    //     lazySusanMotor.backward(130);
+    //     lazySusanMotor.backward(180);
     //     display.print("backward");
-    // }f
+    // }
+    
+    // display.println(lazySusanMotor.encoder->getIncrements());
+    // display.display();
 
-    // linearArmMotor.forward(200);
+// Serial.println();
+// Serial.println();
+// Serial.println(
+
+//     lazySusanMotor.encoder->getIncrements() );
+
+    // delay(10000);
+    // linearArmMotor.forward(20);
 
     //display.print("looping: ");
 
-    display.print(linearArmSystem.firstSwitchHit);
+    // display.print(linearArmSystem.firstSwitchHit);
     
-    display.print(", ");
-    display.println(linearArmSystem.secondSwitchHit);
+    // display.print(", ");
+    // display.println(linearArmSystem.secondSwitchHit);
     
-    display.println(linearArmMotor.encoder->getIncrements());
-    display.display();
+    // display.println(linearArmMotor.encoder->getIncrements());
+    // display.display();
 
 
 } //loop
