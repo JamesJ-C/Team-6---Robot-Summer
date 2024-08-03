@@ -104,6 +104,8 @@ void setup() {
 
 void loop(){
 
+{
+
     // ElevatorSystem.updatePID(10);
     // ElevatorMotor.forward(3800);
     // delay(1000);
@@ -126,7 +128,123 @@ void loop(){
     //     ElevatorMotor.backward(2900);
     //     //delay(800);
     // }
+}
+
+
+switch (currentState){
+case START: 
+    delay(1000); 
+    currentState = TRANSITION_TO_4; 
+    break;
+
+case TRANSITION_TO_4:
+
+
+    while(!stopConditionsMet_TRANS_TO_4()){
+        
+        driveSystem.updateForwardDrivePID();
+        // pidDriving(); // to the right 
+    }
+
+    motorL.stop();
+    motorR.stop(); 
+
+    SerialPort.println(1); 
+
+    currentState = PROCESS_STATION_4;
+    break; 
+
+case PROCESS_STATION_4:
+if( SerialPort.available() ){
+    int receivedVal = SerialPort.parseInt(); 
+    if(receivedVal == 2){
+        ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
+        SerialPort.println(3); 
+    }
+} 
+if( SerialPort.available() ){
+    int receivedVal = SerialPort.parseInt(); 
+    if(receivedVal == 4){
+    ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
+    }
+} currentState = TRANSITION_TO_6; 
+    // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
+    // // ElevatorSystem.updatePID(80);
+case TRANSITION_TO_6:
+    updateLineCounts(); // <-- run this in a while lop while driving
+    driveSystem.updateBackwardDrivePID();
+    //pidDriving(); //to the left
+    //stopping at Serving area; 
+    //once stopped Serial.println(1);
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 2){
+            currentState = PROCESS_STATION_6; 
+        }
+    }
+case PROCESS_STATION_6:
+    ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT);
+    Serial.println(3);
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt();
+        if(receivedVal = 4){
+            currentState = TRANSITION_TO_5; 
+        }
+    }
+case TRANSITION_TO_5:
+
+while(!stopConditionsMet_TRANS_TO_5){
+    updateLineCounts();
+    driveSystem.updateForwardDrivePID();
+    //pidDriving(); //to the left
+}
+motorL.stop();
+motorR.stop(); 
+SerialPort.println(1);
+
+if(SerialPort.available()){
+    int receivedVal = SerialPort.parseInt(); 
+    if(receivedVal == 2){
+        currentState = PROCESS_STATION_5;
+    }
+}
+case PROCESS_STATION_5:
+    ElevatorSystem.moveToValue(CLAW_COUNTER_HEIGHT);
+    SerialPort.println(3);
+
+    if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 5){
+            ElevatorSystem.moveToValue(CLAW_SECURE_HEIGHT);
+            currentState = TRANSITION_TO_62;
+        }
+    }
+case TRANSITION_TO_62:
     
+    driveSystem.updateForwardDrivePID();
+    //pidDriving(); //to the right
+    updateLineCounts();//run in drving while loop 
+    //stopping at Serving area; 
+    //once stopped Serial.println(1);
+     if(SerialPort.available()){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 6)
+        currentState = FINISHED; 
+    }
+case FINISHED: //aka transition to 4.2 
+    
+    while(!stopConditionsMet()){
+        //pidDriving();
+        updateLineCounts();
+        driveSystem.updateForwardDrivePID(); 
+    }
+    motorL.stop();
+    motorR.stop(); 
+    SerialPort.println(1);
+    currentState = PROCESS_STATION_4; 
+}
+
+
 
 
 }
