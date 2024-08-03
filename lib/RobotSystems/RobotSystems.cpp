@@ -82,7 +82,7 @@ namespace robot {
             // turn motor and reach center of motion
             center = top / 2;
             while (this->motor->encoder->getIncrements() != center) {
-                //break;
+                break;
                 this->motor->forward(motorSpeedForward);
 
             }

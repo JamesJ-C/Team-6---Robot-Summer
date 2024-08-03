@@ -35,7 +35,7 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, &SerialPort);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
 
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
@@ -88,7 +88,7 @@ void setup() {
 
 
 
-    ElevatorSystem.localize();
+    ElevatorSystem.localize(3400, 2500);
     //const int motorSpeedForward = 3400;
       //      const int motorSpeedbackward = 2500;
 
@@ -105,13 +105,13 @@ void loop(){
     // delay(500);
     // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
 
-    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
             SerialPort.println("bottom pushed");
             ElevatorMotor.forward(3400);
             //delay(800);
     }
 
-    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
         SerialPort.println("top pushed");
         ElevatorMotor.backward(2900);
         //delay(800);
