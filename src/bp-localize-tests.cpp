@@ -155,21 +155,25 @@ case TRANSITION_TO_4:
     break; 
 
 case PROCESS_STATION_4:
-if( SerialPort.available() ){
-    int receivedVal = SerialPort.parseInt(); 
-    if(receivedVal == 2){
-        ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
-        SerialPort.println(3); 
-    }
-} 
-if( SerialPort.available() ){
-    int receivedVal = SerialPort.parseInt(); 
-    if(receivedVal == 4){
-    ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
-    }
-} currentState = TRANSITION_TO_6; 
-    // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
-    // // ElevatorSystem.updatePID(80);
+    if( SerialPort.available() ){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 2){
+            ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
+            SerialPort.println(3); 
+        }
+    } 
+    if( SerialPort.available() ){
+        int receivedVal = SerialPort.parseInt(); 
+        if(receivedVal == 4){//arm has moved forward 
+        ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
+        SerialPort.println(1);
+        }
+    } 
+    currentState = TRANSITION_TO_6;
+
+    break;
+
+    default:
     break;
 
 }
