@@ -130,53 +130,69 @@ void loop(){
     // }
 }
 
+{
+// switch (currentState){
+// case START: 
+//     delay(1000); 
+//     currentState = TRANSITION_TO_4; 
+//     break;
 
-switch (currentState){
-case START: 
-    delay(1000); 
-    currentState = TRANSITION_TO_4; 
-    break;
-
-case TRANSITION_TO_4:
+// case TRANSITION_TO_4:
 
 
-    while(!stopConditionsMet_TRANS_TO_4()){
+//     while(!stopConditionsMet_TRANS_TO_4()){
         
-        driveSystem.updateForwardDrivePID();
-        // pidDriving(); // to the right 
-    }
+//         driveSystem.updateForwardDrivePID();
+//         // pidDriving(); // to the right 
+//     }
 
-    motorL.stop();
-    motorR.stop(); 
+//     motorL.stop();
+//     motorR.stop(); 
 
-    SerialPort.println(1); 
+//     SerialPort.println(1); 
 
-    currentState = PROCESS_STATION_4;
-    break; 
+//     currentState = PROCESS_STATION_4;
+//     break; 
 
-case PROCESS_STATION_4:
-    if( SerialPort.available() ){
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 2){
-            ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
-            SerialPort.println(3); 
-        }
-    } 
-    if( SerialPort.available() ){
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 4){//arm has moved forward 
-        ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
-        SerialPort.println(1);
-        }
-    } 
-    currentState = TRANSITION_TO_6;
+// case PROCESS_STATION_4:
+//     if( SerialPort.available() ){
+//         int receivedVal = SerialPort.parseInt(); 
+//         if(receivedVal == 2){
+//             ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
+//             SerialPort.println(3); 
+//         }
+//     } 
+//     if( SerialPort.available() ){
+//         int receivedVal = SerialPort.parseInt(); 
+//         if(receivedVal == 4){//arm has moved forward 
+//         ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
+//         SerialPort.println(1);
+//         }
+//     } 
+//     currentState = TRANSITION_TO_6;
 
-    break;
+//     break;
 
-    default:
-    break;
+//     default:
+//     break;
+
+// }
 
 }
+
+
+SerialPort.println(elevatorEncoder.getIncrements());
+
+
+    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+        SerialPort.println("bottom pushed");
+        ElevatorMotor.forward(3300);
+    }
+
+    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+        SerialPort.println("top pushed");
+        ElevatorMotor.backward(2500);  
+    }
 
 
 

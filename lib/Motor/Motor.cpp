@@ -53,7 +53,7 @@ namespace movement {
       this->forward(val);
     }
     if (val < 0){
-      this->backward(val);
+      this->backward( -1 * val);
     } else {
       this->off();
     }
@@ -93,6 +93,8 @@ namespace movement {
     forwardDirection = true;
     backwardDirection = false;
     this->motorSpeed = PWM_Val;
+
+    Serial.println("fwd" + String (PWM_Val));
       
     #ifndef ESP32
       pwm_start( (PinName) PWM_pinA, MOTOR_FREQUENCY, PWM_Val, RESOLUTION_12B_COMPARE_FORMAT);
@@ -130,6 +132,8 @@ void Motor::espForward(int PWM_Val){
     forwardDirection = false;
     backwardDirection = true;
     this->motorSpeed = PWM_Val;
+
+    Serial.println("backwd" + String (PWM_Val));
 
     #ifndef ESP32
       pwm_start( (PinName) PWM_pinA, MOTOR_FREQUENCY, 0, RESOLUTION_12B_COMPARE_FORMAT);

@@ -1,6 +1,13 @@
 # Team-6---Robot-Summer
 
 
+Linear arm has 160 encoder ticks between the limit switches. extended is -160, closed is 0
+
+
+
+
+
+
 Tasks to do:
 
 PID control of rod with limit switches (needed for:)

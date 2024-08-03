@@ -27,14 +27,14 @@ namespace robot {
 
         bool singleLimitSwitch = false;
 
-        const int loopGain = 1.0;
+        const int loopGain = 0.5;
         const int pGain = 2.0;
         const int iGain = 2.0;
         const int dGain = 1.2;
         double transfer;
         double lastError = 0;
         double iTerm = 0;
-        double maxI = 140;
+        double maxI = 1400;
 
         public:
         movement::EncodedMotor *motor;

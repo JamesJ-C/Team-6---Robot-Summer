@@ -132,7 +132,10 @@ namespace robot {
 
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
-            return (int) error;
+            //return (int) error;
+            Serial.println(error);
+            Serial.println(transfer);
+            return (int) transfer;
         }
 
 
