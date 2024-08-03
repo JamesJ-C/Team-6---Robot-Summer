@@ -132,6 +132,8 @@ if( SerialPort.available() ){
 } currentState = TRANSITION_TO_6; 
     // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
     // // ElevatorSystem.updatePID(80);
+    break;
+
 case TRANSITION_TO_6:
     updateLineCounts(); // <-- run this in a while lop while driving
     driveSystem.updateBackwardDrivePID();
@@ -144,6 +146,8 @@ case TRANSITION_TO_6:
             currentState = PROCESS_STATION_6; 
         }
     }
+
+    break;
 case PROCESS_STATION_6:
     ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT);
     Serial.println(3);
@@ -153,6 +157,8 @@ case PROCESS_STATION_6:
             currentState = TRANSITION_TO_5; 
         }
     }
+
+    break;
 case TRANSITION_TO_5:
 
 while(!stopConditionsMet_TRANS_TO_5){
@@ -170,6 +176,8 @@ if(SerialPort.available()){
         currentState = PROCESS_STATION_5;
     }
 }
+
+break;
 case PROCESS_STATION_5:
     ElevatorSystem.moveToValue(CLAW_COUNTER_HEIGHT);
     SerialPort.println(3);
@@ -181,6 +189,8 @@ case PROCESS_STATION_5:
             currentState = TRANSITION_TO_62;
         }
     }
+
+    break;
 case TRANSITION_TO_62:
     
     driveSystem.updateForwardDrivePID();
@@ -193,6 +203,8 @@ case TRANSITION_TO_62:
         if(receivedVal == 6)
         currentState = FINISHED; 
     }
+
+    break;
 case FINISHED: //aka transition to 4.2 
     
     while(!stopConditionsMet()){
@@ -204,7 +216,14 @@ case FINISHED: //aka transition to 4.2
     motorR.stop(); 
     SerialPort.println(1);
     currentState = PROCESS_STATION_4; 
+    
+    break;
+    
+    default:
+        break;
 }
+
+
 
 
 }
