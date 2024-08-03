@@ -144,7 +144,7 @@ void setup() {
 
     Serial.println("localizing");
 
-    linearArmSystem.localize(110, 110);
+    linearArmSystem.localize(125, 125);
     //lazySusanSystem.localize(70, 70);
 
     display.clearDisplay();

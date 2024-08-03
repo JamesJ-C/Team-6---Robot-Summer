@@ -123,9 +123,9 @@ namespace robot {
             // calculate PID transfer function to send to motor
             double motor_p = pGain * error;
             double motor_d = dGain * (error - lastError);
-            double motor_i = iGain * error + iTerm;
-            if (iTerm > maxI) {iTerm = maxI;}
-            if (iTerm < -maxI) {iTerm = -maxI;}
+            motor_i = iGain * error + motor_i;
+            if (motor_i > maxI) {motor_i = maxI;}
+            if (motor_i < -maxI) {motor_i = -maxI;}
 
             transfer = loopGain * (motor_p + motor_d + motor_i);
             lastError = error;
@@ -133,7 +133,10 @@ namespace robot {
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
             //return (int) error;
-            Serial.println(error);
+            // Serial.println(error);
+            // Serial.println(motor_p);
+            // Serial.println(motor_d);
+            Serial.println(motor_i);
             Serial.println(transfer);
             return (int) transfer;
         }
