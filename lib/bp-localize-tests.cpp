@@ -89,8 +89,15 @@ void setup() {
 
 
     ElevatorSystem.localize(3400, 2500);
-    //const int motorSpeedForward = 3400;
-      //      const int motorSpeedbackward = 2500;
+
+    while (true){ 
+        if ( SerialPort.available()){
+            if (SerialPort.parseInt() == 1){
+                SerialPort.println(1);
+                break;
+            }
+        }
+    }
 
 }
 
@@ -105,17 +112,21 @@ void loop(){
     // delay(500);
     // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
 
-    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-            SerialPort.println("bottom pushed");
-            ElevatorMotor.forward(3400);
-            //delay(800);
-    }
 
-    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-        SerialPort.println("top pushed");
-        ElevatorMotor.backward(2900);
-        //delay(800);
-    }
+
+
+    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+    //         SerialPort.println("bottom pushed");
+    //         ElevatorMotor.forward(3400);
+    //         //delay(800);
+    // }
+
+    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+    //     SerialPort.println("top pushed");
+    //     ElevatorMotor.backward(2900);
+    //     //delay(800);
+    // }
+    
 
 
 }

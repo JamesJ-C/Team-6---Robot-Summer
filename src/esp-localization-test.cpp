@@ -144,7 +144,8 @@ void setup() {
 
     Serial.println("localizing");
 
-    linearArmSystem.localize(25, 25);
+    linearArmSystem.localize(70, 70);
+    lazySusanSystem.localize(70, 70);
 
     display.clearDisplay();
     display.setTextSize(1);
@@ -153,30 +154,54 @@ void setup() {
     display.println("done localize");
     display.display();
 
+    linearArmMotor.off();
+    lazySusanMotor.off();
+
+    delay(1000);
+    
+    SerialPort.println(1);
+    unsigned long startTime = millis();
+    while (true){ 
+        if ( SerialPort.parseInt() == 1){
+            display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("confirmation complete");                
+            display.display();
+            // delay(1000);
+            break;
+        }
+        if (millis() - startTime > 3000){
+            SerialPort.println(1);
+        }
+    }
 
 }
 
 int val = 0;
 int loopCount = 0;
 void loop() {
-    // display.clearDisplay();
-    // display.setTextSize(1);
-    // display.setTextColor(SSD1306_WHITE);
-    // display.setCursor(0,0);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println("localizes complete");
+    display.display();
 
-if (loopCount == 0){
-    loopCount++;
-    Serial.println("doing the thing");
-    delay(1000);
-    linearArmSystem.localize(30, 30);
-}
+// if (loopCount == 0){
+//     loopCount++;
+//     Serial.println("doing the thing");
+//     delay(1000);
+//     linearArmSystem.localize(30, 30);
+// }
 
 
 
-linearArmMotor.forward(80);
-delay(3000);
-linearArmMotor.backward(80);
-delay(3000);
+// linearArmMotor.forward(80);
+// delay(3000);
+// linearArmMotor.backward(80);
+// delay(3000);
 
     // if( digitalRead( LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
     //     linearArmMotor.forward(40);
