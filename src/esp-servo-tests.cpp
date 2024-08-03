@@ -94,14 +94,7 @@ void setup() {
 
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinA()), isrUpdateLinearArmEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(linearArmEncoder.getPinB()), isrUpdateLinearArmEncoder, CHANGE);
-
-
-clawServo.write(180);
-delay(1000);
-
-clawServo.write(0);
-delay(1000);
-
+    
 }
 
 int val = 0;
@@ -111,7 +104,7 @@ int loopCount = 0;
 void loop() {
 
 if (loopCount == 0){
-    Serial.println("doing the thing");
+    Serial.println("doing the deed");
     // analogWrite(CLAW_SERVO_PIN, 180);
     // analogWrite(FORKLIFT_SERVO_PIN, 180);
 
@@ -119,14 +112,18 @@ if (loopCount == 0){
     
     loopCount++;
 }
-clawServo.write(0);
+clawServo.write(50);
 delay(1000);
-for (int i = 0; i < 180; i=i + 1){
+for (int i = 50; i < 110; i=i + 1){
     clawServo.write(i);
     delay(10);
 }
-clawServo.write(180);
+clawServo.write(110);
 delay(1000);
+for (int i = 110; i > 50; i=i - 1){
+    clawServo.write(i);
+    delay(10);
+}
 
 
 } //loop
