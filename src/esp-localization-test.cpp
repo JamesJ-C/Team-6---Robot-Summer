@@ -1,4 +1,4 @@
-//#ifdef ESP32
+#ifdef ESP32
 
 
 #include <Arduino.h>
@@ -297,4 +297,4 @@ void IRAM_ATTR isrUpdateRetractArmButton(){
 // }
 
 
-//#endif
+#endif
