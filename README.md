@@ -8,6 +8,12 @@ Elevator has 515 encoder ticks between the limit switches. Top is 0, bottom is -
 
 
 
+elevator calib:
+
+bottom limit: -15
+claw heighy: ~241 to 267
+forklift height: ~bottom of limit switch 
+
 
 
 Tasks to do:
