@@ -27,9 +27,9 @@ namespace robot {
 
         bool singleLimitSwitch = false;
 
-        double loopGain = 10.0;//0.8; for the arm
-        double pGain = 1.3;
-        double iGain = 0.6;
+        double loopGain = -1.0;//10.0;//0.8; for the arm
+        double pGain = 2.0;
+        double iGain = 0.68;
         double dGain = 1.8;
         double transfer;
         double lastError = 0;

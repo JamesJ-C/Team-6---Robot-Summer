@@ -39,7 +39,8 @@ robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMot
 
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM_ROTARY_ENCODER_PB);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);//
-robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor);
+robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
+1.2, 0.6, 1.8, 0.8);
 
 robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
 
@@ -145,19 +146,20 @@ void setup() {
     Serial.println("localizing");
 
     // linearArmSystem.localize(125, 125);
-    //lazySusanSystem.localize(70, 70);
+    lazySusanSystem.localize(190, 190);
 
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0,0);
-    display.println("done localize");
+    display.print("done localize. Max: ");
+    display.println(lazySusanEncoder.getMaxIncrement());
     display.display();
 
     linearArmMotor.off();
     lazySusanMotor.off();
 
-    delay(1000);
+    delay(3000);
     
     // SerialPort.println(1);
     // unsigned long startTime = millis();
@@ -184,15 +186,17 @@ int loopCount = 0;
 int g = 0;
 void loop() {
 
-    // display.clearDisplay();
-    // display.setTextSize(1);
-    // display.setTextColor(SSD1306_WHITE);
-    // display.setCursor(0,0);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
     // display.println( "enc: " + String( linearArmEncoder.getIncrements() ) );
-    // display.println( "g: " + String(g ) );
-    // // display.println(lazySusanEncoder.getIncrements());
-    // display.display();
+    display.println( "g: " + String(g ) );
+    display.println(lazySusanEncoder.getIncrements());
+    display.display();
 
+
+    g = lazySusanSystem.updatePID(100);
 
     // g = linearArmSystem.updatePID(-140);
 
@@ -244,13 +248,12 @@ void loop() {
 
     // if( digitalRead( LAZY_SUSAN_LIMIT_SWITCH) == HIGH){
     //     lazySusanMotor.forward(180);
-    //     display.print("forward: ");
+    //     //display.print("forward: ");
     //     delay(200);
     // } else {
     //     lazySusanMotor.backward(180);
-    //     display.print("backward");
-    // }
-    
+    //     //display.print("backward");
+    // }    
     // display.println(lazySusanMotor.encoder->getIncrements());
     // display.display();
 
@@ -314,15 +317,15 @@ void loop() {
 }
 
 
-if (SerialPort.available()){
-    int msg = SerialPort.parseInt();
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.println(msg);
-    display.display();
-    }
+// if (SerialPort.available()){
+//     int msg = SerialPort.parseInt();
+//     display.clearDisplay();
+//     display.setTextSize(1);
+//     display.setTextColor(SSD1306_WHITE);
+//     display.setCursor(0,0);
+//     display.println(msg);
+//     display.display();
+//     }
 
 } //loop
 
