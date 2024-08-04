@@ -25,6 +25,19 @@ namespace robot {
             this->motor = motor;
         }
 
+        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
+        double pGain, double iGain, double dGain, double loopGain) { 
+            this->limit1 = limit1;
+            if (limit2 == 255){
+                singleLimitSwitch = true;    
+            }
+            this->limit2 = limit2;
+            this->motor = motor;
+            this->iGain = iGain;
+            this->dGain = dGain;
+            this->loopGain = loopGain;
+        }
+
         /**
          * @brief Returns the first limit switch pin
          */

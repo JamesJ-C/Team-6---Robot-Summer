@@ -27,10 +27,10 @@ namespace robot {
 
         bool singleLimitSwitch = false;
 
-        const double loopGain = 10.0;//0.8; for the arm
-        const double pGain = 1.3;
-        const double iGain = 0.6;
-        const double dGain = 1.8;
+        double loopGain = 10.0;//0.8; for the arm
+        double pGain = 1.3;
+        double iGain = 0.6;
+        double dGain = 1.8;
         double transfer;
         double lastError = 0;
         double motor_i = 0;
@@ -50,6 +50,9 @@ namespace robot {
          * @param limit2 second limit switched attatched to movement
          */
         RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor);
+
+        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
+        double pGain, double iGain, double dGain, double loopGain);
 
         /**
          * @brief Returns the first limit switch pin
