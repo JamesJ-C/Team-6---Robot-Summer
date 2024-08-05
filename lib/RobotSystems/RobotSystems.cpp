@@ -152,8 +152,8 @@ namespace robot {
             // Serial.println(error);
             // Serial.println(motor_p);
             // Serial.println(motor_d);
-            Serial.println(motor_i);
-            Serial.println(transfer);
+            // Serial.println(motor_i);
+            // Serial.println(transfer);
             return (int) transfer;
         }
 

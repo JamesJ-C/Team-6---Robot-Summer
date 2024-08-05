@@ -1,4 +1,4 @@
-// #ifdef ESP32
+#ifdef ESP32
 
 
 #include <Arduino.h>
@@ -187,18 +187,20 @@ int g = 0;
 void loop() {
 
 
-String msg;
-if (SerialPort.available()){
-    msg = SerialPort.readString();
-    Serial.print(loopCount++);
-    Serial.println(msg);
+//String msg;
+int msg = -1;
+if (SerialPort.available() ){
+    msg = SerialPort.parseFloat(); //parseInt();//('\n');
+    //Serial.print(loopCount++);
+    // Serial.println(msg);
 
-    // display.clearDisplay();
-    // display.setTextSize(1);
-    // display.setTextColor(SSD1306_WHITE);
-    // display.setCursor(0,0);
-    // display.println(msg);
-    // display.display();
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    //display.print(loopCount);
+    display.println(msg);
+    display.display();
     } 
     else {
         Serial.println(".");
@@ -257,4 +259,4 @@ void IRAM_ATTR isrUpdateRetractArmButton(){
 // }
 
 
-// #endif
+#endif

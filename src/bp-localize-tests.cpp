@@ -89,7 +89,7 @@ void setup() {
 
 
 
-    ElevatorSystem.localize(3400, 2500);
+    ElevatorSystem.localize(3700, 2500);
 
     // while (true){ 
     //     if ( SerialPort.available()){
@@ -101,9 +101,9 @@ void setup() {
     // }
 
 // Serial.println(elevatorEncoder.getMaxIncrement());
-SerialPort.println(elevatorEncoder.getMaxIncrement());
+// SerialPort.println(elevatorEncoder.getMaxIncrement());
 
-delay(1000);
+// delay(1000);
 
 
 }
@@ -124,17 +124,17 @@ void loop(){
 
 
 
-    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-            SerialPort.println("bottom pushed");
-            ElevatorMotor.forward(3400);
-            //delay(800);
-    }
+    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+    //         SerialPort.println("bottom pushed");
+    //         ElevatorMotor.forward(3400);
+    //         //delay(800);
+    // }
 
-    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-        SerialPort.println("top pushed");
-        ElevatorMotor.backward(2900);
-        //delay(800);
-    }
+    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+    //     SerialPort.println("top pushed");
+    //     ElevatorMotor.backward(2900);
+    //     //delay(800);
+    // }
 }
 
 {
@@ -188,24 +188,12 @@ void loop(){
 }
 
 
-// SerialPort.println("enc: " + String (elevatorEncoder.getIncrements()  ));
+// SerialPort.print(String (elevatorEncoder.getIncrements()) + ". " + String (ElevatorSystem.updatePID(-100)) );
 
 // SerialPort.println("g: " + String (ElevatorSystem.updatePID(-100)) );
 
-
-
 // Serial.println(elevatorEncoder.getIncrements());
-
-    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-    //     SerialPort.println("bottom pushed");
-    //     ElevatorMotor.forward(3300);
-    // }
-
-    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-    //     SerialPort.println("top pushed");
-    //     ElevatorMotor.backward(2500);  
-    // }
-
+SerialPort.println(ElevatorSystem.updatePID(-100));
 
 
 }
