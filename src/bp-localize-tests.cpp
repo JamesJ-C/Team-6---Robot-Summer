@@ -89,7 +89,7 @@ void setup() {
 
 
 
-    ElevatorSystem.localize(3700, 2500);
+    // ElevatorSystem.localize(3700, 2500);
 
     // while (true){ 
     //     if ( SerialPort.available()){
@@ -137,7 +137,9 @@ void loop(){
     // }
 }
 
-{
+driveSystem.updateForwardDrivePID();
+
+// {
 // switch (currentState){
 // case START: 
 //     delay(1000); 
@@ -147,11 +149,10 @@ void loop(){
 // case TRANSITION_TO_4:
 
 
-//     while(!stopConditionsMet_TRANS_TO_4()){
+//     do {
         
 //         driveSystem.updateForwardDrivePID();
-//         // pidDriving(); // to the right 
-//     }
+//     } while(!stopConditionsMet_TRANS_TO_4());
 
 //     motorL.stop();
 //     motorR.stop(); 
@@ -165,14 +166,14 @@ void loop(){
 //     if( SerialPort.available() ){
 //         int receivedVal = SerialPort.parseInt(); 
 //         if(receivedVal == 2){
-//             ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
+//             ElevatorSystem.moveToValue(-500); 
 //             SerialPort.println(3); 
 //         }
 //     } 
 //     if( SerialPort.available() ){
 //         int receivedVal = SerialPort.parseInt(); 
 //         if(receivedVal == 4){//arm has moved forward 
-//         ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
+//         ElevatorSystem.moveToValue(-550);
 //         SerialPort.println(1);
 //         }
 //     } 
@@ -185,7 +186,7 @@ void loop(){
 
 // }
 
-}
+// }
 
 
 // SerialPort.print(String (elevatorEncoder.getIncrements()) + ". " + String (ElevatorSystem.updatePID(-100)) );
@@ -193,7 +194,7 @@ void loop(){
 // SerialPort.println("g: " + String (ElevatorSystem.updatePID(-100)) );
 
 // Serial.println(elevatorEncoder.getIncrements());
-SerialPort.println(ElevatorSystem.updatePID(-100));
+// SerialPort.println(ElevatorSystem.updatePID(-100));
 
 
 }
