@@ -191,7 +191,7 @@ void loop(){
 SerialPort.println(elevatorEncoder.getIncrements());
 
 
-ElevatorSystem.updatePID(-100);
+//ElevatorSystem.updatePID(-100);
 
 // Serial.println(elevatorEncoder.getIncrements());
 
