@@ -32,7 +32,7 @@ movement::Motor motorL(MOTOR_L_P1, MOTOR_L_P2);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
 
 encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB);
-movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder);
+movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
 robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
@@ -124,17 +124,17 @@ void loop(){
 
 
 
-    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-    //         SerialPort.println("bottom pushed");
-    //         ElevatorMotor.forward(3400);
-    //         //delay(800);
-    // }
+    if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+            SerialPort.println("bottom pushed");
+            ElevatorMotor.forward(3400);
+            //delay(800);
+    }
 
-    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-    //     SerialPort.println("top pushed");
-    //     ElevatorMotor.backward(2900);
-    //     //delay(800);
-    // }
+    if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+        SerialPort.println("top pushed");
+        ElevatorMotor.backward(2900);
+        //delay(800);
+    }
 }
 
 {
@@ -188,10 +188,11 @@ void loop(){
 }
 
 
-SerialPort.println(elevatorEncoder.getIncrements());
+// SerialPort.println("enc: " + String (elevatorEncoder.getIncrements()  ));
+
+// SerialPort.println("g: " + String (ElevatorSystem.updatePID(-100)) );
 
 
-//ElevatorSystem.updatePID(-100);
 
 // Serial.println(elevatorEncoder.getIncrements());
 
