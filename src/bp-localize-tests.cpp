@@ -38,7 +38,7 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.5, 2.1, 1.0);
 
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
@@ -56,7 +56,9 @@ enum State{
     TRANSITION_TO_62,
     PROCESS_STATION_62,
     IDLE,
-    FINISHED
+    FINISHED,
+    MOVE_ELEVATOR,
+    MOVE_ARM
 };
 State currentState = IDLE;
 
@@ -65,8 +67,8 @@ void setup() {
 
     delay(2000);
 
-    Serial.begin(115200);
-    Serial.println("setup");
+    // Serial.begin(115200);
+    // Serial.println("setup");
 
     SerialPort.begin(115200);
 
@@ -80,8 +82,8 @@ void setup() {
     pinMode(motorR.getPinA(), OUTPUT);
     pinMode(motorR.getPinB(), OUTPUT);
 
-    // pinMode(ElevatorMotor.getPinA(), OUTPUT);
-    // pinMode(ElevatorMotor.getPinB(), OUTPUT);
+    pinMode(ElevatorMotor.getPinA(), OUTPUT);
+    pinMode(ElevatorMotor.getPinB(), OUTPUT);
 
     pinMode(ElevatorSystem.getLimit1(), INPUT);
     pinMode(ElevatorSystem.getLimit2(), INPUT);
@@ -104,23 +106,16 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
 
-    // ElevatorSystem.localize(3700, 2500);
+    ElevatorSystem.localize(3700, 2500);
 
-    // while (true){ 
-    //     if ( SerialPort.available()){
-    //         if (SerialPort.parseInt() == 1){
-    //             SerialPort.println(1);
-    //             break;
-    //         }
-    //     }
-    // }
-
-// Serial.println(elevatorEncoder.getMaxIncrement());
-// SerialPort.println(elevatorEncoder.getMaxIncrement());
-
-// delay(1000);
-
-Serial.println("setupp");
+    while (true){ 
+        if ( SerialPort.available()){
+            if (SerialPort.parseInt() == 1){
+                SerialPort.println(1);
+                break;
+            }
+        }
+    }
 
 }
 
@@ -133,175 +128,30 @@ int rightLineCount = 0;
 int lineCount  = 0;
 bool prevVal = 0;
 
-void loop()
+void loop(){
 
-    // do{
-    //     driveSystem.updateForwardDrivePID(); 
-    // }
-    // while(analogRead(TAPE_SENSOR_LEFT_1) <= 600 || analogRead(TAPE_SENSOR_RIGHT_1) <= 600); 
-    // motorL.stop();
-    // motorR.stop(); 
-    // delay(5000); 
-{
-int l_val = analogRead(TAPE_SENSOR_LEFT_1);
-int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
+switch (currentState){
+    
+case START: 
+    delay(1000); 
+    currentState = MOVE_ELEVATOR;
+    break;
 
-    // Serial.println("v");
-    // Serial.println(l_val);
-    // Serial.println();
-    // Serial.println(r_val);
-    // Serial.println();
+case MOVE_ELEVATOR:
+    if (SerialPort.available()){
+        if (SerialPort.parseInt() == 1){
+            ElevatorSystem.moveToValue(270);//  updatePID(250);
+            SerialPort.println(2);
+            currentState = IDLE;
+        }
+    }
 
-int tape_val = 0;
-if ( abs( l_val - r_val ) <= 175) {
-    tape_val = 0;
-}
-else {
-    tape_val = r_val;
+    default:
+    break;
+
 }
 
-bool val = tape_val >= 600 ? 1 : 0;
-
-driveSystem.updateForwardDrivePID();
-
-if (val != prevVal && val != 0){
-    lineCount++;
-    Serial.println(l_val);
-    Serial.println();
-    Serial.println(r_val);
-    Serial.println();
-    Serial.println(tape_val);
-    Serial.println();
-    Serial.println(val);
-    Serial.println();
-    Serial.println(lineCount);    
-    Serial.println();     
-    Serial.println();
 }
-else {
-    Serial.print("prevVal: ");
-    Serial.println(prevVal);
-
-    Serial.print(", ");
-    Serial.println(tape_val);
-}
-
-if (lineCount >= 2){
-    Serial.println("motors off");
-    lineCount = 0;
-    motorL.stop();
-    motorR.stop();
-    delay(1000);
-    Serial.println("motors on");
-}
-}
-
-// prevVal = val;
-
-    // ElevatorSystem.updatePID(10);
-    // ElevatorMotor.forward(3800);
-    // delay(1000);
-    // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
-    // ElevatorMotor.backward(3000);
-    // delay(500);
-    // SerialPort.println("enc val: " + String ( ElevatorSystem.motor->encoder->getIncrements() ));
-
-
-
-
-    // if ( digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
-    //         SerialPort.println("bottom pushed");
-    //         ElevatorMotor.forward(3400);
-    //         //delay(800);
-    // }
-
-    // if ( digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
-    //     SerialPort.println("top pushed");
-    //     ElevatorMotor.backward(2900);
-    //     //delay(800);
-    // }
-// }
-
-// motorL.forward(3900);
-// motorR.forward(3900);
-
-// driveSystem.updateForwardDrivePID();
-// driveSystem.updateBackwardDrivePID();
-
-// motorL.backward(3900);
-// motorR.backward(3900);
-
-// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
-// Serial.print(" ");
-// Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
-
-// {
-// switch (currentState){
-// case START: 
-//     delay(1000); 
-//     currentState = TRANSITION_TO_4;
-//     break;
-
-// case TRANSITION_TO_4:
-
-
-
-
-// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
-// Serial.print(" ");
-// Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
-
-// int oldC = 0;
-
-//     do {
-//          driveSystem.updateForwardDrivePID();
-//          updateLineCounts();
-//     // if (rightLineCount != oldC){
-//     //     Serial.println(rightLineCount);
-//     //     SerialPort.println(rightLineCount);
-//     //     }
-//     //     oldC = rightLineCount;
-//     } while(!stopConditionsMet_TRANS_TO_4());
-//     motorL.stop();
-//     motorR.stop();
-//     lineCount = 0;
-//     rightLineCount = 0;
-//     leftLineCount = 0;
-//     delay(2000);
-
-//     motorL.stop();
-//     motorR.stop(); 
-
-//     SerialPort.println(1); 
-
-//     currentState = PROCESS_STATION_4;
-//     break; 
-
-// case PROCESS_STATION_4:
-//     if( SerialPort.available() ){
-//         int receivedVal = SerialPort.parseInt(); 
-//         if(receivedVal == 2){
-//             ElevatorSystem.moveToValue(-500); 
-//             SerialPort.println(3); 
-//         }
-//     } 
-//     if( SerialPort.available() ){
-//         int receivedVal = SerialPort.parseInt(); 
-//         if(receivedVal == 4){//arm has moved forward 
-//         ElevatorSystem.moveToValue(-550);
-//         SerialPort.println(1);
-//         }
-//     } 
-//     currentState = TRANSITION_TO_6;
-
-//     break;
-
-//     default:
-//     break;
-
-// }
-
-// }
 
 
 // SerialPort.print(String (elevatorEncoder.getIncrements()) + ". " + String (ElevatorSystem.updatePID(-100)) );
