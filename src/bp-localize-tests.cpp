@@ -143,6 +143,9 @@ void loop(){
 // driveSystem.updateForwardDrivePID();
 driveSystem.updateBackwardDrivePID();
 
+// motorL.backward(3900);
+// motorR.backward(3900);
+
 Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
 Serial.print(" ");
 Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
