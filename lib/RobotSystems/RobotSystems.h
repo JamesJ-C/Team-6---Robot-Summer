@@ -127,11 +127,11 @@ private:
         double backward_g;
         double backwardLastError;
 
-        const int backwardMidMotorSpeed = 3800;//33
+        const int backwardMidMotorSpeed = 3850;//33
         const double BACKWARD_LOOP_GAIN = 1.0;
-        const double BACKWARD_P_GAIN = 0.8;
+        const double BACKWARD_P_GAIN = 0.9;
         const double BACKWARD_I_GAIN = 0.0;
-        const double BACKWARD_D_GAIN = 1.0;
+        const double BACKWARD_D_GAIN = 1.6;
         const double MAX_BACKWARD_I = 1400.0;
 
         double ir_p;

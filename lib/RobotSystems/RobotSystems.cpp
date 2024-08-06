@@ -208,8 +208,8 @@ namespace robot {
 
             backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
  
-            driveMotorL->backward( 1 / 1.0 * ( (backwardMidMotorSpeed - 1 * backward_g) ) );
-            driveMotorR->backward( 1 / 1.0 * ( (backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorL->backward( 1 / 1.0 * ( (backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorR->backward( 1 / 1.0 * ( (backwardMidMotorSpeed - 1 * backward_g) ) );
         }
 
         void DrivePID::updateIRDrive(double irError){
