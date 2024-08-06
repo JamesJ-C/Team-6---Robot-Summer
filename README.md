@@ -1,6 +1,21 @@
 # Team-6---Robot-Summer
 
 
+Linear arm has 160 encoder ticks between the limit switches. extended is -160, closed is 0
+
+
+Elevator has 515 encoder ticks between the limit switches. Top is 0, bottom is -515.
+
+
+
+elevator calib:
+
+bottom limit: -15
+claw heighy: ~241 to 267
+forklift height: ~bottom of limit switch 
+
+
+
 Tasks to do:
 
 PID control of rod with limit switches (needed for:)

@@ -1,3 +1,4 @@
+//#include <Arduino.h>
 #include <Arduino.h>
 #include <RotaryEncoder.h>
 #include <Motor.h>
@@ -22,6 +23,19 @@ namespace robot {
             }
             this->limit2 = limit2;
             this->motor = motor;
+        }
+
+        RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
+        double pGain, double iGain, double dGain, double loopGain) { 
+            this->limit1 = limit1;
+            if (limit2 == 255){
+                singleLimitSwitch = true;    
+            }
+            this->limit2 = limit2;
+            this->motor = motor;
+            this->iGain = iGain;
+            this->dGain = dGain;
+            this->loopGain = loopGain;
         }
 
         /**
@@ -50,20 +64,23 @@ namespace robot {
 
             // turn motor until elevator reaches first limit
             
-            this->motor->forward(motorSpeedForward);
-            do {
-                
-            } while (!digitalRead(limit2)); //while (!secondSwitchHit); 
-            //Serial.println("after first loop");
-            
-            // initialize first limit of motion
-            this->motor->off();
-            this->motor->encoder->resetIncrement();
-            bottom = this->motor->encoder->getIncrements();
+            if(!singleLimitSwitch){
 
-            // if (singleLimitSwitch){
-            //     return;
-            // }
+                this->motor->forward(motorSpeedForward);
+                do {
+                    
+                } while (!digitalRead(limit2)); //while (!secondSwitchHit); 
+                //Serial.println("after first loop");
+                
+                // initialize first limit of motion
+                this->motor->off();
+                this->motor->encoder->resetIncrement();
+                bottom = this->motor->encoder->getIncrements();
+
+            }
+            if (singleLimitSwitch){
+                //return;
+            }
 
             // turn motor in opposite direction until second limit reached
                 this->motor->backward(motorSpeedBackward);
@@ -122,16 +139,22 @@ namespace robot {
             // calculate PID transfer function to send to motor
             double motor_p = pGain * error;
             double motor_d = dGain * (error - lastError);
-            double motor_i = iGain * error + iTerm;
-            if (iTerm > maxI) {iTerm = maxI;}
-            if (iTerm < -maxI) {iTerm = -maxI;}
+            motor_i = iGain * error + motor_i;
+            if (motor_i > maxI) {motor_i = maxI;}
+            if (motor_i < -maxI) {motor_i = -maxI;}
 
             transfer = loopGain * (motor_p + motor_d + motor_i);
             lastError = error;
 
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
-            return (int) error;
+            //return (int) error;
+            // Serial.println(error);
+            // Serial.println(motor_p);
+            // Serial.println(motor_d);
+            // Serial.println(motor_i);
+            // Serial.println(transfer);
+            return (int) transfer;
         }
 
 
@@ -161,10 +184,12 @@ namespace robot {
             forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
             forwardLastError = forwardError; 
 
-            driveMotorL->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
-            driveMotorR->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
+            driveMotorL->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
+            driveMotorR->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
 
-            Serial.println(forward_g);
+            // // Serial.println(forward_g);
+            // Serial.println(forwardMidMotorSpeed + 1 * forward_g);
+            // Serial.println(forwardMidMotorSpeed - 1 * forward_g);
 
         }
 
@@ -183,8 +208,8 @@ namespace robot {
 
             backward_g = BACKWARD_LOOP_GAIN * ( backward_p + backward_i + backward_d ); 
  
-            driveMotorL->backward( 1 / 1.0 * ( (backwardMidMotorSpeed - 1 * backward_g) ) );
-            driveMotorR->backward( 1 / 1.0 * ( (backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorL->backward( 1 / 1.0 * ( (backwardMidMotorSpeed + 1 * backward_g) ) );
+            driveMotorR->backward( 1 / 1.0 * ( (backwardMidMotorSpeed - 1 * backward_g) ) );
         }
 
         void DrivePID::updateIRDrive(double irError){

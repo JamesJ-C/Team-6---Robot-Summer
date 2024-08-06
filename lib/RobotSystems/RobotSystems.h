@@ -27,14 +27,14 @@ namespace robot {
 
         bool singleLimitSwitch = false;
 
-        const int loopGain = 1.0;
-        const int pGain = 2.0;
-        const int iGain = 2.0;
-        const int dGain = 1.2;
+        double loopGain = 1.0;//10.0;//0.8; for the arm
+        double pGain = 6.2;
+        double iGain = 0.5;//0.68;
+        double dGain = 2.1;//2.0;//1.8;
         double transfer;
         double lastError = 0;
-        double iTerm = 0;
-        double maxI = 140;
+        double motor_i = 0;
+        double maxI = 2720;//2800;//3000;
 
         public:
         movement::EncodedMotor *motor;
@@ -50,6 +50,9 @@ namespace robot {
          * @param limit2 second limit switched attatched to movement
          */
         RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor);
+
+        RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
+        double pGain, double iGain, double dGain, double loopGain);
 
         /**
          * @brief Returns the first limit switch pin
@@ -111,11 +114,11 @@ private:
         double forward_g;
         double forwardLastError;
 
-        const int forwardMidMotorSpeed = 3300;
+        const int forwardMidMotorSpeed = 3850;//33
         const double FORWARD_LOOP_GAIN = 1.0;
-        const double FORWARD_P_GAIN = 1.2;
+        const double FORWARD_P_GAIN = 0.9;
         const double FORWARD_I_GAIN = 0.0;
-        const double FORWARD_D_GAIN = 1.4;
+        const double FORWARD_D_GAIN = 2.1;//1.9;
         const double MAX_FORWARD_I = 1400.0;
 
         double backward_p;
@@ -124,11 +127,11 @@ private:
         double backward_g;
         double backwardLastError;
 
-        const int backwardMidMotorSpeed = 3300;
-        const double BACKWARD_LOOP_GAIN = 1.0;
-        const double BACKWARD_P_GAIN = 0.8;
+        const int backwardMidMotorSpeed = 3900;//33
+        const double BACKWARD_LOOP_GAIN = 0.7;
+        const double BACKWARD_P_GAIN = 0.9;
         const double BACKWARD_I_GAIN = 0.0;
-        const double BACKWARD_D_GAIN = 1.0;
+        const double BACKWARD_D_GAIN = 1.8;
         const double MAX_BACKWARD_I = 1400.0;
 
         double ir_p;
