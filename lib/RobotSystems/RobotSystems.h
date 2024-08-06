@@ -114,7 +114,7 @@ private:
         double forward_g;
         double forwardLastError;
 
-        const int forwardMidMotorSpeed = 3850;//33
+        const int forwardMidMotorSpeed = 4000; //3850;//33
         const double FORWARD_LOOP_GAIN = 1.0;
         const double FORWARD_P_GAIN = 1.2;
         const double FORWARD_I_GAIN = 0.0;

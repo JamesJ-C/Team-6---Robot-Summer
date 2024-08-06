@@ -28,7 +28,7 @@ bool stopConditionsMet();
 
 HardwareSerial SerialPort(USART3);
 
-movement::Motor motorL(MOTOR_L_P1, MOTOR_L_P2);
+movement::Motor motorL(MOTOR_L_P2, MOTOR_L_P1);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
 
 encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB);
@@ -137,21 +137,28 @@ void loop(){
     // }
 }
 
+// motorL.forward(3900);
+// motorR.forward(3900);
+
 driveSystem.updateForwardDrivePID();
+
+// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
+// Serial.print(" ");
+// Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
 
 // {
 // switch (currentState){
 // case START: 
 //     delay(1000); 
-//     currentState = TRANSITION_TO_4; 
+//     currentState = TRANSITION_TO_4;
 //     break;
 
 // case TRANSITION_TO_4:
 
 
 //     do {
-        
-//         driveSystem.updateForwardDrivePID();
+//          driveSystem.updateForwardDrivePID();
+//          updateLineCounts();
 //     } while(!stopConditionsMet_TRANS_TO_4());
 
 //     motorL.stop();
