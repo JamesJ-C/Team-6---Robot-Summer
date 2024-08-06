@@ -17,8 +17,8 @@ namespace robotControl {
     
     //Servo Positions
     #define FORKLIFTSERVO_READY_POS 90
-    #define CLAWSERVO_OPEN_POS 120
-    #define CLAWSERVO_CLOSED_POS 0
+    #define CLAWSERVO_OPEN_POS 100
+    #define CLAWSERVO_CLOSED_POS 50
 }
 
 namespace constants {

@@ -209,13 +209,16 @@ case PROCESS_STATION_4:
 
     case PROCESS_STATION_5:
     lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
-    clawServo.write(CLAW_OPEN_POS);
+    clawServo.write(CLAWSERVO_OPEN_POS);
     SerialPort.println(2); 
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
         if(receivedVal == 3){
             linearArmSystem.moveToValue(CLAW_FORWARD); 
-            clawServo.write(CLAWSERVO_CLOSED_POS);
+            for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
+                clawServo.write(pos);
+                delay(20);
+            }
             SerialPort.println(5); 
         }
     }
@@ -228,7 +231,7 @@ case PROCESS_STATION_4:
         break;
 
     case PROCESS_STATION_62:
-        clawServo.write(CLAW_OPEN_POS); 
+        clawServo.write(CLAWSERVO_OPEN_POS); 
         linearArmSystem.moveToValue(CLAW_NEUTRAL); 
         currentState = FINISHED; 
         SerialPort.println(6);
