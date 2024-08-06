@@ -141,7 +141,7 @@ else {
     tape_val = r_val;
 }
 
-bool val = tape_val >= 200 ? 1 : 0;
+bool val = tape_val >= 500 ? 1 : 0;
 
 driveSystem.updateForwardDrivePID();
 
