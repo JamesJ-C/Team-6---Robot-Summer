@@ -85,6 +85,19 @@ void setup() {
 
     pinMode(ElevatorSystem.getLimit1(), INPUT);
     pinMode(ElevatorSystem.getLimit2(), INPUT);
+
+
+    pinMode(TAPE_SENSOR_FORWARD_1, INPUT);
+    pinMode(TAPE_SENSOR_FORWARD_2, INPUT);
+
+    pinMode(TAPE_SENSOR_BACKWARD_1, INPUT);
+    pinMode(TAPE_SENSOR_BACKWARD_2, INPUT);
+
+    pinMode(TAPE_SENSOR_RIGHT_1, INPUT);
+    pinMode(TAPE_SENSOR_LEFT_1, INPUT);
+    
+    pinMode(TAPE_SENSOR_RIGHT_2, INPUT);
+    pinMode(TAPE_SENSOR_LEFT_2, INPUT);
     
 
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
@@ -147,7 +160,7 @@ else {
     tape_val = r_val;
 }
 
-bool val = tape_val >= 500 ? 1 : 0;
+bool val = tape_val >= 600 ? 1 : 0;
 
 driveSystem.updateForwardDrivePID();
 
@@ -173,7 +186,7 @@ else {
     Serial.println(tape_val);
 }
 
-if (lineCount >= 1){
+if (lineCount >= 2){
     Serial.println("motors off");
     lineCount = 0;
     motorL.stop();
