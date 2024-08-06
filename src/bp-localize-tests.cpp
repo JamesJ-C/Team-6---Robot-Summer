@@ -120,38 +120,63 @@ int rightLineCount = 0;
 int lineCount  = 0;
 bool prevVal = 0;
 
-// void loop(){
+void loop(){
 
 
-// {
-// int i_val = analogRead(TAPE_SENSOR_RIGHT_1);
-// int temp = i_val;
+{
+int l_val = analogRead(TAPE_SENSOR_LEFT_1);
+int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
 
-// bool val = i_val >= 350 ? 1 : 0; 
+    // Serial.println("v");
+    // Serial.println(l_val);
+    // Serial.println();
+    // Serial.println(r_val);
+    // Serial.println();
 
-// driveSystem.updateForwardDrivePID();
+int tape_val = 0;
+if ( abs( l_val - r_val ) <= 150) {
+    tape_val = 0;
+}
+else {
+    tape_val = r_val;
+}
 
-// if (val != prevVal && val != 0){
-//     lineCount++;
-//     Serial.println(temp);
-//     Serial.println();
-//     Serial.println(val);
-//     Serial.println();
-//     Serial.println(lineCount);    
-//     Serial.println();     
-//     Serial.println();
-// }
+bool val = tape_val >= 500 ? 1 : 0;
 
-// if (lineCount >= 2){
-//     Serial.println("motors off");
-//     lineCount = 0;
-//     motorL.stop();
-//     motorR.stop();
-//     delay(1000);
-//     Serial.println("motors on");
-// }
+driveSystem.updateForwardDrivePID();
 
-// prevVal = val;
+if (val != prevVal && val != 0){
+    lineCount++;
+    Serial.println(l_val);
+    Serial.println();
+    Serial.println(r_val);
+    Serial.println();
+    Serial.println(tape_val);
+    Serial.println();
+    Serial.println(val);
+    Serial.println();
+    Serial.println(lineCount);    
+    Serial.println();     
+    Serial.println();
+}
+else {
+    Serial.print("prevVal: ");
+    Serial.println(prevVal);
+
+    Serial.print(", ");
+    Serial.println(tape_val);
+}
+
+if (lineCount >= 2){
+    Serial.println("motors off");
+    lineCount = 0;
+    motorL.stop();
+    motorR.stop();
+    delay(1000);
+    Serial.println("motors on");
+}
+
+prevVal = val;
 
 
 }
@@ -205,9 +230,9 @@ bool prevVal = 0;
 
 
 
-// // Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
-// // Serial.print(" ");
-// // Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
+// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
+// Serial.print(" ");
+// Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
 
 // int oldC = 0;
 
@@ -226,19 +251,6 @@ bool prevVal = 0;
 //     rightLineCount = 0;
 //     leftLineCount = 0;
 //     delay(2000);
-
-void loop{
-    do{
-        driveSystem.updateForwardDrivePID(); 
-    }
-    while(analogRead(TAPE_SENSOR_LEFT_1) <= 600 && analogRead(TAPE_SENSOR_RIGHT_1) <= 600); 
-    motorL.stop();
-    motorR.stop(); 
-    delay(5000); 
-}
-
-
-
 
 //     motorL.stop();
 //     motorR.stop(); 
@@ -293,10 +305,10 @@ bool markerDetected(){
 }
 
 
-void updateLineCounts(){
 
-    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 600;
-    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 600;
+void updateLineCounts(){
+    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 200;
+    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 200;
 
     // if(currentLeftState && !prevLeftState){
     //     leftLineCount++;
