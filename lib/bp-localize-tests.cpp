@@ -120,10 +120,10 @@ int rightLineCount = 0;
 int lineCount  = 0;
 bool prevVal = 0;
 
-void loop(){
+// void loop(){
 
 
-{
+// {
 // int i_val = analogRead(TAPE_SENSOR_RIGHT_1);
 // int temp = i_val;
 
@@ -205,27 +205,40 @@ void loop(){
 
 
 
-// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
-// Serial.print(" ");
-// Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
+// // Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
+// // Serial.print(" ");
+// // Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
 
-int oldC = 0;
+// int oldC = 0;
 
-    do {
-         driveSystem.updateForwardDrivePID();
-         updateLineCounts();
-    // if (rightLineCount != oldC){
-    //     Serial.println(rightLineCount);
-    //     SerialPort.println(rightLineCount);
-    //     }
-    //     oldC = rightLineCount;
-    } while(!stopConditionsMet_TRANS_TO_4());
+//     do {
+//          driveSystem.updateForwardDrivePID();
+//          updateLineCounts();
+//     // if (rightLineCount != oldC){
+//     //     Serial.println(rightLineCount);
+//     //     SerialPort.println(rightLineCount);
+//     //     }
+//     //     oldC = rightLineCount;
+//     } while(!stopConditionsMet_TRANS_TO_4());
+//     motorL.stop();
+//     motorR.stop();
+//     lineCount = 0;
+//     rightLineCount = 0;
+//     leftLineCount = 0;
+//     delay(2000);
+
+void loop{
+    do{
+        driveSystem.updateForwardDrivePID(); 
+    }
+    while(analogRead(TAPE_SENSOR_LEFT_1) <= 600 && analogRead(TAPE_SENSOR_RIGHT_1) <= 600); 
     motorL.stop();
-    motorR.stop();
-    lineCount = 0;
-    rightLineCount = 0;
-    leftLineCount = 0;
-    delay(2000);
+    motorR.stop(); 
+    delay(5000); 
+}
+
+
+
 
 //     motorL.stop();
 //     motorR.stop(); 
@@ -280,10 +293,10 @@ bool markerDetected(){
 }
 
 
-
 void updateLineCounts(){
-    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 200;
-    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 200;
+
+    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 600;
+    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 600;
 
     // if(currentLeftState && !prevLeftState){
     //     leftLineCount++;
