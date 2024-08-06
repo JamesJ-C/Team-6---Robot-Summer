@@ -120,9 +120,15 @@ int rightLineCount = 0;
 int lineCount  = 0;
 bool prevVal = 0;
 
-void loop(){
+void loop()
 
-
+    // do{
+    //     driveSystem.updateForwardDrivePID(); 
+    // }
+    // while(analogRead(TAPE_SENSOR_LEFT_1) <= 600 || analogRead(TAPE_SENSOR_RIGHT_1) <= 600); 
+    // motorL.stop();
+    // motorR.stop(); 
+    // delay(5000); 
 {
 int l_val = analogRead(TAPE_SENSOR_LEFT_1);
 int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
@@ -134,7 +140,7 @@ int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
     // Serial.println();
 
 int tape_val = 0;
-if ( abs( l_val - r_val ) <= 150) {
+if ( abs( l_val - r_val ) <= 175) {
     tape_val = 0;
 }
 else {
@@ -175,12 +181,10 @@ if (lineCount >= 1){
     delay(1000);
     Serial.println("motors on");
 }
-
-prevVal = val;
-
-
 }
-{
+
+// prevVal = val;
+
     // ElevatorSystem.updatePID(10);
     // ElevatorMotor.forward(3800);
     // delay(1000);
@@ -203,7 +207,7 @@ prevVal = val;
     //     ElevatorMotor.backward(2900);
     //     //delay(800);
     // }
-}
+// }
 
 // motorL.forward(3900);
 // motorR.forward(3900);
@@ -294,8 +298,6 @@ prevVal = val;
 // Serial.println(elevatorEncoder.getIncrements());
 // SerialPort.println(ElevatorSystem.updatePID(-100));
 
-
-}
 
 
 
