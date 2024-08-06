@@ -18,10 +18,13 @@ bool stopConditionsMet();
 int lineCountLeft();
 int lineCountRight();
 bool markerDetected();
+void updateLineCounts();
 
 bool stopConditionsMet_TRANS_TO_4();
 bool stopConditionsMet_TRANS_TO_5();
 bool stopConditionsMet();
+
+void isrUpdateLineCount();
 
 
 /*  Object declerations  */
@@ -88,7 +91,6 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
 
-
     // ElevatorSystem.localize(3700, 2500);
 
     // while (true){ 
@@ -108,6 +110,13 @@ void setup() {
 
 }
 
+bool prevLeftState = false;
+bool prevRightState = false; 
+int leftLineCount = 0;
+int rightLineCount = 0; 
+
+
+int lineCount  = 0;
 
 void loop(){
 
@@ -141,14 +150,14 @@ void loop(){
 // motorR.forward(3900);
 
 // driveSystem.updateForwardDrivePID();
-driveSystem.updateBackwardDrivePID();
+// driveSystem.updateBackwardDrivePID();
 
 // motorL.backward(3900);
 // motorR.backward(3900);
 
-Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
-Serial.print(" ");
-Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
+// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
+// Serial.print(" ");
+// Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
 
 // {
 // switch (currentState){
@@ -160,10 +169,35 @@ Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
 // case TRANSITION_TO_4:
 
 
-//     do {
-//          driveSystem.updateForwardDrivePID();
-//          updateLineCounts();
-//     } while(!stopConditionsMet_TRANS_TO_4());
+
+
+// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_RIGHT_1) ));
+// Serial.print(" ");
+// Serial.println(analogRead(TAPE_SENSOR_LEFT_1));
+
+int oldC = 0;
+
+    while (lineCount < 2){
+        driveSystem.updateForwardDrivePID();
+    }
+
+    // do {
+    //      driveSystem.updateForwardDrivePID();
+    //      updateLineCounts();
+
+    //     if (rightLineCount != oldC){
+
+    //         Serial.println(rightLineCount);
+    //         SerialPort.println(rightLineCount);
+    //     }
+    //     oldC = rightLineCount;
+    // } while(!stopConditionsMet_TRANS_TO_4());
+    motorL.stop();
+    motorR.stop();
+    lineCount = 0;
+    rightLineCount = 0;
+    leftLineCount = 0;
+    delay(3000);
 
 //     motorL.stop();
 //     motorR.stop(); 
@@ -209,22 +243,23 @@ Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
 
 
 }
+
+
+
+
 bool markerDetected(){
     return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD);
 }
 
-bool prevLeftState = false;
-bool prevRightState = false; 
-int leftLineCount = 0;
-int rightLineCount = 0; 
+
 
 void updateLineCounts(){
-    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD;
-    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD;
+    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 200;
+    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 200;
 
-    if(currentLeftState && !prevLeftState){
-        leftLineCount++;
-    }
+    // if(currentLeftState && !prevLeftState){
+    //     leftLineCount++;
+    // }
     if(currentRightState && !prevRightState){
         rightLineCount++;
     }
@@ -249,7 +284,7 @@ int lineCountLeft(){
  * @return false 
  */
 bool stopConditionsMet_TRANS_TO_4() {
-    return lineCountRight() >= 2 || lineCountLeft() >= 4; 
+    return lineCountRight() >= 2;// || lineCountLeft() >= 4; 
 }
 
 

@@ -187,9 +187,9 @@ namespace robot {
             driveMotorL->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
             driveMotorR->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
 
-            // Serial.println(forward_g);
-            Serial.println(forwardMidMotorSpeed + 1 * forward_g);
-            Serial.println(forwardMidMotorSpeed - 1 * forward_g);
+            // // Serial.println(forward_g);
+            // Serial.println(forwardMidMotorSpeed + 1 * forward_g);
+            // Serial.println(forwardMidMotorSpeed - 1 * forward_g);
 
         }
 

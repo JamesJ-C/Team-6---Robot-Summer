@@ -187,63 +187,63 @@ int g = 0;
 void loop() {
 
 
-//String msg;
-// int msg = -1;
-// if (SerialPort.available() ){
-//     msg = SerialPort.parseFloat(); //parseInt();//('\n');
-//     //Serial.print(loopCount++);
-//     // Serial.println(msg);
+// String msg;
+int msg = -1;
+if (SerialPort.available() ){
+    msg = SerialPort.parseInt(); //parseInt();//('\n');
+    //Serial.print(loopCount++);
+    // Serial.println(msg);
 
-//     display.clearDisplay();
-//     display.setTextSize(1);
-//     display.setTextColor(SSD1306_WHITE);
-//     display.setCursor(0,0);
-//     //display.print(loopCount);
-//     display.println(msg);
-//     display.display();
-//     } 
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    //display.print(loopCount);
+    display.println(msg);
+    display.display();
+    } 
 //     else {
 //         Serial.println(".");
 //     }
 
 
 
-    switch (currentState)
-{
-case START:
-    //forkliftServo.write(FORKLIFTSERVO_READY_POS);
-    if(SerialPort.available()){
-    int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
-            currentState = PROCESS_STATION_4;
-        }
-    }
-    break;
+//     switch (currentState)
+// {
+// case START:
+//     //forkliftServo.write(FORKLIFTSERVO_READY_POS);
+//     if(SerialPort.available()){
+//     int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
+//             currentState = PROCESS_STATION_4;
+//         }
+//     }
+//     break;
 
-case PROCESS_STATION_4:
-    lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
-    SerialPort.println(2);
-    //wait for bp to adjust height 
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 3) {//elevator has moved to forklift height
-            linearArmSystem.moveToValue(CLAW_FORWARD); 
-            Serial.println(4); 
-        }
-    }
-    if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 1) {//lifted elvator forklift above table
-            currentState = PROCESS_STATION_6;
-        }
-    }
-    break;
+// case PROCESS_STATION_4:
+//     lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
+//     SerialPort.println(2);
+//     //wait for bp to adjust height 
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 3) {//elevator has moved to forklift height
+//             linearArmSystem.moveToValue(CLAW_FORWARD); 
+//             Serial.println(4); 
+//         }
+//     }
+//     if(SerialPort.available()){
+//         int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 1) {//lifted elvator forklift above table
+//             currentState = PROCESS_STATION_6;
+//         }
+//     }
+//     break;
 
-    default:
-        currentState = IDLE;
-    break;
+//     default:
+//         currentState = IDLE;
+//     break;
 
-}
+//}
 
 } //loop
 

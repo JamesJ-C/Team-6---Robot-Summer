@@ -118,7 +118,7 @@ private:
         const double FORWARD_LOOP_GAIN = 1.0;
         const double FORWARD_P_GAIN = 0.9;
         const double FORWARD_I_GAIN = 0.0;
-        const double FORWARD_D_GAIN = 1.9;
+        const double FORWARD_D_GAIN = 2.1;//1.9;
         const double MAX_FORWARD_I = 1400.0;
 
         double backward_p;
