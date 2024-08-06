@@ -167,7 +167,7 @@ else {
     Serial.println(tape_val);
 }
 
-if (lineCount >= 2){
+if (lineCount >= 1){
     Serial.println("motors off");
     lineCount = 0;
     motorL.stop();
