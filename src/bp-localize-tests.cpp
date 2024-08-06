@@ -107,6 +107,7 @@ void setup() {
 
 // delay(1000);
 
+Serial.println("setupp");
 
 }
 
@@ -117,11 +118,44 @@ int rightLineCount = 0;
 
 
 int lineCount  = 0;
+bool prevVal = 0;
 
 void loop(){
 
-{
 
+{
+// int i_val = analogRead(TAPE_SENSOR_RIGHT_1);
+// int temp = i_val;
+
+// bool val = i_val >= 350 ? 1 : 0; 
+
+// driveSystem.updateForwardDrivePID();
+
+// if (val != prevVal && val != 0){
+//     lineCount++;
+//     Serial.println(temp);
+//     Serial.println();
+//     Serial.println(val);
+//     Serial.println();
+//     Serial.println(lineCount);    
+//     Serial.println();     
+//     Serial.println();
+// }
+
+// if (lineCount >= 2){
+//     Serial.println("motors off");
+//     lineCount = 0;
+//     motorL.stop();
+//     motorR.stop();
+//     delay(1000);
+//     Serial.println("motors on");
+// }
+
+// prevVal = val;
+
+
+}
+{
     // ElevatorSystem.updatePID(10);
     // ElevatorMotor.forward(3800);
     // delay(1000);
@@ -177,27 +211,21 @@ void loop(){
 
 int oldC = 0;
 
-    while (lineCount < 2){
-        driveSystem.updateForwardDrivePID();
-    }
-
-    // do {
-    //      driveSystem.updateForwardDrivePID();
-    //      updateLineCounts();
-
-    //     if (rightLineCount != oldC){
-
-    //         Serial.println(rightLineCount);
-    //         SerialPort.println(rightLineCount);
+    do {
+         driveSystem.updateForwardDrivePID();
+         updateLineCounts();
+    // if (rightLineCount != oldC){
+    //     Serial.println(rightLineCount);
+    //     SerialPort.println(rightLineCount);
     //     }
     //     oldC = rightLineCount;
-    // } while(!stopConditionsMet_TRANS_TO_4());
+    } while(!stopConditionsMet_TRANS_TO_4());
     motorL.stop();
     motorR.stop();
     lineCount = 0;
     rightLineCount = 0;
     leftLineCount = 0;
-    delay(3000);
+    delay(2000);
 
 //     motorL.stop();
 //     motorR.stop(); 
