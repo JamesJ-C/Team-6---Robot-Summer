@@ -184,10 +184,12 @@ namespace robot {
             forward_g = FORWARD_LOOP_GAIN * ( forward_p + forward_i + forward_d ); 
             forwardLastError = forwardError; 
 
-            driveMotorL->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
-            driveMotorR->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
+            driveMotorL->forward( ( forwardMidMotorSpeed + 1 * forward_g) );
+            driveMotorR->forward( ( forwardMidMotorSpeed - 1 * forward_g) );
 
             // Serial.println(forward_g);
+            Serial.println(forwardMidMotorSpeed + 1 * forward_g);
+            Serial.println(forwardMidMotorSpeed - 1 * forward_g);
 
         }
 

@@ -62,8 +62,8 @@ void setup() {
 
     delay(2000);
 
-    // Serial.begin(115200);
-    // Serial.println("setup");
+    Serial.begin(115200);
+    Serial.println("setup");
 
     SerialPort.begin(115200);
 
@@ -77,8 +77,8 @@ void setup() {
     pinMode(motorR.getPinA(), OUTPUT);
     pinMode(motorR.getPinB(), OUTPUT);
 
-    pinMode(ElevatorMotor.getPinA(), OUTPUT);
-    pinMode(ElevatorMotor.getPinB(), OUTPUT);
+    // pinMode(ElevatorMotor.getPinA(), OUTPUT);
+    // pinMode(ElevatorMotor.getPinB(), OUTPUT);
 
     pinMode(ElevatorSystem.getLimit1(), INPUT);
     pinMode(ElevatorSystem.getLimit2(), INPUT);
@@ -142,9 +142,9 @@ void loop(){
 
 driveSystem.updateForwardDrivePID();
 
-// Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
-// Serial.print(" ");
-// Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
+Serial.print("tp1: " + String( analogRead(TAPE_SENSOR_FORWARD_1) ));
+Serial.print(" ");
+Serial.println(analogRead(TAPE_SENSOR_FORWARD_2));
 
 // {
 // switch (currentState){
