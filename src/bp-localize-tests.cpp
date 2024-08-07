@@ -111,7 +111,7 @@ void setup() {
 
 // delay(40000);
 
-    ElevatorSystem.localize(3800, 3200);
+    // ElevatorSystem.localize(3800, 3200);
     // ElevatorSystem.moveToValue(-400);
 
     // while (true){ 
@@ -213,12 +213,15 @@ void loop(){
         tape_val = r_val;
     }
 
-    bool val = tape_val >= 600 ? 1 : 0;
+    bool val = tape_val >= 700 ? 1 : 0;//maybe 750 is best
 
     driveSystem.updateForwardDrivePID();
 
     if (val != prevVal && val != 0){
         lineCount++;
+        motorR.stop();
+        motorL.stop();
+        delay(3000);
 
     }
 
@@ -230,7 +233,7 @@ void loop(){
         delay(1000);
         // Serial.println("motors on");
     }
-    
+
 
 }
 
