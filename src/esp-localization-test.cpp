@@ -170,7 +170,7 @@ void setup() {
     
     // lazySusanSystem.localize(200, 200);
     // delay(2000);
-    linearArmSystem.localize(180, 180);
+    linearArmSystem.localize(150, 150);
 
     display.clearDisplay();
     display.setTextSize(1);
