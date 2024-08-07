@@ -234,7 +234,7 @@ void loop() {
 
     switch (currentState)
     {
-    case START: {
+    case START: { //added a comment
         //forkliftServo.write(FORKLIFTSERVO_READY_POS);
         delay(1000); 
         currentState = TRANSITION_TO_CHEESE;
