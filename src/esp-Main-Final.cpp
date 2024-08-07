@@ -71,7 +71,7 @@ enum State{
     PROCESS_STATION_PLATE,
     PROCESS_STATION_CHEESE, 
     TRANSITION_TO_SERVE,
-    PROCESS_STATION_PLATE,
+    PROCESS_STATION_SERVE,
     TRANSITION_TO_CHEESE,
     IDLE,
     FINISHED,
@@ -244,27 +244,43 @@ void loop() {
         break;
 
     case PROCESS_STATION_PLATE:
-    
+
         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
-        SerialPort.println(2); 
+        SerialPort.println(1); 
         //wait for bp to adjust height 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 3) {
+            if(receivedVal == 2) {
             while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
                 linearArmSystem.updatePID(CLAW_FORWARD);
             }
-                Serial.println(4); 
+                Serial.println(3); 
             }
         }
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 1) {
-                currentState = PROCESS_STATION_PLATE;
+            if(receivedVal == 4) {
+                currentState = TRANSITION_TO_SERVE;
             }
         }
+        break;
+
+        case TRANSITION_TO_SERVE:
+
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt();
+            if(receivedVal == 2) {
+                currentState = PROCESS_STATION_SERVE;
+            }
+        }
+
+            break;
+
+        case PROCESS_STATION_SERVE:
+
+
         break;
 
         case TRANSITION_TO_CHEESE:
