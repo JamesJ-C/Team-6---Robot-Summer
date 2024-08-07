@@ -135,30 +135,39 @@ bool off = false;
 void loop(){
 
 
+    // Serial.println(elevatorEncoder.getIncrements());
+    // ElevatorSystem.updatePID(-140);
+
+
+
+
+
     //ElevatorSystem.moveToValue(-250);//  updatePID(250);
     //SerialPort.println(2);
 
 
-switch (currentState){
+
+
+// switch (currentState){
     
-case START: 
-    //delay(1000); 
-    currentState = MOVE_ELEVATOR;
-    break;
+// case START: 
+//     //delay(1000); 
+//     currentState = MOVE_ELEVATOR;
+//     break;
 
-case MOVE_ELEVATOR:
+// case MOVE_ELEVATOR:
 
-    if ( abs(ElevatorSystem.updatePID(250) ) <= 30) {
-        SerialPort.println(2);
-        off = true;
-        currentState = IDLE;
-        ElevatorMotor.off();
-    }
-    break;
-case IDLE:
-    ElevatorMotor.off();
-    default:
-    break;
+//     if ( abs(ElevatorSystem.updatePID(250) ) <= 30) {
+//         SerialPort.println(2);
+//         off = true;
+//         currentState = IDLE;
+//         ElevatorMotor.off();
+//     }
+//     break;
+// case IDLE:
+//     ElevatorMotor.off();
+//     default:
+//     break;
 
 // }
 
