@@ -15,6 +15,9 @@ namespace robotControl {
     #define ELEVATOR_CLAW_AT_COUNTER_HEIGHT 250
     #define FORKLIFT_COUNTER_HEIGHT 0
 
+
+    #define START_BUTTON PA10
+
 }
 
 namespace constants {

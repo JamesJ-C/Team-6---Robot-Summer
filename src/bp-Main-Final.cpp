@@ -128,6 +128,8 @@ void setup() {
     
     pinMode(TAPE_SENSOR_RIGHT_2, INPUT);
     pinMode(TAPE_SENSOR_LEFT_2, INPUT);
+
+    pinMode(START_BUTTON, INPUT_PULLUP);
     
 
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
@@ -139,12 +141,16 @@ void setup() {
     ElevatorSystem.localize(3800, 3200);
 
     while (true){ 
-        if ( SerialPort.available()){
-            if (SerialPort.parseInt() == 1){
-                SerialPort.println(1);
-                break;
+
+        if (START_BUTTON == LOW){
+            if ( SerialPort.available()){
+                if (SerialPort.parseInt() == 1){
+                    SerialPort.println(1);
+                    SerialPort.flush();
+                    break;
+                }
             }
-        }
+        } 
     }
 
 }
@@ -158,7 +164,6 @@ void loop(){
         break;
 
     case TRANSITION_TO_4:
-
 
         while(!stopConditionsMet_TRANS_TO_4()){
             driveSystem.updateForwardDrivePID();
