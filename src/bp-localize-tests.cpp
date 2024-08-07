@@ -38,7 +38,7 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PB, ELEVATOR_ENCODER_PA)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.6, 2.1, 8.0, 3200);//1.9, 3.0);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 9.2, 0.6, 2.1, 8.0, 3200);//1.9, 3.0);
 //bottom -133
 //top 182
 //going uip increase encoder, going down decreases encoder
@@ -142,7 +142,7 @@ void loop(){
 // ElevatorMotor.forward(3800);
 
     // Serial.println(elevatorEncoder.getIncrements());
-    ElevatorSystem.updatePID(235);
+    // ElevatorSystem.updatePID(235);
 
 
 // if(digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
@@ -190,8 +190,6 @@ void loop(){
 
 // }
 
-}
-
 
 // SerialPort.print(String (elevatorEncoder.getIncrements()) + ". " + String (ElevatorSystem.updatePID(-100)) );
 
@@ -202,6 +200,39 @@ void loop(){
 
 // }
 
+
+
+    int l_val = analogRead(TAPE_SENSOR_LEFT_1);
+    int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
+
+    int tape_val = 0;
+    if ( abs( l_val - r_val ) <= 175) {
+        tape_val = 0;
+    }
+    else {
+        tape_val = r_val;
+    }
+
+    bool val = tape_val >= 600 ? 1 : 0;
+
+    driveSystem.updateForwardDrivePID();
+
+    if (val != prevVal && val != 0){
+        lineCount++;
+
+    }
+
+    if (lineCount >= 2){
+        // Serial.println("motors off");
+        lineCount = 0;
+        motorL.stop();
+        motorR.stop();
+        delay(1000);
+        // Serial.println("motors on");
+    }
+    
+
+}
 
 
 bool markerDetected(){
