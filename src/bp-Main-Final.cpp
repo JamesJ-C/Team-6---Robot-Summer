@@ -233,7 +233,15 @@ void loop(){
 
     case PROCESS_STATION_PLATE:
     if( SerialPort.available() ){
-        //wait for lazySusan & arm to move 
+        //wait for lazySusan & arm to move
+        int received = SerialPort.parseInt();
+        if (received == 1){
+            while (!ELEVATOR_LIMIT_BOTTOM) {
+                ElevatorMotor.backward(2500);
+            }
+            SerialPort.println(1);
+        }
+    }
 
         //move elevator to height just above plate 
 
@@ -247,33 +255,31 @@ void loop(){
 
         //esp will extend arm
 
+    if( SerialPort.available() ){
         //wait for response to move elevator up 
+        int received = SerialPort.parseInt();
+        if (received == 1){
+            while (abs(elevatorEncoder.getIncrements()-200) >= ERROR_THRESHOLD) {
+                ElevatorSystem.updatePID(200);
+            }
+            SerialPort.println(2);
+        }
+    }
         //send done response 
 
         //esp retracts
 
+    if( SerialPort.available() ){
         //wait for response to move to serving station
-
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 2){
-            while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
-                ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
-            }
-            SerialPort.println(3); 
+        int received = SerialPort.parseInt();
+        if (received == 1){
+            currentState = TRANSITION_TO_SERVE;
+            SerialPort.println(3);
         }
-    } 
-    if(SerialPort.available() ){
-        int receivedVal = SerialPort.parseInt(); 
-        if(receivedVal == 4){
-            while(abs(elevatorEncoder.getIncrements()-( FORKLIFT_COUNTER_HEIGHT + 20) ) >= ERROR_THRESHOLD){
-                ElevatorSystem.updatePID( ( FORKLIFT_COUNTER_HEIGHT + 20) );
-            }
+        
+    }
 
-        }
-    } currentState = TRANSITION_TO_SERVE; 
-        // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
-        // // ElevatorSystem.updatePID(80);
-        break;
+    break;
 
     case TRANSITION_TO_SERVE:
         unsigned long serveStartTime = millis();
