@@ -10,7 +10,6 @@ namespace robotControl {
     //threshold value for errors for different motions. used in a while loop for calling the updatepid function 
     #define ERROR_THRESHOLD 30
 
-
     //Encoder values for different heights of the elevator 
     #define ELEVATOR_CLAW_AT_COUNTER_HEIGHT 250
     #define FORKLIFT_COUNTER_HEIGHT 0

@@ -81,7 +81,7 @@ enum State{
     START_1, 
     MOVE_LS
 };
-State currentState = START_1; 
+State currentState = PROCESS_STATION_CHEESE; 
 
 enum uartSignal {
     sendingSignal,
@@ -234,23 +234,23 @@ void loop() {
 
     switch (currentState)
     {
-    case START: {
-        //forkliftServo.write(FORKLIFTSERVO_READY_POS);
-        delay(1000); 
-        currentState = TRANSITION_TO_CHEESE;
-        break;
+    // case START: {
+    //     //forkliftServo.write(FORKLIFTSERVO_READY_POS);
+    //     delay(1000); 
+    //     currentState = TRANSITION_TO_CHEESE;
+    //     break;
         
-        case TRANSITION_TO_CHEESE:
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
-                currentState = PROCESS_STATION_CHEESE;
-            }
-        }
-    } break;
+    //     case TRANSITION_TO_CHEESE:
+    //     if(SerialPort.available()){
+    //         int receivedVal = SerialPort.parseInt();
+    //         if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
+    //             currentState = PROCESS_STATION_CHEESE;
+    //         }
+    //     }
+    // } break;
 
         case PROCESS_STATION_CHEESE: {
-            //rotating lazy susan tto 270 degrees
+            //rotating lazy susan to 270 degrees
             while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
                 lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
             }
@@ -286,7 +286,7 @@ void loop() {
                         linearArmSystem.updatePID(CLAW_NEUTRAL);
                     }
                     SerialPort.println(5); //communicates to bp that lineararm has finished moving
-                    currentState = TRANSITION_TO_PLATE;
+                    currentState = IDLE;
                 }
             }
         } break;

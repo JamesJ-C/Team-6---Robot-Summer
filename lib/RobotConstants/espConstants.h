@@ -10,13 +10,13 @@ namespace robotControl {
     #define ERROR_THRESHOLD 30
 
     //Encoder values for different rotational positions, arbitary values needs tuning 
-    #define NINETY_LAZYSUSAN 666
-    #define ONE_EIGHTY_LAZYSUSAN 667
-    #define TWO_SEVENTY_LAZYSUSAN 668
+    #define NINETY_LAZYSUSAN 0
+    #define ONE_EIGHTY_LAZYSUSAN 172
+    #define TWO_SEVENTY_LAZYSUSAN 340
     
     //Encoder values for different positions of the linear arm movement 
     #define CLAW_FORWARD 100 
-    #define CLAW_NEUTRAL 50 
+    #define CLAW_NEUTRAL 0 
     
     //Servo Positions
     #define FORKLIFTSERVO_READY_POS 90
