@@ -254,7 +254,7 @@ void loop(){
         motorR.stop();
         motorL.stop();
         
-        //once stopped Serial.println(1);
+        SerialPort.println(1);
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt(); 
             if(receivedVal == 2){
@@ -268,27 +268,34 @@ void loop(){
     case PROCESS_STATION_SERVE:
 
 //wait for esp to move ls & arm
-
-//move elevator down
-
-//tell esp done 
-
-//esp retracts arms
-
-//waits for signal from esp to move elevator
-
-//go from serving back to cheese station
-
-        while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
-            ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
-        }
-        Serial.println(3);
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal = 4){
-                currentState = TRANSITION_TO_CHEESE; 
+            if(receivedVal = 1){
+                while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
+                    ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
+                }   
             }
         }
+        SerialPort.println(2);
+
+        //move elevator down
+
+        //tell esp done 
+
+        //esp retracts arms
+
+        //waits for signal from esp to move elevator
+         if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt();
+            if(receivedVal = 3){
+                while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT + 40) >= ERROR_THRESHOLD){
+                    ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT + 40);
+                }   
+                currentState = IDLE; 
+            }
+        }
+
+        //go from serving back to cheese station
 
         break;
     case TRANSITION_TO_CHEESE:
