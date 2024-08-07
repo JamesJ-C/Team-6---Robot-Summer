@@ -48,7 +48,7 @@ robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMot
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PB, LINEAR_ARM_ROTARY_ENCODER_PA);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P2, LINEAR_ARM_P1, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
-1.8, 0.7, 1.8, -0.8, 100);//0.8);
+1.8, 0.7, 1.8, -0.8, 95.0);//0.8);
 //forward is positive encoder values: -70 to 28, range of 98 ~100
 //extended ~100
 //retracted 0
