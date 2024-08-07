@@ -7,6 +7,10 @@
 namespace robotControl {
     #define TAPE_THRESHOLD 800
 
+    //threshold value for errors for different motions. used in a while loop for calling the updatepid function 
+    #define ERROR_THRESHOLD 30
+
+
     //Encoder values for different heights of the elevator 
     #define FORKLIFT_COUNTER_HEIGHT 1000
     #define FORKLIFT_SECURE_HEIGHT 1001 //A height that is just a little bit taller than counter height
