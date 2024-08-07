@@ -66,10 +66,12 @@ void setup() {
 
 
     /*  Servos  */
-    clawServo.attach(CLAW_SERVO_PIN, 500, 2400);
-    forkliftServo.attach(FORKLIFT_SERVO_PIN, 500, 2400);
-// myServo.attach(25, 500, 2400);
-// myServo2.attach(26, 500, 2400);
+    clawServo.attach(CLAW_SERVO_PIN);
+    forkliftServo.attach(FORKLIFT_SERVO_PIN);
+
+    pinMode(CLAW_SERVO_PIN,OUTPUT);
+    pinMode(FORKLIFT_SERVO_PIN,OUTPUT);
+
     /*  Encoders  */
     pinMode(lazySusanEncoder.getPinA(), INPUT_PULLUP);
     pinMode(lazySusanEncoder.getPinB(), INPUT_PULLUP);
@@ -103,42 +105,30 @@ int loopCount = 0;
 
 void loop() {
 
-
-// analogWrite(25, 140);
-
-// analogWrite(26, 140);
-
-
-// digitalWrite(25, HIGH);
-// digitalWrite(26, HIGH);
-
-// if (loopCount == 0){
-//     Serial.println("doing the deed");
-//     // analogWrite(CLAW_SERVO_PIN, 180);
-//     // analogWrite(FORKLIFT_SERVO_PIN, 180);
+if (loopCount == 0){
+    Serial.println("doing the deed");
+    // analogWrite(CLAW_SERVO_PIN, 180);
+    // analogWrite(FORKLIFT_SERVO_PIN, 180);
 
 //     //clawServo.write(90);
     
-//     loopCount++;
-// }
+    loopCount++;
+}
 clawServo.write(50);
-forkliftServo.write(50);
 delay(1000);
 for (int i = 50; i < 110; i=i + 1){
     clawServo.write(i);
-    forkliftServo.write(i);
     delay(10);
 }
 clawServo.write(100);
 delay(1000);
 for (int i = 100; i > 50; i=i - 1){
     clawServo.write(i);
-    forkliftServo.write(i);
     delay(10);
 }
 
 
-} //loop
+} 
 
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
