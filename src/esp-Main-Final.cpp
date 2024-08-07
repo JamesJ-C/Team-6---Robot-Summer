@@ -234,7 +234,7 @@ void loop() {
 
     switch (currentState)
     {
-    case START:
+    case START: {
         //forkliftServo.write(FORKLIFTSERVO_READY_POS);
         delay(1000); 
         currentState = TRANSITION_TO_CHEESE;
@@ -244,56 +244,54 @@ void loop() {
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
             if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
-                currentState = PROCESS_STATION_CHEESE; 
+                currentState = PROCESS_STATION_CHEESE;
             }
         }
-        break;
+    } break;
 
-        case PROCESS_STATION_CHEESE:
-        //rotating lazy susan tto 270 degrees
-        while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
-            lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
-        }
+        case PROCESS_STATION_CHEESE: {
+            //rotating lazy susan tto 270 degrees
+            while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+                lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+            }
 
-        //claw arm reaches forward
-        while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
-            linearArmSystem.updatePID(CLAW_FORWARD);
-        }
-        //claw opens 
-        for (int pos = CLAWSERVO_CLOSED_POS; pos <= CLAWSERVO_OPEN_POS; pos++)
-        {
-            clawServo.write(pos);
-            delay(20);
-        }
-        
-        SerialPort.println(2); // communicating to BP that LA and Elevator has finished moving 
+            //claw arm reaches forward
+            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(CLAW_FORWARD);
+            }
+            //claw opens 
+            for (int pos = CLAWSERVO_CLOSED_POS; pos <= CLAWSERVO_OPEN_POS; pos++)
+            {
+                clawServo.write(pos);
+                delay(20);
+            }
+            
+            SerialPort.println(1); // communicating to BP that LA and Elevator has finished moving 
 
-        if(SerialPort.available()){ //waiting for BPs signal 
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 3){
-                //closing the claw 
-                for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
-                    clawServo.write(pos);
-                    delay(5);
+            if(SerialPort.available()){ //waiting for BPs signal 
+                int receivedVal = SerialPort.parseInt();
+                if(receivedVal == 2){
+                    //closing the claw 
+                    for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
+                        clawServo.write(pos);
+                        delay(5);
+                    }
+                    SerialPort.println(3); 
                 }
-                SerialPort.println(5); //5 is the signal esp sends to bp whenever claw is closed
-            }
-        }
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 3) {
-                //retracts claw arm to neutral to get ready for travel 
-                while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= CLAW_NEUTRAL)
-                {
-                    linearArmSystem.updatePID(CLAW_NEUTRAL);
+            
+                if(receivedVal == 4) {
+                    //retracts claw arm to neutral to get ready for travel 
+                    while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= CLAW_NEUTRAL)
+                    {
+                        linearArmSystem.updatePID(CLAW_NEUTRAL);
+                    }
+                    SerialPort.println(5); //communicates to bp that lineararm has finished moving
+                    currentState = TRANSITION_TO_PLATE;
                 }
-                SerialPort.println(4); //communicates to bp that lineararm has finished moving
-                currentState = TRANSITION_TO_PLATE;
             }
-        }
-        break;
+        } break;
 
-     case TRANSITION_TO_PLATE:
+    case TRANSITION_TO_PLATE: {
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt(); 
             if(receivedVal == 1) { //waits for bp to finish driving
@@ -301,30 +299,50 @@ void loop() {
             }
         }
 
-    case PROCESS_STATION_PLATE:
+     } break;
+
+    case PROCESS_STATION_PLATE: {
         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
+        //move claw out
+        while(abs(linearArmEncoder.getIncrements()-9999999) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(9999999);
+        }
+
+        //open CLAW
+        clawServo.write(OPEN_POS);
+
+
+        //retract claw
+        while(abs(linearArmEncoder.getIncrements()-9999999) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(9999999);
+        }
+
         SerialPort.println(1); 
         //wait for bp to adjust height 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
+
             if(receivedVal == 2) {
-            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
-                linearArmSystem.updatePID(CLAW_FORWARD);
-            }
+                while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+                    linearArmSystem.updatePID(CLAW_FORWARD);
+                }
                 Serial.println(3); 
             }
-        }
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt();
+
             if(receivedVal == 4) {
+                //move claw in
+                while(abs(linearArmEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
+                    linearArmSystem.updatePID(999999);
+                }
+                SerialPort.println(5);
                 currentState = TRANSITION_TO_SERVE;
             }
         }
-        break;
+    } break;
 
-        case TRANSITION_TO_SERVE:
+        case TRANSITION_TO_SERVE: {
 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
@@ -334,15 +352,16 @@ void loop() {
             SerialPort.println(2);
         }
 
-            break;
+        } break;
 
-        case PROCESS_STATION_SERVE:
+        case PROCESS_STATION_SERVE: {
 
-            ///move ls & arm
-            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
-                linearArmSystem.updatePID(CLAW_FORWARD);
+            ///move ls
+            while(abs(lazySusanEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(99999);
             }
 
+            //move claw out
             while(abs(linearArmEncoder.getIncrements()-0999999) >= ERROR_THRESHOLD){
                 linearArmSystem.updatePID(0999999);
             }
@@ -358,17 +377,15 @@ void loop() {
                     } 
                     //move ls to the front?
                     SerialPort.println(3);
+                    currentState = IDLE;
                 }
-                currentState = IDLE;
+                
 
             }
 
+        } break;
 
-
-
-        break;
-
-        case TRANSITION_TO_CHEESE:
+        case TRANSITION_TO_CHEESE: {
         //wait for BP to tell us we have arrived 
 
         // while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
@@ -390,10 +407,11 @@ void loop() {
             if( receivedVal == 1 ){
                 currentState = PROCESS_STATION_CHEESE; 
             }
+            SerialPort.println(2);
         }
-        break;
+        } break;
 
-        case PROCESS_STATION_CHEESE:
+        case PROCESS_STATION_CHEESE: {
 
         while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
@@ -424,9 +442,9 @@ void loop() {
                 SerialPort.println(3);
             }
         }
-        break;
+        } break;
 
-    case: TRANSITION_TO_PLATE
+    case TRANSITION_TO_PLATE: {
 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt(); 
@@ -446,9 +464,9 @@ void loop() {
             break;
         default:
             currentState = IDLE;
-        break;
+    } break;
 
-    }    
+}    
 
 
 } //loop
