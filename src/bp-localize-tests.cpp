@@ -136,6 +136,9 @@ bool prevVal = 0;
 
 bool off = false;
 
+unsigned long lastTime = 0;
+unsigned long currentTime = 0;
+
 void loop(){
 
 
@@ -218,11 +221,15 @@ void loop(){
     driveSystem.updateForwardDrivePID();
 
     if (val != prevVal && val != 0){
-        lineCount++;
-        motorR.stop();
-        motorL.stop();
-        delay(3000);
 
+        currentTime = millis();
+        if (currentTime - lastTime >= 1000){
+            lineCount++;
+            motorR.stop();
+            motorL.stop();
+            //delay(3000);
+            lastTime = currentTime;
+        }
     }
 
     if (lineCount >= 2){
