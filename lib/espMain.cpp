@@ -171,13 +171,17 @@ case START:
     break;
 
 case PROCESS_STATION_4:
-    lazySusanSystem.moveToValue(NINETY_LAZYSUSAN); 
+    while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
+        lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
+    }
     SerialPort.println(2); 
     //wait for bp to adjust height 
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
         if(receivedVal == 3) {
-            linearArmSystem.moveToValue(CLAW_FORWARD); 
+        while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(CLAW_FORWARD);
+        }
             Serial.println(4); 
         }
     }
@@ -190,12 +194,16 @@ case PROCESS_STATION_4:
     break;
 
     case PROCESS_STATION_6:
-    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+    while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+            lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+    }
     Serial.println(2);
     if(SerialPort.available()) {
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 3){
-            linearArmSystem.moveToValue(CLAW_NEUTRAL);
+            while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL)>= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(CLAW_NEUTRAL);
+            }
             Serial.println(4);
         }
     }
@@ -208,13 +216,17 @@ case PROCESS_STATION_4:
     break;
 
     case PROCESS_STATION_5:
-    lazySusanSystem.moveToValue(TWO_SEVENTY_LAZYSUSAN);
+    while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+        lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+    }
     clawServo.write(CLAWSERVO_OPEN_POS);
     SerialPort.println(2); 
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
         if(receivedVal == 3){
-            linearArmSystem.moveToValue(CLAW_FORWARD); 
+            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(CLAW_FORWARD);
+            }
             for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
                 clawServo.write(pos);
                 delay(20);
@@ -232,7 +244,9 @@ case PROCESS_STATION_4:
 
     case PROCESS_STATION_62:
         clawServo.write(CLAWSERVO_OPEN_POS); 
-        linearArmSystem.moveToValue(CLAW_NEUTRAL); 
+        while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(CLAW_NEUTRAL);
+        }
         currentState = FINISHED; 
         SerialPort.println(6);
         break;
@@ -253,7 +267,6 @@ case PROCESS_STATION_4:
 
 
 } //loop
-
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
 

@@ -6,6 +6,9 @@
 
 namespace robotControl {
 
+    //threshold value for errors for different motions. used in a while loop for calling the updatepid function 
+    #define ERROR_THRESHOLD 30
+
     //Encoder values for different rotational positions, arbitary values needs tuning 
     #define NINETY_LAZYSUSAN 666
     #define ONE_EIGHTY_LAZYSUSAN 667

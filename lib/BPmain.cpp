@@ -1,5 +1,5 @@
 
-#ifndef ESP32
+// #ifndef ESP32
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -28,6 +28,7 @@ bool stopConditionsMet();
 
 movement::Motor motorL(MOTOR_L_P1, MOTOR_L_P2);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
+
 
 encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB);
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P1, ELEVATOR_P2, &elevatorEncoder);
@@ -82,15 +83,11 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
-
-
     // ElevatorSystem.localize();
-
 }
 
 
 void loop(){
-
 
 
 switch (currentState){
@@ -103,7 +100,6 @@ case TRANSITION_TO_4:
 
 
     while(!stopConditionsMet_TRANS_TO_4()){
-        
         driveSystem.updateForwardDrivePID();
         // pidDriving(); // to the right 
     }
@@ -120,14 +116,19 @@ case PROCESS_STATION_4:
 if( SerialPort.available() ){
     int receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 2){
-        ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT); 
+        while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
+            ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
+        }
         SerialPort.println(3); 
     }
 } 
 if( SerialPort.available() ){
     int receivedVal = SerialPort.parseInt(); 
     if(receivedVal == 4){
-    ElevatorSystem.moveToValue(FORKLIFT_SECURE_HEIGHT);
+         while(abs(elevatorEncoder.getIncrements()-FORKLIFT_SECURE_HEIGHT) >= ERROR_THRESHOLD){
+            ElevatorSystem.updatePID(FORKLIFT_SECURE_HEIGHT);
+        }
+
     }
 } currentState = TRANSITION_TO_6; 
     // Serial.println("enc: " + String(    elevatorEncoder.getIncrements() ) );
@@ -149,7 +150,9 @@ case TRANSITION_TO_6:
 
     break;
 case PROCESS_STATION_6:
-    ElevatorSystem.moveToValue(FORKLIFT_COUNTER_HEIGHT);
+     while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
+        ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
+        }
     Serial.println(3);
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt();
@@ -179,13 +182,17 @@ if(SerialPort.available()){
 
 break;
 case PROCESS_STATION_5:
-    ElevatorSystem.moveToValue(CLAW_COUNTER_HEIGHT);
+     while(abs(elevatorEncoder.getIncrements()-CLAW_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
+            ElevatorSystem.updatePID(CLAW_COUNTER_HEIGHT);
+        }
     SerialPort.println(3);
 
     if(SerialPort.available()){
         int receivedVal = SerialPort.parseInt(); 
         if(receivedVal == 5){
-            ElevatorSystem.moveToValue(CLAW_SECURE_HEIGHT);
+            while(abs(elevatorEncoder.getIncrements()-CLAW_SECURE_HEIGHT) >= ERROR_THRESHOLD){
+            ElevatorSystem.updatePID(CLAW_SECURE_HEIGHT);
+        }
             currentState = TRANSITION_TO_62;
         }
     }
@@ -278,4 +285,11 @@ void isrUpdateElevatorEncoder(){
 
 }
 
-#endif
+
+//Plate grilling code
+
+
+
+
+
+// #endif
