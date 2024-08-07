@@ -34,8 +34,13 @@ namespace robot {
         double transfer;
         double lastError = 0;
         double motor_i = 0;
-        double maxI = 2720;//2800;//3000;
-
+        #ifndef ESP32
+        double maxI = 3000;//2800;//2720;//2800;//3000;
+        #endif
+        
+        #ifdef ESP32
+        double maxI = 160;
+        #endif
         public:
         movement::EncodedMotor *motor;
 

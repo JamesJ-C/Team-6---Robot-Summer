@@ -118,9 +118,9 @@ for (int i = 50; i < 110; i=i + 1){
     clawServo.write(i);
     delay(10);
 }
-clawServo.write(110);
+clawServo.write(100);
 delay(1000);
-for (int i = 110; i > 50; i=i - 1){
+for (int i = 100; i > 50; i=i - 1){
     clawServo.write(i);
     delay(10);
 }

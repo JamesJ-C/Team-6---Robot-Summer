@@ -118,8 +118,8 @@ namespace robot {
 
             // get current rotary value and compare to target value
             int currentRotaryVal = this->motor->encoder->getIncrements();
-            while (currentRotaryVal != rotaryVal) {
-                break;
+            while (abs (currentRotaryVal - rotaryVal) < 20) {
+                //break;
                 updatePID(rotaryVal);
                 int currentRotaryVal = this->motor->encoder->getIncrements();
             }

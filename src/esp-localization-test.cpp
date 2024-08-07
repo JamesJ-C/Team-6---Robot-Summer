@@ -33,14 +33,14 @@ void isrUpdateExtendArmButton();
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 
-encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PA, LAZY_SUSAN_ROTARY_ENCODER_PB);
+encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PB, LAZY_SUSAN_ROTARY_ENCODER_PA);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
-robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.0, 0.68, 1.8, -1.0);
+robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -1.0);
 
-encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PA, LINEAR_ARM_ROTARY_ENCODER_PB);
-movement::EncodedMotor linearArmMotor(LINEAR_ARM_P1, LINEAR_ARM_P2, &linearArmEncoder);//
+encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PB, LINEAR_ARM_ROTARY_ENCODER_PA);
+movement::EncodedMotor linearArmMotor(LINEAR_ARM_P2, LINEAR_ARM_P1, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
-1.2, 0.6, 1.8, 0.8);
+1.8, 0.7, 1.8, 1.0);//0.8);
 
 robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
 
@@ -67,9 +67,11 @@ enum State{
     IDLE,
     FINISHED,
     MOVE_ARM,
-    CLAW
+    CLAW,
+    START_1, 
+    MOVE_LS
 };
-State currentState = START; 
+State currentState = START_1; 
 
 enum uartSignal {
     sendingSignal,
@@ -154,33 +156,47 @@ void setup() {
 
     Serial.println("localizing");
 
-    delay(3000);
+    
+    // lazySusanSystem.localize(200, 200);
+    // delay(2000);
+    // linearArmSystem.localize(250, 250);
 
-    linearArmSystem.localize(125, 125);
-    lazySusanSystem.localize(190, 190);
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.println(linearArmEncoder.getMaxIncrement());
+    display.display();
 
+    // while (abs (linearArmSystem.updatePID(140)) <= 30){
+
+    // }
+    // linearArmMotor.off();
+
+    delay(2000);
     // linearArmMotor.off();
     // lazySusanMotor.off();
 
     // delay(3000);
-    
-    SerialPort.println(1);
-    unsigned long startTime = millis();
-    while (true){ 
-        if ( SerialPort.parseInt() == 1){
-            // display.clearDisplay();
-            // display.setTextSize(1);
-            // display.setTextColor(SSD1306_WHITE);
-            // display.setCursor(0,0);
-            // display.print("confirmation complete");                
-            // display.display();
-            // delay(1000);
-            break;
-        }
-        if (millis() - startTime > 3000){
-            SerialPort.println(1);
-        }
-    }
+
+
+    // SerialPort.println(1);
+    // unsigned long startTime = millis();
+    // while (true){ 
+    //     if ( SerialPort.parseInt() == 1){
+    //         display.clearDisplay();
+    //         display.setTextSize(1);
+    //         display.setTextColor(SSD1306_WHITE);
+    //         display.setCursor(0,0);
+    //         display.print("confirmation complete");                
+    //         display.display();
+    //         delay(1000);
+    //         break;
+    //     }
+    //     if (millis() - startTime > 3000){
+    //         SerialPort.println(1);
+    //     }
+    // }
 
 }
 
@@ -189,40 +205,126 @@ int loopCount = 0;
 int g = 0;
 void loop() {
 
-switch (currentState) {
+     linearArmMotor.forward(180);
 
-case START:
-    //forkliftServo.write(FORKLIFTSERVO_READY_POS);
-    if(SerialPort.available()){
-    int receivedVal = SerialPort.parseInt();
-        if(receivedVal == 2) { // 1 is the signal indicating that the BP has finished driving 
-            currentState = MOVE_ARM;
-        }
-    }
-    break;
+     delay(200);
 
-case MOVE_ARM:
-    lazySusanSystem.moveToValue(-200); 
-    linearArmSystem.moveToValue(-160);
-    SerialPort.println(1);
-    currentState = CLAW;
-    break;
+    linearArmMotor.backward(180);
 
-case CLAW:
-    clawServo.write(110);
-    delay(1000);
-    for (int i = 110; i > 50; i=i - 1){
-        clawServo.write(i);
-        delay(10);
-    }
-    currentState = IDLE;
+     delay(200);
 
-    break;
-    default:
-        currentState = IDLE;
-    break;
 
+if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
+    linearArmMotor.forward(180);
+            display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("fwd");                
+            display.display();
 }
+
+if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
+    linearArmMotor.backward(180);
+    display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("bckwd");                
+            display.display();
+}
+
+
+
+// switch (currentState) {
+
+// case START_1:
+// delay(2000);
+// SerialPort.println(1);
+// currentState = START;
+// break;
+
+// case START:
+//             // display.clearDisplay();
+//             // display.setTextSize(1);
+//             // display.setTextColor(SSD1306_WHITE);
+//             // display.setCursor(0,0);
+//             // display.print("confirmation complete");                
+//             // display.display();
+//             // // delay(1000);
+//     //forkliftServo.write(FORKLIFTSERVO_READY_POS);
+//     if(SerialPort.available()){
+//     int receivedVal = SerialPort.parseInt();
+//         if(receivedVal == 2) { // 1 is the signal indicating that the BP has finished driving 
+//             currentState = MOVE_LS;
+//             display.clearDisplay();
+//             display.setTextSize(1);
+//             display.setTextColor(SSD1306_WHITE);
+//             display.setCursor(0,0);
+//             display.print("received");                
+//             display.display();
+//             // delay(1000);
+//         }
+//     }
+//     break;
+
+// case MOVE_ARM:
+//     if (abs (linearArmSystem.updatePID(-100)) <=30){
+//         currentState = CLAW;
+//         linearArmMotor.off();
+//         }
+//             display.clearDisplay();
+//             display.setTextSize(1);
+//             display.setTextColor(SSD1306_WHITE);
+//             display.setCursor(0,0);
+//             display.print("arm");                
+//             display.display();
+//     break;
+
+//     case MOVE_LS:
+//     if (abs (lazySusanSystem.updatePID(-60)) <= 30){
+
+//             display.clearDisplay();
+//             display.setTextSize(1);
+//             display.setTextColor(SSD1306_WHITE);
+//             display.setCursor(0,0);
+//             display.print("tansisityon");                
+//             display.display();
+//         currentState = MOVE_ARM;
+//         lazySusanMotor.off();
+//         delay(2000);
+//         }
+//             display.clearDisplay();
+//             display.setTextSize(1);
+//             display.setTextColor(SSD1306_WHITE);
+//             display.setCursor(0,0);
+//             display.print("lazy S");                
+//             display.display();
+//             // delay(2000);
+//             //delay(10);
+//             break;
+
+// case CLAW:
+//             display.clearDisplay();
+//             display.setTextSize(1);
+//             display.setTextColor(SSD1306_WHITE);
+//             display.setCursor(0,0);
+//             display.print("doing claw");                
+//             display.display();
+//     clawServo.write(100);
+//     delay(1000);
+//     for (int i = 100; i > 50; i=i - 1){
+//         clawServo.write(i);
+//         delay(10);
+//     }
+//     currentState = IDLE;
+
+//     break;
+//     default:
+//         currentState = IDLE;
+//     break;
+
+// }
 
 } //loop
 

@@ -34,11 +34,11 @@ HardwareSerial SerialPort(USART3);
 movement::Motor motorL(MOTOR_L_P2, MOTOR_L_P1);
 movement::Motor motorR(MOTOR_R_P1, MOTOR_R_P2);
 
-encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PA, ELEVATOR_ENCODER_PB);
+encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PB, ELEVATOR_ENCODER_PA);
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.5, 2.1, 1.0);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.6, 2.1, 3.5);//1.9, 3.0);
 
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
@@ -60,7 +60,7 @@ enum State{
     MOVE_ELEVATOR,
     MOVE_ARM
 };
-State currentState = IDLE;
+State currentState = START;
 
 
 void setup() {
@@ -105,8 +105,10 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
+delay(40000);
 
-    ElevatorSystem.localize(3700, 2500);
+    ElevatorSystem.localize(4000, 2800);
+    // ElevatorSystem.moveToValue(-400);
 
     while (true){ 
         if ( SerialPort.available()){
@@ -128,28 +130,37 @@ int rightLineCount = 0;
 int lineCount  = 0;
 bool prevVal = 0;
 
+bool off = false;
+
 void loop(){
+
+
+    //ElevatorSystem.moveToValue(-250);//  updatePID(250);
+    //SerialPort.println(2);
+
 
 switch (currentState){
     
 case START: 
-    delay(1000); 
+    //delay(1000); 
     currentState = MOVE_ELEVATOR;
     break;
 
 case MOVE_ELEVATOR:
-    if (SerialPort.available()){
-        if (SerialPort.parseInt() == 1){
-            ElevatorSystem.moveToValue(270);//  updatePID(250);
-            SerialPort.println(2);
-            currentState = IDLE;
-        }
-    }
 
+    if ( abs(ElevatorSystem.updatePID(250) ) <= 30) {
+        SerialPort.println(2);
+        off = true;
+        currentState = IDLE;
+        ElevatorMotor.off();
+    }
+    break;
+case IDLE:
+    ElevatorMotor.off();
     default:
     break;
 
-}
+// }
 
 }
 
@@ -161,7 +172,7 @@ case MOVE_ELEVATOR:
 // Serial.println(elevatorEncoder.getIncrements());
 // SerialPort.println(ElevatorSystem.updatePID(-100));
 
-
+}
 
 
 
