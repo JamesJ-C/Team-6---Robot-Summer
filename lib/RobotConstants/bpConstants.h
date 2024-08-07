@@ -16,7 +16,7 @@ namespace robotControl {
     #define FORKLIFT_COUNTER_HEIGHT 0
 
 
-    #define START_BUTTON PA10
+    #define START_BUTTON PA_10
 
 }
 

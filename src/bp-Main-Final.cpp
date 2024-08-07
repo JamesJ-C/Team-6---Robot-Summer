@@ -25,6 +25,9 @@ bool stopConditionsMet();
 void isrUpdateLineCount();
 
 
+
+
+
 /*  Object declerations  */
 
 HardwareSerial SerialPort(USART3);
@@ -88,8 +91,12 @@ unsigned long l_lastTime = 0;
 unsigned long l_currentTime = 0;
 
 
+volatile bool STARTED = false;
 
 
+void isrStart(){
+    STARTED = true;
+}
 
 void setup() {
 
@@ -136,13 +143,14 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
 
-    delay(20000);
+    attachInterrupt(digitalPinToInterrupt(START_BUTTON), isrStart, FALLING);
 
-    ElevatorSystem.localize(3800, 3200);
 
-    while (true){ 
+    delay(10000);
+    ElevatorSystem.localize(4000, 3500);
 
-        if (START_BUTTON == LOW){
+    while (true){
+
             if ( SerialPort.available()){
                 if (SerialPort.parseInt() == 1){
                     SerialPort.println(1);
@@ -150,7 +158,6 @@ void setup() {
                     break;
                 }
             }
-        } 
     }
 
 }
@@ -173,7 +180,7 @@ void loop(){
         motorL.stop();
         motorR.stop(); 
 
-        SerialPort.println(1); 
+        SerialPort.println(1);
 
         currentState = PROCESS_STATION_4;
         break; 
@@ -202,10 +209,10 @@ void loop(){
         break;
 
     case TRANSITION_TO_6:
-        while (!stopConditionsMet_TRANS_TO_6){
-        // updateLineCounts(); // <-- run this in a while lop while driving
-        // driveSystem.updateBackwardDrivePID();
-        }
+        // while (!stopConditionsMet_TRANS_TO_6){
+        // // updateLineCounts(); // <-- run this in a while lop while driving
+        // // driveSystem.updateBackwardDrivePID();
+        // }
         //pidDriving(); //to the left
         //stopping at Serving area; 
         //once stopped Serial.println(1);
