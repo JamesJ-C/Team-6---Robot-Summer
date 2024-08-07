@@ -244,6 +244,7 @@ void loop() {
         break;
 
     case PROCESS_STATION_PLATE:
+    
         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
@@ -303,25 +304,36 @@ void loop() {
         }
 //move lA
         SerialPort.println(1);
-        
+
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 3){
+            if(receivedVal == 1){
                 
                 for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
                     clawServo.write(pos);
                     delay(20);
                 }
-                SerialPort.println(5); 
+                SerialPort.println(2); 
             }
         }
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 1){
-                currentState = PROCESS_STATION_PLATE2;
+            if(receivedVal == 2) {
+                currentState = TRANSITION_TO_PLATE;
+                SerialPort.println(3);
             }
         }
-            break;
+        break;
+
+    case: TRANSITION_TO_PLATE
+
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
+            if(receivedVal == 1) {
+                currentState = PROCESS_STATION_PLATE;
+            }
+        }
+
 
         case FINISHED: //basically loops back to station 
             if(SerialPort.available()){
