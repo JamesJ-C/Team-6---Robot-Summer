@@ -328,14 +328,42 @@ void loop() {
 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 2) {
+            if(receivedVal == 1) {
                 currentState = PROCESS_STATION_SERVE;
             }
+            SerialPort.println(2);
         }
 
             break;
 
         case PROCESS_STATION_SERVE:
+
+            ///move ls & arm
+            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(CLAW_FORWARD);
+            }
+
+            while(abs(linearArmEncoder.getIncrements()-0999999) >= ERROR_THRESHOLD){
+                linearArmSystem.updatePID(0999999);
+            }
+
+            Serial.println(1);
+
+
+            if (SerialPort.available()){
+                int recieved = SerialPort.parseInt();
+                if (recieved == 2){
+                    while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= ERROR_THRESHOLD){
+                        linearArmSystem.updatePID(CLAW_NEUTRAL);
+                    } 
+                    //move ls to the front?
+                    SerialPort.println(3);
+                }
+                currentState = IDLE;
+
+            }
+
+
 
 
         break;
