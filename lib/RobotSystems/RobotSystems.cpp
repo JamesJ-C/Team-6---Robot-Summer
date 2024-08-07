@@ -231,4 +231,9 @@ namespace robot {
             driveMotorR->backward(  1 * ir_g );
         }
 
+        void DrivePID::motorStop(){
+            this->driveMotorL->stop();
+            this->driveMotorR->stop();
+        }
+
 }

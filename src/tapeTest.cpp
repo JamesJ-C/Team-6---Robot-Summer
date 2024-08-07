@@ -216,11 +216,11 @@ void loop(){
         r_tape_val = r_val;
     }
 
-    bool r_val = r_tape_val >= 700 ? 1 : 0;//maybe 750 is best
+    bool r_t_val = r_tape_val >= 700 ? 1 : 0;//maybe 750 is best
 
     driveSystem.updateForwardDrivePID();
 
-    if (r_val != r_prevVal && r_val != 0){
+    if (r_t_val != r_prevVal && r_t_val != 0){
 
         r_currentTime = millis();
         if (r_currentTime - r_lastTime >= 1000){

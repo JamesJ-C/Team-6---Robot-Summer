@@ -164,6 +164,8 @@ private:
 
         void updateIRDrive(double irError);
 
+        void motorStop();
+
     };
 
 
