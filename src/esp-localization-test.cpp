@@ -216,23 +216,75 @@ void loop() {
 
 if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
     linearArmMotor.forward(180);
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("fwd");                
-            display.display();
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.print("fwd: ");
+    display.println(linearArmEncoder.getIncrements());                 
+    display.display();
 }
 
 if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
     linearArmMotor.backward(180);
     display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("bckwd");                
-            display.display();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.print("bckwd");
+    display.println(linearArmEncoder.getIncrements());                
+    display.display();
 }
+
+
+/*
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.print(enc);
+    display.println(linearArmEncoder.getIncrements());                
+    display.display();
+
+    linearArmSystem.updatePID(80);
+
+
+*/
+
+
+    // if(digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == HIGH){
+    //     lazySusanMotor.forward(180);
+    //     display.clearDisplay();
+    //     display.setTextSize(1);
+    //     display.setTextColor(SSD1306_WHITE);
+    //     display.setCursor(0,0);
+    //     display.print("fwd: ");
+    //     display.println(lazySusanEncoder.getIncrements());          
+    //     display.display();
+    // } else {
+    //     lazySusanMotor.backward(180);
+    //     display.clearDisplay();
+    //     display.setTextSize(1);
+    //     display.setTextColor(SSD1306_WHITE);
+    //     display.setCursor(0,0);
+    //     display.print("backwd: ");
+    //     display.println(lazySusanEncoder.getIncrements());              
+    //     display.display();
+    // }
+
+/*
+    display.clearDisplay();
+    display.setTextSize(1);
+    display.setTextColor(SSD1306_WHITE);
+    display.setCursor(0,0);
+    display.print(enc);
+    display.println(lazySusanEncoder.getIncrements());                
+    display.display();
+
+    lazySusanSystem.updatePID(80);
+
+
+*/
 
 
 
