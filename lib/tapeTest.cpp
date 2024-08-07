@@ -130,14 +130,15 @@ bool prevRightState = false;
 int leftLineCount = 0;
 int rightLineCount = 0; 
 
+bool r_prevVal = 0;
 
-int lineCount  = 0;
-bool prevVal = 0;
+bool l_prevVal = 0;
 
-bool off = false;
+unsigned long r_lastTime = 0;
+unsigned long r_currentTime = 0;
 
-unsigned long lastTime = 0;
-unsigned long currentTime = 0;
+unsigned long l_lastTime = 0;
+unsigned long l_currentTime = 0;
 
 void loop(){
 
@@ -208,37 +209,35 @@ void loop(){
     int l_val = analogRead(TAPE_SENSOR_LEFT_1);
     int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
 
-    int tape_val = 0;
+    int r_tape_val = 0;
     if ( abs( l_val - r_val ) <= 175) {
-        tape_val = 0;
+        r_tape_val = 0;
     }
     else {
-        tape_val = r_val;
+        r_tape_val = r_val;
     }
 
-    bool val = tape_val >= 700 ? 1 : 0;//maybe 750 is best
+    bool r_t_val = r_tape_val >= 700 ? 1 : 0;//maybe 750 is best
 
     driveSystem.updateForwardDrivePID();
 
-    if (val != prevVal && val != 0){
+    if (r_t_val != r_prevVal && r_t_val != 0){
 
-        currentTime = millis();
-        if (currentTime - lastTime >= 1000){
-            lineCount++;
+        r_currentTime = millis();
+        if (r_currentTime - r_lastTime >= 1000){
+            rightLineCount++;
             motorR.stop();
             motorL.stop();
             //delay(3000);
-            lastTime = currentTime;
+            r_lastTime = r_currentTime;
         }
     }
 
-    if (lineCount >= 2){
-        // Serial.println("motors off");
-        lineCount = 0;
+    if (rightLineCount >= 2){
+        rightLineCount = 0;
         motorL.stop();
         motorR.stop();
         delay(1000);
-        // Serial.println("motors on");
     }
 
 
@@ -252,17 +251,50 @@ bool markerDetected(){
 
 
 void updateLineCounts(){
-    bool currentLeftState = analogRead(TAPE_SENSOR_LEFT_1) >= 200;
-    bool currentRightState = analogRead(TAPE_SENSOR_RIGHT_1) >= 200;
+    
+    int l_val = analogRead(TAPE_SENSOR_LEFT_1);
+    int r_val = analogRead(TAPE_SENSOR_RIGHT_1);
 
-    // if(currentLeftState && !prevLeftState){
-    //     leftLineCount++;
-    // }
-    if(currentRightState && !prevRightState){
-        rightLineCount++;
+    int r_tape_val = 0;
+    int l_tape_val = 0;
+    if ( abs( l_val - r_val ) <= 175) {
+        r_tape_val = 0;
     }
-    prevLeftState = currentLeftState;
-    prevRightState = currentRightState;
+    else {
+        r_tape_val = r_val;
+        l_tape_val = l_val;
+    }
+
+    bool r_t_val = r_tape_val >= 700 ? 1 : 0;//maybe 750 is best
+    bool l_t_val = l_tape_val >= 700 ? 1 : 0;//maybe 750 is best
+
+//update right lines
+    if (r_t_val != r_prevVal && r_t_val != 0){
+
+        r_currentTime = millis();
+        if (r_currentTime - r_lastTime >= 1000){
+            rightLineCount++;
+            motorR.stop();
+            motorL.stop();
+            r_lastTime = r_currentTime;
+        }
+    }
+//update left
+    if (l_t_val != l_prevVal && l_t_val != 0){
+
+        l_currentTime = millis();
+        if (l_currentTime - l_lastTime >= 1000){
+            leftLineCount++;
+            motorR.stop();
+            motorL.stop();
+            //delay(3000);
+            l_lastTime = l_currentTime;
+        }
+    }
+
+
+
+
 }
 
 int lineCountRight(){

@@ -149,13 +149,13 @@ namespace robot {
 
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
-            //return (int) error;
+            return (int) error;
             // Serial.println(error);
             // Serial.println(motor_p);
             // Serial.println(motor_d);
             // Serial.println(motor_i);
             // Serial.println(transfer);
-            return (int) transfer;
+            // return (int) transfer;
         }
 
 
@@ -229,6 +229,11 @@ namespace robot {
  
             driveMotorL->backward( ir_g );
             driveMotorR->backward(  1 * ir_g );
+        }
+
+        void DrivePID::motorStop(){
+            this->driveMotorL->stop();
+            this->driveMotorR->stop();
         }
 
 }

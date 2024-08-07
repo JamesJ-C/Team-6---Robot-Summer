@@ -12,10 +12,11 @@ namespace robotControl {
 
 
     //Encoder values for different heights of the elevator 
-    #define FORKLIFT_COUNTER_HEIGHT 1000
-    #define FORKLIFT_SECURE_HEIGHT 1001 //A height that is just a little bit taller than counter height
-    #define CLAW_COUNTER_HEIGHT 900
-    #define CLAW_SECURE_HEIGHT 901
+    #define ELEVATOR_CLAW_AT_COUNTER_HEIGHT 250
+    #define FORKLIFT_COUNTER_HEIGHT 0
+
+
+    #define START_BUTTON PA_10
 
 }
 
