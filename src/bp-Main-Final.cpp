@@ -73,6 +73,17 @@ enum State{
 State currentState = START;
 
 
+enum PlateStation {
+
+    IDLE,
+    st1,
+    st2
+
+};
+
+PlateStation currentPlateState = IDLE;
+
+
 
 /*  Tape debouncing vars  */
 bool prevLeftState = false;
