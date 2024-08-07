@@ -38,8 +38,12 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PB, ELEVATOR_ENCODER_PA)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.6, 2.1, 3.5, 0);//1.9, 3.0);
-
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 6.2, 0.6, 2.1, 8.0, 3200);//1.9, 3.0);
+//bottom -133
+//top 182
+//going uip increase encoder, going down decreases encoder
+//up is forward
+//down is backward
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
 
@@ -105,19 +109,19 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
-delay(40000);
+// delay(40000);
 
-    ElevatorSystem.localize(4000, 2800);
+    ElevatorSystem.localize(3800, 3200);
     // ElevatorSystem.moveToValue(-400);
 
-    while (true){ 
-        if ( SerialPort.available()){
-            if (SerialPort.parseInt() == 1){
-                SerialPort.println(1);
-                break;
-            }
-        }
-    }
+    // while (true){ 
+    //     if ( SerialPort.available()){
+    //         if (SerialPort.parseInt() == 1){
+    //             SerialPort.println(1);
+    //             break;
+    //         }
+    //     }
+    // }
 
 }
 
@@ -135,10 +139,25 @@ bool off = false;
 void loop(){
 
 
+// ElevatorMotor.forward(3800);
+
     // Serial.println(elevatorEncoder.getIncrements());
-    // ElevatorSystem.updatePID(-140);
+    ElevatorSystem.updatePID(235);
 
 
+// if(digitalRead(ELEVATOR_LIMIT_BOTTOM) == HIGH){
+//     ElevatorMotor.forward(3700);
+//     // Serial.print("fwd: ");
+//     // Serial.println(elevatorEncoder.getIncrements());                 
+// }
+
+// if(digitalRead(ELEVATOR_LIMIT_TOP) == HIGH){
+//     ElevatorMotor.backward(3700);
+//     // Serial.print("backwd: ");
+//     // Serial.println(elevatorEncoder.getIncrements());   
+
+// }
+    // Serial.println(elevatorEncoder.getIncrements());             
 
 
 
