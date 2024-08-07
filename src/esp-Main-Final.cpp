@@ -72,7 +72,8 @@ enum State{
     TRANSITION_TO_CHEESE,
     PROCESS_STATION_CHEESE, 
     TRANSITION_TO_SERVE,
-    PROCESS_STATION_PLATE,
+    PROCESS_STATION_SERVE,
+    TRANSITION_TO_CHEESE,
     IDLE,
     FINISHED,
     MOVE_ARM,
@@ -304,26 +305,109 @@ void loop() {
         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
-        SerialPort.println(2); 
+        SerialPort.println(1); 
         //wait for bp to adjust height 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 3) {
+            if(receivedVal == 2) {
             while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
                 linearArmSystem.updatePID(CLAW_FORWARD);
             }
-                Serial.println(4); 
+                Serial.println(3); 
             }
         }
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
+            if(receivedVal == 4) {
+                currentState = TRANSITION_TO_SERVE;
+            }
+        }
+        break;
+
+        case TRANSITION_TO_SERVE:
+
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt();
+            if(receivedVal == 2) {
+                currentState = PROCESS_STATION_SERVE;
+            }
+        }
+
+            break;
+
+        case PROCESS_STATION_SERVE:
+
+
+        break;
+
+        case TRANSITION_TO_CHEESE:
+        //wait for BP to tell us we have arrived 
+
+        // while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+        //         lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+        // }
+        // Serial.println(2);
+        // if(SerialPort.available()) {
+        //     int receivedVal = SerialPort.parseInt(); 
+        //     if(receivedVal == 3){
+        //         while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL)>= ERROR_THRESHOLD){
+        //             linearArmSystem.updatePID(CLAW_NEUTRAL);
+        //         }
+        //         Serial.println(4);
+        //     }
+        // }
+        
+        if( SerialPort.available() ) {
+            int receivedVal = SerialPort.parseInt(); 
+            if( receivedVal == 1 ){
+                currentState = PROCESS_STATION_CHEESE; 
+            }
+        }
+        break;
+
+        case PROCESS_STATION_CHEESE:
+
+        while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+            lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+        }
+        clawServo.write(CLAWSERVO_OPEN_POS);
+
+        while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(CLAW_FORWARD);
+        }
+//move lA
+        SerialPort.println(1);
+
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt();
+            if(receivedVal == 1){
+                
+                for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
+                    clawServo.write(pos);
+                    delay(20);
+                }
+                SerialPort.println(2); 
+            }
+        }
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
+            if(receivedVal == 2) {
+                currentState = TRANSITION_TO_PLATE;
+                SerialPort.println(3);
+            }
+        }
+        break;
+
+    case: TRANSITION_TO_PLATE
+
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
             if(receivedVal == 1) {
                 currentState = PROCESS_STATION_PLATE;
             }
         }
-        break;
-        
-        
+
+
         case FINISHED: //basically loops back to station 
             if(SerialPort.available()){
                 int receivedVal = SerialPort.parseInt(); 
