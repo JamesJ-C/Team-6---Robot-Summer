@@ -69,6 +69,7 @@ enum State{
     START, 
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
+    TRANSITION_TO_CHEESE,
     PROCESS_STATION_CHEESE, 
     TRANSITION_TO_SERVE,
     PROCESS_STATION_SERVE,
@@ -235,16 +236,72 @@ void loop() {
     {
     case START:
         //forkliftServo.write(FORKLIFTSERVO_READY_POS);
+        delay(1000); 
+        currentState = TRANSITION_TO_CHEESE;
+        break;
+        
+        case TRANSITION_TO_CHEESE:
         if(SerialPort.available()){
-        int receivedVal = SerialPort.parseInt();
+            int receivedVal = SerialPort.parseInt();
             if(receivedVal == 1) { // 1 is the signal indicating that the BP has finished driving 
-                currentState = TRANSITION_TO_CHEESE; 
+                currentState = PROCESS_STATION_CHEESE; 
             }
         }
         break;
 
-    case PROCESS_STATION_PLATE:
+        case PROCESS_STATION_CHEESE:
+        //rotating lazy susan tto 270 degrees
+        while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+            lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+        }
 
+        //claw arm reaches forward
+        while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
+            linearArmSystem.updatePID(CLAW_FORWARD);
+        }
+        //claw opens 
+        for (int pos = CLAWSERVO_CLOSED_POS; pos <= CLAWSERVO_OPEN_POS; pos++)
+        {
+            clawServo.write(pos);
+            delay(20);
+        }
+        
+        SerialPort.println(2); // communicating to BP that LA and Elevator has finished moving 
+
+        if(SerialPort.available()){ //waiting for BPs signal 
+            int receivedVal = SerialPort.parseInt();
+            if(receivedVal == 3){
+                //closing the claw 
+                for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
+                    clawServo.write(pos);
+                    delay(5);
+                }
+                SerialPort.println(5); //5 is the signal esp sends to bp whenever claw is closed
+            }
+        }
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
+            if(receivedVal == 3) {
+                //retracts claw arm to neutral to get ready for travel 
+                while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= CLAW_NEUTRAL)
+                {
+                    linearArmSystem.updatePID(CLAW_NEUTRAL);
+                }
+                SerialPort.println(4); //communicates to bp that lineararm has finished moving
+                currentState = TRANSITION_TO_PLATE;
+            }
+        }
+        break;
+
+     case TRANSITION_TO_PLATE:
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt(); 
+            if(receivedVal == 1) { //waits for bp to finish driving
+                currentState = PROCESS_STATION_PLATE;
+            }
+        }
+
+    case PROCESS_STATION_PLATE:
         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
