@@ -26,7 +26,7 @@ namespace robot {
         }
 
         RobotSubSystem::RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
-        double pGain, double iGain, double dGain, double loopGain) { 
+        double pGain, double iGain, double dGain, double loopGain, double i_max) { 
             this->limit1 = limit1;
             if (limit2 == 255){
                 singleLimitSwitch = true;    
@@ -36,6 +36,7 @@ namespace robot {
             this->iGain = iGain;
             this->dGain = dGain;
             this->loopGain = loopGain;
+            this->maxI = i_max;
         }
 
         /**

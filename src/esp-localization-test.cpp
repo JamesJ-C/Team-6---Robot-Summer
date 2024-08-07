@@ -35,12 +35,16 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PB, LAZY_SUSAN_ROTARY_ENCODER_PA);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
-robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -1.0);
+robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -1.0, 160);//-1.0);
+//backwards is rotation towards limit switch. coupled with increasing encoder value
+//tuning will need to have loop gain < 0.
+
+
 
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PB, LINEAR_ARM_ROTARY_ENCODER_PA);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P2, LINEAR_ARM_P1, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
-1.8, 0.7, 1.8, 1.0);//0.8);
+1.8, 0.7, 1.8, 1.0, 0);//0.8);
 
 robot::IRSensor beaconSensor(IR_SENSOR_1, IR_SENSOR_2);
 
@@ -157,7 +161,7 @@ void setup() {
     Serial.println("localizing");
 
     
-    // lazySusanSystem.localize(200, 200);
+    lazySusanSystem.localize(200, 200);
     // delay(2000);
     // linearArmSystem.localize(250, 250);
 
@@ -205,36 +209,36 @@ int loopCount = 0;
 int g = 0;
 void loop() {
 
-     linearArmMotor.forward(180);
+    //  linearArmMotor.forward(180);
 
-     delay(200);
+    //  delay(200);
 
-    linearArmMotor.backward(180);
+    // linearArmMotor.backward(180);
 
-     delay(200);
+    //  delay(200);
 
 
-if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
-    linearArmMotor.forward(180);
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.print("fwd: ");
-    display.println(linearArmEncoder.getIncrements());                 
-    display.display();
-}
+// if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A) == HIGH){
+//     linearArmMotor.forward(180);
+//     display.clearDisplay();
+//     display.setTextSize(1);
+//     display.setTextColor(SSD1306_WHITE);
+//     display.setCursor(0,0);
+//     display.print("fwd: ");
+//     display.println(linearArmEncoder.getIncrements());                 
+//     display.display();
+// }
 
-if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
-    linearArmMotor.backward(180);
-    display.clearDisplay();
-    display.setTextSize(1);
-    display.setTextColor(SSD1306_WHITE);
-    display.setCursor(0,0);
-    display.print("bckwd");
-    display.println(linearArmEncoder.getIncrements());                
-    display.display();
-}
+// if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
+//     linearArmMotor.backward(180);
+//     display.clearDisplay();
+//     display.setTextSize(1);
+//     display.setTextColor(SSD1306_WHITE);
+//     display.setCursor(0,0);
+//     display.print("bckwd");
+//     display.println(linearArmEncoder.getIncrements());                
+//     display.display();
+// }
 
 
 /*
@@ -272,19 +276,19 @@ if(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B) == HIGH){
     //     display.display();
     // }
 
-/*
+//
     display.clearDisplay();
     display.setTextSize(1);
     display.setTextColor(SSD1306_WHITE);
     display.setCursor(0,0);
-    display.print(enc);
+    display.print("enc: ");
     display.println(lazySusanEncoder.getIncrements());                
     display.display();
 
-    lazySusanSystem.updatePID(80);
+    lazySusanSystem.updatePID(220);
 
 
-*/
+// */
 
 
 

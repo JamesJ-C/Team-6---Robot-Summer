@@ -57,7 +57,7 @@ namespace robot {
         RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor);
 
         RobotSubSystem (uint8_t limit1, uint8_t limit2, movement::EncodedMotor *motor, 
-        double pGain, double iGain, double dGain, double loopGain);
+        double pGain, double iGain, double dGain, double loopGain, double i_max);
 
         /**
          * @brief Returns the first limit switch pin
