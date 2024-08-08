@@ -204,44 +204,44 @@ void setup() {
         //     display.setCursor(0,0);
         //     display.print("done :)");                
         //     display.display();
-            delay(5000);
+    //         delay(5000);
 
-    SerialPort.println(1);
-    unsigned long startTime = millis();
-    while (true){
-        if ( SerialPort.parseInt() == 1){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("confirmation complete");                
-            display.display();
-            delay(1000);
-            break;
-        }
-        else if (SerialPort.parseInt() == 2){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("recived 2");                
-            display.display();
-            delay(1000);
-        }
-        else if (SerialPort.parseInt() == 3){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("recived 3");                
-            display.display();
-            delay(1000);
-        }
-        if (millis() - startTime > 3000 ){//&& digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == LOW 
-            SerialPort.println(1);
-            startTime = millis();
-        }
-    }
+    // SerialPort.println(1);
+    // unsigned long startTime = millis();
+    // while (true){
+    //     if ( SerialPort.parseInt() == 1){
+    //         display.clearDisplay();
+    //         display.setTextSize(1);
+    //         display.setTextColor(SSD1306_WHITE);
+    //         display.setCursor(0,0);
+    //         display.print("confirmation complete");                
+    //         display.display();
+    //         delay(1000);
+    //         break;
+    //     }
+    //     else if (SerialPort.parseInt() == 2){
+    //         display.clearDisplay();
+    //         display.setTextSize(1);
+    //         display.setTextColor(SSD1306_WHITE);
+    //         display.setCursor(0,0);
+    //         display.print("recived 2");                
+    //         display.display();
+    //         delay(1000);
+    //     }
+    //     else if (SerialPort.parseInt() == 3){
+    //         display.clearDisplay();
+    //         display.setTextSize(1);
+    //         display.setTextColor(SSD1306_WHITE);
+    //         display.setCursor(0,0);
+    //         display.print("recived 3");                
+    //         display.display();
+    //         delay(1000);
+    //     }
+    //     if (millis() - startTime > 3000 ){//&& digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == LOW 
+    //         SerialPort.println(1);
+    //         startTime = millis();
+    //     }
+    // }
 
 }
 
