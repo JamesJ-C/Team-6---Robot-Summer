@@ -176,13 +176,11 @@ void setup() {
     // display.println(linearArmEncoder.getMaxIncrement());
     // display.display();
     // int eqmCount = 0;
-    while(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
 
-        linearArmMotor.backward(200);
-    
+    //retracting arm in set up
+    while(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+        linearArmMotor.forward(200);
     }
-
-
     linearArmMotor.off();
     lazySusanMotor.off();
     delay(5000);
@@ -289,7 +287,6 @@ void loop() {
             int eqmCount = 0;
             while(eqmCount <= 50){
 
-                
                 if ( abs( lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN) ) <= 10){
                     eqmCount++;
                 }
@@ -327,8 +324,9 @@ void loop() {
             //     display.display();
             // }
 
-            while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
-                linearArmMotor.forward(200);
+            //extending arm
+            while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+                linearArmMotor.backward(200);
             }
             linearArmMotor.off();
 
@@ -381,14 +379,15 @@ void loop() {
                 }
             
                 if(receivedVal == 4) {
-                    //retracts claw arm to neutral to get ready for travel 
                 // int eqmCount = 0;
                 // while(eqmCount <= 50){
                 //     if ( abs( linearArmSystem.updatePID(CLAW_NEUTRAL) ) <= 10){
                 //         eqmCount++;
                 //     }
                 // }
-                while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+
+                //retracts claw arm to neutral to get ready for travel 
+                while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
                     linearArmMotor.forward(200);
                 }
                     // delay(10000);
@@ -428,36 +427,37 @@ void loop() {
             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
         }
         //move claw out
-        while(abs(linearArmEncoder.getIncrements()-9999999) >= ERROR_THRESHOLD){
-            linearArmSystem.updatePID(9999999);
-        }
+        while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+            linearArmMotor.backward(200);
+            }
 
         //open CLAW
         clawServo.write(999999);
 
-
-        //retract claw
-        while(abs(linearArmEncoder.getIncrements()-9999999) >= ERROR_THRESHOLD){
-            linearArmSystem.updatePID(9999999);
-        }
-
+        //retracts claw arm to neutral to get ready for travel 
+        while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+            linearArmMotor.forward(200);
+            }
+    
         SerialPort.println(1); 
         //wait for bp to adjust height 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
 
             if(receivedVal == 2) {
-                while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
-                    linearArmSystem.updatePID(CLAW_FORWARD);
-                }
-                Serial.println(3); 
+                 //move claw out
+                 while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+                    linearArmMotor.backward(200);
+            }
             }
 
             if(receivedVal == 4) {
                 //move claw in
-                while(abs(linearArmEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
-                    linearArmSystem.updatePID(999999);
-                }
+                while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B))
+                {
+                    linearArmMotor.forward(200);
+                    }
+            }
                 SerialPort.println(5);
                 currentState = TRANSITION_TO_SERVE;
             }
@@ -480,31 +480,25 @@ void loop() {
 
             ///move ls
             while(abs(lazySusanEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
-                linearArmSystem.updatePID(99999);
+                lazySusanSystem.updatePID(99999);
             }
 
             //move claw out
-            while(abs(linearArmEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
-                linearArmSystem.updatePID(999999);
+            while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+                linearArmMotor.backward(200);
             }
-
             Serial.println(1);
-
 
             if (SerialPort.available()){
                 int recieved = SerialPort.parseInt();
                 if (recieved == 2){
-                    while(abs(linearArmEncoder.getIncrements()-CLAW_NEUTRAL) >= ERROR_THRESHOLD){
-                        linearArmSystem.updatePID(CLAW_NEUTRAL);
-                    } 
-                    //move ls to the front?
+                    while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+                        linearArmMotor.forward(200);
+                        }
                     SerialPort.println(3);
                     currentState = IDLE;
                 }
-                
-
             }
-
         } break;
 
     case TRANSITION_TO_CHEESE: {
@@ -531,8 +525,7 @@ void loop() {
             currentState = IDLE;
         } break;
     }
-
-} //loop
+ //loop
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
 
