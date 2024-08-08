@@ -252,7 +252,6 @@ int g = 0;
 int updatePIDCount = 0;
 
 void loop() {
-
     switch (currentState) {
     
     case IDLE: {
