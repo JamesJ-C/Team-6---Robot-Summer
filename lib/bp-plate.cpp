@@ -127,19 +127,17 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
 }
-
 int countTimes = 0;
 void loop(){
 
     switch (currentState){
-
+        
     case START: {
         delay(1000); 
         currentState = TRANSITION_TO_PLATE;
     } break;
 
     case TRANSITION_TO_PLATE: {
-
         while(!stopConditionsMet_TRANS_TO_4()){
             driveSystem.updateForwardDrivePID();
             updateLineCounts();
@@ -149,12 +147,10 @@ void loop(){
         motorR.stop(); 
 
         SerialPort.println(1);
-
         currentState = PROCESS_STATION_PLATE;
     } break; 
 
     case PROCESS_STATION_PLATE: {
-
             if (ELEVATOR_LIMIT_BOTTOM == HIGH){
                 ElevatorMotor.backward(3000);
             } else {
@@ -162,7 +158,7 @@ void loop(){
             }
 
             if( SerialPort.available() ){
-                //wait for lazySusan & arm & claw to move
+                //wait for lazySusan & arm to move
                 int received = SerialPort.parseInt();
                 if (received == 1){
                     currentState = LIFT_PLATE;
