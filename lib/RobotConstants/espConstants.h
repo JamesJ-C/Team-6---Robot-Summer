@@ -12,7 +12,7 @@ namespace robotControl {
     //Encoder values for different rotational positions, arbitary values needs tuning 
     #define NINETY_LAZYSUSAN 0
     #define ONE_EIGHTY_LAZYSUSAN 172
-    #define TWO_SEVENTY_LAZYSUSAN 330
+    #define TWO_SEVENTY_LAZYSUSAN 360
     
     //Encoder values for different positions of the linear arm movement 
     #define CLAW_FORWARD 100

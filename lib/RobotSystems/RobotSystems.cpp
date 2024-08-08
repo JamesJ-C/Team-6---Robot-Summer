@@ -71,7 +71,7 @@ namespace robot {
                 do {
                     
                 } while (!digitalRead(limit2)); //while (!secondSwitchHit); 
-                //Serial.println("after first loop");
+                // Serial.println("after first loop");
                 
                 // initialize first limit of motion
                 this->motor->off();
@@ -90,7 +90,7 @@ namespace robot {
 
             } while (!digitalRead(limit1)); //while (!firstSwitchHit);
 
-            //Serial.println("after 2nd loop");
+            // Serial.println("after 2nd loop");
 
             // initialize second limit of motion
             this->motor->off();
@@ -150,11 +150,15 @@ namespace robot {
             // set motor value based on calculated PID value
             this->motor->setMotor(transfer);
             return (int) error;
+            // Serial.println();
+            // Serial.println();
             // Serial.println(error);
             // Serial.println(motor_p);
             // Serial.println(motor_d);
             // Serial.println(motor_i);
             // Serial.println(transfer);
+            // Serial.println();
+            // Serial.println();
             // return (int) transfer;
         }
 
