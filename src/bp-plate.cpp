@@ -130,120 +130,152 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
 
-// delay(2000);
+delay(2000);
 
 }
 
 void loop(){
 
-    switch (currentState){
-
-    case START: {
-        delay(1000); 
-        currentState = TRANSITION_TO_PLATE;
-    } break;
-
-    case TRANSITION_TO_PLATE: {
-
-        while(!stopConditionsMet_TRANS_TO_4()){
+while(rightLineCount < 1) {
             driveSystem.updateForwardDrivePID();
             updateLineCounts();
         }
 
         motorL.stop();
-        motorR.stop(); 
-
-        SerialPort.println(1);
-
-        currentState = PROCESS_STATION_PLATE;
-    } break; 
-
-    case PROCESS_STATION_PLATE: {
-
-            if ( digitalRead( ELEVATOR_LIMIT_BOTTOM ) == HIGH){
-                ElevatorMotor.backward(3000);
-            } else {
-                ElevatorMotor.off();
-            }
-
-            if( SerialPort.available() ){
-                //wait for lazySusan & arm & claw to move
-                int received = SerialPort.parseInt();
-                if (received == 1){
-                    currentState = LIFT_PLATE;
-                }
-            } 
-    } break;
-
-    case LIFT_PLATE: {
-            if (ELEVATOR_LIMIT_TOP == HIGH){
-                ElevatorMotor.forward(3800);
-            } else {
-                ElevatorMotor.off();
-                Serial.println(2);
-                currentState = WAIT_TO_DRIVE;
-            }
-    } break;
-
-    case WAIT_TO_DRIVE: {
-        if( SerialPort.available() ){
-            int received = SerialPort.parseInt();
-            if (received == 3){
-                currentState = TRANSITION_TO_SERVE;
-            }
-            } 
-    } break;
-
-    case TRANSITION_TO_SERVE: {
-        unsigned long serveStartTime = millis();
-        while (millis() - serveStartTime < 2000){
-            driveSystem.updateBackwardDrivePID();
-        }
         motorR.stop();
+
+        ElevatorSystem.localize(3700, 2500);
+
+        while(rightLineCount < 2) {
+            driveSystem.updateBackwardDrivePID();
+            updateLineCounts();
+        }
+
         motorL.stop();
+        motorR.stop();
+
+        ElevatorSystem.localize(3700, 2500);
+
+
+
+//     switch (currentState){
+
+//     case START: {
+//         delay(1000); 
+//         currentState = TRANSITION_TO_PLATE;
+//     } break;
+
+//     case TRANSITION_TO_PLATE: {
+
+//         while(!stopConditionsMet_TRANS_TO_4()) {
+//             driveSystem.updateForwardDrivePID();
+//             updateLineCounts();
+//         }
+
+//         motorL.stop();
+//         motorR.stop();
+
+//         // SerialPort.println(1);
+
+//         currentState = PROCESS_STATION_PLATE;
+//     } break; 
+
+//     case PROCESS_STATION_PLATE: {
+
+//             if ( digitalRead( ELEVATOR_LIMIT_BOTTOM ) == HIGH){
+//                 ElevatorMotor.backward(3000);
+//             } else {
+//                 ElevatorMotor.off();
+//             }
+
+//             // if( SerialPort.available() ){
+//                 //wait for lazySusan & arm & claw to move
+//                 // int received = SerialPort.parseInt();
+//                 // if (received == 1){
+//                     delay(4000);
+//                     currentState = LIFT_PLATE;
+//                 //}
+//             // } 
+//     } break;
+
+//     case LIFT_PLATE: {
+//             if (ELEVATOR_LIMIT_TOP == HIGH){
+//                 ElevatorMotor.forward(3800);
+//             } else {
+//                 ElevatorMotor.off();
+//                 // Serial.println(2);
+//                 currentState = WAIT_TO_DRIVE;
+//             }
+//     } break;
+
+//     case WAIT_TO_DRIVE: {
+//         // if( SerialPort.available() ){
+//         //     int received = SerialPort.parseInt();
+//         //     if (received == 3){
+//         //         currentState = TRANSITION_TO_SERVE;
+//         //     }
+//         //     } 
+
+//         delay(3000);
+//         currentState = TRANSITION_TO_SERVE;
+
+//     } break;
+
+//     case TRANSITION_TO_SERVE: {
+//         unsigned long serveStartTime = millis();
+//         while (millis() - serveStartTime < 2000){
+//             driveSystem.updateBackwardDrivePID();
+//         }
+//         motorR.stop();
+//         motorL.stop();
         
-        SerialPort.println(1);
-        currentState = WAITING_TO_SERVE;
+//         // SerialPort.println(1);
+//         currentState = WAITING_TO_SERVE;
 
-    } break;
+//     } break;
 
-    case WAITING_TO_SERVE: {
+//     case WAITING_TO_SERVE: {
         
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 1){
-                currentState = PLATE_DOWN; 
-            }
-        }
-    } break;
+//         // if(SerialPort.available()){
+//         //     int receivedVal = SerialPort.parseInt(); 
+//         //     if(receivedVal == 1){
+//         //         currentState = PLATE_DOWN; 
+//         //     }
+//         // }
 
-    case PROCESS_STATION_SERVE: { 
+//         delay(3000);
+//         currentState = PLATE_DOWN;
+//     } break;
 
-    //wait for esp to move ls & arm
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal = 1){
-                currentState = PLATE_DOWN; 
-            }
-        } 
-    } break;
+//     case PROCESS_STATION_SERVE: { 
 
-    case PLATE_DOWN: {
+//         delay(3000);
+//         currentState = PLATE_DOWN; 
+//     // //wait for esp to move ls & arm
+//     //     if(SerialPort.available()){
+//     //         int receivedVal = SerialPort.parseInt();
+//     //         if(receivedVal = 1){
+//     //             currentState = PLATE_DOWN; 
+//     //         }
+//     //     } 
+//     } break;
 
-        if (digitalRead(ELEVATOR_LIMIT_BOTTOM == HIGH)){
-            ElevatorMotor.backward(2800);
-        } else{
-            ElevatorMotor.off();
-            SerialPort.println(1);
-        }
+//     case PLATE_DOWN: {
 
-    } break;
+//         if (digitalRead(ELEVATOR_LIMIT_BOTTOM == HIGH)){
+//             ElevatorMotor.backward(2800);
+//         } else{
+//             ElevatorMotor.off();
+//             // SerialPort.println(1);
+//         }
 
-case FINISHED: {
+//     } break;
+
+// case FINISHED: {
         
-    } break;
+//     } break;
 
-    }
+//     }
 
 }
 
