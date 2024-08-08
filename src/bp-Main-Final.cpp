@@ -240,6 +240,7 @@ case MOVE_ELEVATOR_COUNTER_1: {
     if (countTimes >= 30){
         currentState = PROCESS_STATION_CHEESE_2;
         SerialPort.println(2);
+        countTimes = 0;
     }
 
 } break;
@@ -252,6 +253,7 @@ case MOVE_ELEVATOR_LIFTED_1: {
     if (countTimes >= 30){
         currentState = PROCESS_STATION_CHEESE_3;
         SerialPort.println(4);
+        countTimes = 0;
     }
 } break;
 
@@ -261,6 +263,7 @@ case MOVE_ELEVATOR_LIFTED_2: {
     }
     if (countTimes >= 30){
         currentState = IDLE;
+        countTimes = 0;
     }
 } break;
 
@@ -270,6 +273,8 @@ case MOVE_ELEVATOR_LIFTED_3: {
     }
     if (countTimes >= 30){
         currentState = PROCESS_STATION_PLATE_3;
+        countTimes = 0;
+        SerialPort.println(4);
     }
 } break;
 
@@ -351,14 +356,10 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
     case PROCESS_STATION_PLATE_3: {
         if( SerialPort.available() ){
             int received = SerialPort.parseInt();
-        if (received == 3){
-            SerialPort.println(4);
-        }
-        //wait for response to move to serving station
-        if (received == 5){
-            currentState = TRANSITION_TO_SERVE;
-        }
-        
+            //wait for response to move to serving station
+            if (received == 5){
+                currentState = TRANSITION_TO_SERVE;
+            }
         }
     }
     break;
@@ -384,7 +385,7 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
 
     case PROCESS_STATION_SERVE: { 
 
-//wait for esp to move ls & arm
+    //wait for esp to move ls & arm
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
             if(receivedVal = 1){
