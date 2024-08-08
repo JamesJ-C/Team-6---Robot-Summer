@@ -365,11 +365,8 @@ void loop() {
                 display.println(receivedVal);           
                 display.display();
 
-
-
                 if(receivedVal == 2){
                     //closing the claw 
-                    
                     clawServo.write(CLAWSERVO_CLOSED_POS);
                     // for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
                     //     clawServo.write(pos);
@@ -432,7 +429,10 @@ void loop() {
             }
 
         //open CLAW
-        clawServo.write(999999);
+        for(int pos = CLAWSERVO_CLOSED_POS; pos <= CLAWSERVO_OPEN_POS; pos++){
+            clawServo.write(pos);
+            delay(5);
+        }
 
         //retracts claw arm to neutral to get ready for travel 
         while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
@@ -440,19 +440,20 @@ void loop() {
             }
     
         SerialPort.println(1); 
+
         //wait for bp to adjust height 
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
-
             if(receivedVal == 2) {
-                 //move claw out
+                 //move arm out
                  while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
                     linearArmMotor.backward(200);
             }
+                SerialPort.println(3);
             }
 
             if(receivedVal == 4) {
-                //move claw in
+                //retracts arm 
                 while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B))
                 {
                     linearArmMotor.forward(200);
@@ -473,14 +474,13 @@ void loop() {
             }
             SerialPort.println(2);
         }
-
         } break;
 
     case PROCESS_STATION_SERVE: {
 
             ///move ls
-            while(abs(lazySusanEncoder.getIncrements()-999999) >= ERROR_THRESHOLD){
-                lazySusanSystem.updatePID(99999);
+            while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+                lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
             }
 
             //move claw out
