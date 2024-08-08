@@ -179,6 +179,7 @@ void setup() {
     while(digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
 
         linearArmMotor.backward(200);
+    
     }
 
 
@@ -205,7 +206,7 @@ void setup() {
         //     display.setCursor(0,0);
         //     display.print("done :)");                
         //     display.display();
-        //     delay(5000);
+            delay(5000);
 
     SerialPort.println(1);
     unsigned long startTime = millis();
@@ -282,7 +283,7 @@ void loop() {
             display.setTextSize(1);
             display.setTextColor(SSD1306_WHITE);
             display.setCursor(0,0);
-            display.print("pre ls");                
+            display.print("pre ls");              
             display.display();
 
             int eqmCount = 0;
@@ -391,12 +392,11 @@ void loop() {
                     linearArmMotor.forward(200);
                 }
                     // delay(10000);
-                
+            
 
-
-                while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
-                    linearArmMotor.backward(120);
-                }
+                // while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+                //     linearArmMotor.backward(120);
+                // }
                 linearArmMotor.off();
 
 
