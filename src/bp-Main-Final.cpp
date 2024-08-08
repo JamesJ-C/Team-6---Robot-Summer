@@ -20,13 +20,8 @@ void updateLineCounts();
 
 bool stopConditionsMet_TRANS_TO_4();
 bool stopConditionsMet_TRANS_TO_5();
-bool stopConditionsMet();
 
 void isrUpdateLineCount();
-
-
-
-
 
 /*  Object declerations  */
 
@@ -49,17 +44,14 @@ robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, 
 #define ELEVATOR_CLAW_AT_COUNTER_HEIGHT -140
 #define FORKLIFT_COUNTER_HEIGHT 0
 
-
-
 robot::DrivePID 
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
-
 
 enum State{ 
     START, 
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
-        PROCESS_STATION_CHEESE,
+    PROCESS_STATION_CHEESE,
     PROCESS_STATION_CHEESE_1, 
     PROCESS_STATION_CHEESE_2, 
     PROCESS_STATION_CHEESE_3, 
@@ -94,8 +86,6 @@ enum State{
 
 };
 State currentState = START;
-
-
 
 /*  Tape debouncing vars  */
 bool prevLeftState = false;
@@ -499,11 +489,6 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
             break;
     }
 
-}
-
-
-bool markerDetected(){
-    return (analogRead(TAPE_SENSOR_LEFT_1) >= TAPE_THRESHOLD || analogRead(TAPE_SENSOR_RIGHT_1) >= TAPE_THRESHOLD);
 }
 
 void updateLineCounts(){

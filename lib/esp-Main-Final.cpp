@@ -253,8 +253,6 @@ int updatePIDCount = 0;
 
 void loop() {
 
-
-
     switch (currentState) {
     
     case IDLE: {
@@ -462,8 +460,7 @@ void loop() {
                 SerialPort.println(5);
                 currentState = TRANSITION_TO_SERVE;
             }
-        }
-    } break;
+        } break;
 
     case TRANSITION_TO_SERVE: {
 
@@ -525,6 +522,7 @@ void loop() {
             currentState = IDLE;
         } break;
     }
+}
  //loop
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
