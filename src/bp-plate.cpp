@@ -56,6 +56,9 @@ enum State{
     TRANSITION_TO_SERVE,
     PROCESS_STATION_SERVE,
 
+    WAITING_TO_SERVE,
+    WAIT_TO_DRIVE,
+
     IDLE,
     FINISHED,
 
@@ -126,9 +129,11 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
+
+// delay(2000);
+
 }
 
-int countTimes = 0;
 void loop(){
 
     switch (currentState){
@@ -155,7 +160,7 @@ void loop(){
 
     case PROCESS_STATION_PLATE: {
 
-            if (ELEVATOR_LIMIT_BOTTOM == HIGH){
+            if ( digitalRead( ELEVATOR_LIMIT_BOTTOM ) == HIGH){
                 ElevatorMotor.backward(3000);
             } else {
                 ElevatorMotor.off();
@@ -175,9 +180,18 @@ void loop(){
                 ElevatorMotor.forward(3800);
             } else {
                 ElevatorMotor.off();
-                Serial.println(1);
+                Serial.println(2);
+                currentState = WAIT_TO_DRIVE;
+            }
+    } break;
+
+    case WAIT_TO_DRIVE: {
+        if( SerialPort.available() ){
+            int received = SerialPort.parseInt();
+            if (received == 3){
                 currentState = TRANSITION_TO_SERVE;
             }
+            } 
     } break;
 
     case TRANSITION_TO_SERVE: {
@@ -189,10 +203,16 @@ void loop(){
         motorL.stop();
         
         SerialPort.println(1);
+        currentState = WAITING_TO_SERVE;
+
+    } break;
+
+    case WAITING_TO_SERVE: {
+        
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 2){
-                currentState = PROCESS_STATION_SERVE; 
+            if(receivedVal == 1){
+                currentState = PLATE_DOWN; 
             }
         }
     } break;
