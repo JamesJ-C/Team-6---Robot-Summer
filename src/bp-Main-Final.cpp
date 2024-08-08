@@ -85,7 +85,7 @@ enum State{
     MOVE_ELEVATOR_LIFTED_3,
 
 };
-State currentState = START;
+State currentState = MOVE_ELEVATOR_COUNTER;
 
 /*  Tape debouncing vars  */
 bool prevLeftState = false;
@@ -366,7 +366,7 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
 
             if(receivedVal == 1){
                 currentState = MOVE_ELEVATOR_COUNTER_1;
-            } 
+            }
         }
     } break;
 
