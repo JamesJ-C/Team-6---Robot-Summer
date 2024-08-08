@@ -81,7 +81,7 @@ enum State{
     START_1, 
     MOVE_LS
 };
-State currentState = PROCESS_STATION_CHEESE_A; 
+State currentState = START; 
 
 enum uartSignal {
     sendingSignal,
@@ -167,87 +167,8 @@ void setup() {
     
     lazySusanSystem.localize(200, 200);
     delay(2000);
-    linearArmSystem.localize(120, 120);
-
-    // display.clearDisplay();
-    // display.setTextSize(1);
-    // display.setTextColor(SSD1306_WHITE);
-    // display.setCursor(0,0);
-    // display.println(linearArmEncoder.getMaxIncrement());
-    // display.display();
-    // int eqmCount = 0;
-
-    //retracting arm in set up
-    while(digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
-        linearArmMotor.forward(200);
-    }
-    linearArmMotor.off();
-    lazySusanMotor.off();
-    delay(5000);
-
-        display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("finished lcze");                
-            display.display();
-
-//delay(2000);
-
-// while (LAZY_SUSAN_LIMIT_SWITCH == HIGH){}
-
-
-
-        //     display.clearDisplay();
-        //     display.setTextSize(1);
-        //     display.setTextColor(SSD1306_WHITE);
-        //     display.setCursor(0,0);
-        //     display.print("done :)");                
-        //     display.display();
-            delay(5000);
-
-    SerialPort.println(1);
-    unsigned long startTime = millis();
-    while (true){
-        if ( SerialPort.parseInt() == 1){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("confirmation complete");                
-            display.display();
-            delay(1000);
-            break;
-        }
-        else if (SerialPort.parseInt() == 2){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("recived 2");                
-            display.display();
-            delay(1000);
-        }
-        else if (SerialPort.parseInt() == 3){
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("recived 3");                
-            display.display();
-            delay(1000);
-        }
-        if (millis() - startTime > 3000 ){//&& digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == LOW 
-            SerialPort.println(1);
-            startTime = millis();
-        }
-    }
 
 }
-
-int val = 0;
-int loopCount = 0;
-int g = 0;
 
 int updatePIDCount = 0;
 

@@ -107,9 +107,6 @@ unsigned long l_currentTime = 0;
 volatile bool STARTED = false;
 
 
-void isrStart(){
-    STARTED = true;
-}
 
 void setup() {
 
@@ -155,70 +152,10 @@ void setup() {
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinA()), isrUpdateElevatorEncoder, CHANGE);
     attachInterrupt(digitalPinToInterrupt(elevatorEncoder.getPinB()), isrUpdateElevatorEncoder, CHANGE);
 
-
-    attachInterrupt(digitalPinToInterrupt(START_BUTTON), isrStart, FALLING);
-
-
-    // delay(10000);
-    ElevatorSystem.localize(4000, 3500);
-    
-    // int eqmVal = 0;
-    // while (eqmVal <= 10) {
-    //     if (ElevatorSystem.updatePID(-100) <= 10){
-    //         eqmVal++;
-    //     }  
-    // }
-
-    // while (digitalRead( ELEVATOR_LIMIT_TOP ) == HIGH){
-    //     ElevatorMotor.forward(3700);
-    // }
-    // ElevatorMotor.off();
-
-
-
-    while (true){
-
-            if ( SerialPort.available()){
-                if (SerialPort.parseInt() == 1){
-                    
-                    // while (SerialPort.available()){
-                    //     int i = SerialPort.parseInt();
-                    // }
-                    SerialPort.println(1);
-                    //SerialPort.flush();
-                    break;
-                }
-            }
-    }
-
 }
+
 int countTimes = 0;
 void loop(){
-
-{
-// ElevatorSystem.updatePID(-100);
-
-// Serial.println(elevatorEncoder.getIncrements());
-
-
-
-//             int eqmCount = 0;
-//                 while( eqmCount <= 50 ){
-                
-//                 if ( abs( ElevatorSystem.updatePID(-100 )<= 10) ) {
-//                     eqmCount++;
-//                 }
-//             }
-// delay(1000);
-//             eqmCount = 0;
-//                 while( eqmCount <= 50 ){
-                
-//                 if ( abs( ElevatorSystem.updatePID(-200 )<= 10) ){
-//                     eqmCount++;
-//                 }
-//             }
-}
-
 
     switch (currentState){
 
@@ -291,7 +228,7 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
 
     case START: {
         delay(1000); 
-        currentState = TRANSITION_TO_CHEESE;
+        currentState = PROCESS_STATION_CHEESE;
     }
         break;
 
