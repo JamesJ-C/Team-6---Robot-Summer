@@ -48,7 +48,7 @@ robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMot
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PB, LINEAR_ARM_ROTARY_ENCODER_PA);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P2, LINEAR_ARM_P1, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
-1.8, 0.7, 1.8, -0.8, 140.0);//0.8); //95!!!
+1.8, 0.7, 1.8, -0.8, 180.0);//0.8); //95!!!
 //forward is positive encoder values: -70 to 28, range of 98 ~100
 //extended ~100
 //retracted 0
@@ -199,7 +199,17 @@ void setup() {
 
 delay(2000);
 
-while (LAZY_SUSAN_LIMIT_SWITCH == HIGH){}
+// while (LAZY_SUSAN_LIMIT_SWITCH == HIGH){}
+
+
+
+        display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("done :)");                
+            display.display();
+            delay(5000);
 
     SerialPort.println(1);
     unsigned long startTime = millis();
@@ -265,8 +275,14 @@ void loop() {
             display.setCursor(0,0);
             display.print("pre ls");                
             display.display();
-            while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
-                lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+
+            int eqmCount = 0;
+            while(eqmCount <= 10){
+
+                
+                if ( abs( lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN) ) <= 10){
+                    eqmCount++;
+                }
                 display.clearDisplay();
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE);
@@ -274,9 +290,10 @@ void loop() {
                 display.print("ls");   
                 display.println(lazySusanEncoder.getIncrements());             
                 display.display();
+
             }
             lazySusanMotor.off();
-            //delay(1000);
+
 
             display.clearDisplay();
             display.setTextSize(1);
@@ -285,9 +302,12 @@ void loop() {
             display.print("post ls, pre arm");                
             display.display();
 
-            //claw arm reaches forward
-            while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
-                linearArmSystem.updatePID(CLAW_FORWARD);
+            eqmCount = 0;
+            while( eqmCount <=10 ){
+                
+                if ( abs( linearArmSystem.updatePID(CLAW_FORWARD) )<= 10){
+                    eqmCount++;
+                }
                 display.clearDisplay();
                 display.setTextSize(1);
                 display.setTextColor(SSD1306_WHITE);
@@ -337,11 +357,13 @@ void loop() {
 
                 if(receivedVal == 2){
                     //closing the claw 
-                    for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
-                        clawServo.write(pos);
-                        delay(5);
-                    }
-                    SerialPort.println(3); 
+                    
+                    clawServo.write(CLAWSERVO_CLOSED_POS);
+                    // for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
+                    //     clawServo.write(pos);
+                    //     delay(5);
+                    // }
+                    SerialPort.println(3);
                 }
             
                 if(receivedVal == 4) {

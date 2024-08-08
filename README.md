@@ -1,6 +1,20 @@
 # Team-6---Robot-Summer
 
 
+
+bottom -262
+top 0
+
+
+
+
+
+
+
+
+
+
+
 Linear arm has 160 encoder ticks between the limit switches. extended is -160, closed is 0
 
 

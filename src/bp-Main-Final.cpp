@@ -39,15 +39,15 @@ encoder::RotaryEncoder elevatorEncoder(ELEVATOR_ENCODER_PB, ELEVATOR_ENCODER_PA)
 movement::EncodedMotor ElevatorMotor(ELEVATOR_P2, ELEVATOR_P1, &elevatorEncoder);
 
 //robot::RobotSubSystem Elevator();
-robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 9.2, 0.6, 2.1, 8.0, 3200);//1.9, 3.0);
+robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, &ElevatorMotor, 9.2, 0.8, 2.1, 8.0, 3900);//1.9, 3.0);
 //bottom -133
 //top 182
 //going uip increase encoder, going down decreases encoder
 //up is forward
 //down is backward
 
-#define ELEVATOR_CLAW_AT_COUNTER_HEIGHT -150
-#define FORKLIFT_COUNTER_HEIGHT 0 
+#define ELEVATOR_CLAW_AT_COUNTER_HEIGHT -140
+#define FORKLIFT_COUNTER_HEIGHT 0
 
 
 
@@ -55,7 +55,7 @@ robot::DrivePID
 driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1, TAPE_SENSOR_BACKWARD_2, &motorL, &motorR); 
 
 
-enum State{
+enum State{ 
     START, 
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
@@ -148,8 +148,12 @@ void setup() {
 
     delay(10000);
     ElevatorSystem.localize(4000, 3500);
-    // while (ElevatorSystem.updatePID(-100) >= 30) {
-        
+    
+    // int eqmVal = 0;
+    // while (eqmVal <= 10) {
+    //     if (ElevatorSystem.updatePID(-100) <= 10){
+    //         eqmVal++;
+    //     }  
     // }
 
     while (true){
@@ -170,6 +174,10 @@ void setup() {
 }
 
 void loop(){
+
+
+// Serial.println(elevatorEncoder.getIncrements());
+
 
     switch (currentState){
     case START: {
@@ -307,17 +315,27 @@ void loop(){
             int receivedVal = SerialPort.parseInt(); 
 
             if(receivedVal == 1){
-                while(abs(elevatorEncoder.getIncrements()-ELEVATOR_CLAW_AT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
-                    ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT);
+                int eqmCount = 0;
+                while( eqmCount <=20 ){
+                
+                if ( abs( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT) )<= 10){
+                    eqmCount++;
                 }
                 SerialPort.println(2);
+                }
             }
 
             if(receivedVal == 3){
                 //move elevator up
-                while(abs(elevatorEncoder.getIncrements()- (ELEVATOR_CLAW_AT_COUNTER_HEIGHT + 40) ) >= ERROR_THRESHOLD){
-                    ElevatorSystem.updatePID( (ELEVATOR_CLAW_AT_COUNTER_HEIGHT + 40) );
+                int eqmCount = 0;
+                while( eqmCount <=20 ){
+                
+                    if ( abs( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT + 40) )<= 10){
+                        eqmCount++;
+                    }
+                    SerialPort.println(2);
                 }
+
             SerialPort.println(4);
             }
 
