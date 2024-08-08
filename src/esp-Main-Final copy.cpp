@@ -30,7 +30,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PB, LAZY_SUSAN_ROTARY_ENCODER_PA);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
-robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -0.7, 160);//-1.0);
+robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -7.0, 160);//-1.0);
 //backwards is rotation towards limit switch. coupled with increasing encoder value
 //tuning will need to have loop gain < 0.
 //forward 172
@@ -121,70 +121,66 @@ void setup() {
 
 int updatePIDCount = 0;
 
-void loop() {
-    switch (currentState) {
-    case PROCESS_STATION_PLATE: {
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 1) { //waits for bp to finish driving
-               //move lazy susan to plate side
-                while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
-                lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
-                }
-        //move arm out
+void loop(){
+        // while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= 30){
+        //     lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
+        //     }
+        // //move arm out
         while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
             linearArmMotor.backward(200);
-            }
-            SerialPort.println(1);  // yo bluepill move up the elevator 
-            }
-        }
+            }  
+        delay(5000);
         
-         if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 2) { //bluepill said i moved the elevator
-                while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
-                    //arm retracted
-                    linearArmMotor.forward(200); 
+        while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+            linearArmMotor.forward(200); 
             }
-            SerialPort.println(3); //tell bluepill to drive to serving station
-            }
-        }
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 1) {
-                currentState = PROCESS_STATION_SERVE;
-            }
-        }
-    }
-    break;
-
-    case PROCESS_STATION_SERVE: {
-        //turn towards serving station
-        while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
-                lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
-            }
-            //move arm out 
-            while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
-                linearArmMotor.backward(200);
-            }
-            Serial.println(1); //tell elevator move down elevator
-
-            if (SerialPort.available()){
-                int recieved = SerialPort.parseInt();
-                if (recieved == 1){ //elevator moved down
-                    while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
-                        linearArmMotor.forward(200); //retract the claw
-                        }
-                    SerialPort.println(3); //tell elevator state finished
-                    currentState = IDLE;
-                }
-            }
-        } break;
-    default: {
-            currentState = IDLE;
-        } break;
-    }
+            delay(3000); 
 }
+
+// void loop() {
+//     switch (currentState) {
+//     case PROCESS_STATION_PLATE: {
+//         delay(3000);
+//         while(abs(lazySusanEncoder.getIncrements()-NINETY_LAZYSUSAN) >= ERROR_THRESHOLD){
+//             lazySusanSystem.updatePID(NINETY_LAZYSUSAN);
+//             }
+//         //move arm out
+//         while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+//             linearArmMotor.backward(200);
+//             }  
+//         delay(5000);
+        
+//         while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+//             linearArmMotor.forward(200); 
+//             }
+//             delay(3000); 
+//                 currentState = PROCESS_STATION_SERVE;
+//             }
+//     break;
+
+//     case PROCESS_STATION_SERVE: {
+//         //turn towards serving station
+//         while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
+//                 lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+//             }
+//             //move arm out 
+//             while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
+//                 linearArmMotor.backward(200);
+//             }
+
+//             delay(3000);
+            
+//             while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_B)){
+//                 linearArmMotor.forward(200); //retract the claw}
+//                     currentState = IDLE;
+//                 }
+//             }
+//          break;
+//     default: {
+//             currentState = IDLE;
+//         } break;
+//     }
+// }
  //loop
 
 void IRAM_ATTR isrUpdateLinearArmEncoder(){
