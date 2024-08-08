@@ -59,16 +59,39 @@ enum State{
     START, 
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
-    PROCESS_STATION_CHEESE, 
+        PROCESS_STATION_CHEESE,
+    PROCESS_STATION_CHEESE_1, 
+    PROCESS_STATION_CHEESE_2, 
+    PROCESS_STATION_CHEESE_3, 
+    PROCESS_STATION_CHEESE_4, 
+    PROCESS_STATION_CHEESE_5, 
+
     TRANSITION_TO_SERVE,
     PROCESS_STATION_SERVE,
     TRANSITION_TO_CHEESE,
     TRANSITION_TO_SERVE2,
-    PROCESS_STATION_SERVE2,
+    PROCESS_STATION_SERVE_2,
     IDLE,
     FINISHED,
     MOVE_ELEVATOR,
-    MOVE_ARM
+    MOVE_ARM,
+    MOVE_ELEVATOR_FORKLIFT,
+    MOVE_ELEVATOR_LIFTED,
+    MOVE_ELEVATOR_COUNTER, 
+    MOVE_ELEVATOR_COUNTER_1,
+    MOVE_ELEVATOR_COUNTER_2,
+    MOVE_ELEVATOR_COUNTER_3, 
+    PROCESS_STATION_PLATE_1,
+    PROCESS_STATION_PLATE_2,
+    PROCESS_STATION_PLATE_3,
+    PROCESS_STATION_PLATE_4,
+    MOVE_ELEVATOR_FORKLIFT_1,
+    MOVE_ELEVATOR_FORKLIFT_2,
+    MOVE_ELEVATOR_FORKLIFT_3,
+    MOVE_ELEVATOR_LIFTED_1,
+    MOVE_ELEVATOR_LIFTED_2,
+    MOVE_ELEVATOR_LIFTED_3,
+
 };
 State currentState = START;
 
@@ -209,23 +232,76 @@ void loop(){
 
     switch (currentState){
 
-case MOVE_ELEVATOR: {
+case MOVE_ELEVATOR_COUNTER_1: {
 
-    if ( ElevatorSystem.updatePID(-70) == 0){
+    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT) == 0){
         countTimes++;
     }
     if (countTimes >= 30){
-        currentState = TRANSITION_TO_CHEESE;
+        currentState = PROCESS_STATION_CHEESE_2;
+        SerialPort.println(2);
+        countTimes = 0;
     }
 
+} break;
 
 
+case MOVE_ELEVATOR_LIFTED_1: {
+    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
+        countTimes++;
+    }
+    if (countTimes >= 30){
+        currentState = PROCESS_STATION_CHEESE_3;
+        SerialPort.println(4);
+        countTimes = 0;
+    }
+} break;
+
+case MOVE_ELEVATOR_LIFTED_2: {
+    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
+        countTimes++;
+    }
+    if (countTimes >= 30){
+        currentState = IDLE;
+        countTimes = 0;
+    }
+} break;
+
+case MOVE_ELEVATOR_LIFTED_3: {
+    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
+        countTimes++;
+    }
+    if (countTimes >= 30){
+        currentState = PROCESS_STATION_PLATE_3;
+        countTimes = 0;
+        SerialPort.println(4);
+    }
+} break;
+
+case MOVE_ELEVATOR_FORKLIFT: {
+    if ( ELEVATOR_LIMIT_BOTTOM){
+        ElevatorMotor.backward(2700);
+    }
+    if ( !ELEVATOR_LIMIT_BOTTOM) {
+        currentState = PROCESS_STATION_PLATE_3;
+        SerialPort.println(4);
+    }
+} break;
+
+case MOVE_ELEVATOR_FORKLIFT_2: {
+    if ( ELEVATOR_LIMIT_BOTTOM){
+        ElevatorMotor.backward(2700);
+    }
+    if ( !ELEVATOR_LIMIT_BOTTOM) {
+        currentState = PROCESS_STATION_PLATE_2;
+        SerialPort.println(2);
+    }
 } break;
 
 
     case START: {
         delay(1000); 
-        currentState = MOVE_ELEVATOR;
+        currentState = TRANSITION_TO_CHEESE;
     }
         break;
 
@@ -246,15 +322,14 @@ case MOVE_ELEVATOR: {
         break; 
 
     case PROCESS_STATION_PLATE: {
-    if( SerialPort.available() ){
-        //wait for lazySusan & arm & claw to move
-        int received = SerialPort.parseInt();
-        if (received == 1){
-            while (!ELEVATOR_LIMIT_BOTTOM) {
-                ElevatorMotor.backward(2500);
+        if( SerialPort.available() ){
+            //wait for lazySusan & arm & claw to move
+            int received = SerialPort.parseInt();
+            if (received == 1){
+                currentState = MOVE_ELEVATOR_FORKLIFT_2;
             }
-            SerialPort.println(2);
-        }
+        } 
+    } break;
 
         //move elevator to height just above plate 
 
@@ -268,19 +343,24 @@ case MOVE_ELEVATOR: {
 
         //esp will extend arm
 
-
-        if (received == 3){
-            while (abs(elevatorEncoder.getIncrements()-200) >= ERROR_THRESHOLD) {
-                ElevatorSystem.updatePID(200);
+    case PROCESS_STATION_PLATE_2: {
+        if( SerialPort.available() ){
+            //wait for lazySusan & arm & claw to move
+            int received = SerialPort.parseInt();
+            if (received == 3){
+                currentState = MOVE_ELEVATOR_LIFTED_3;
             }
-            SerialPort.println(4);
+        } 
+    } break;
+
+    case PROCESS_STATION_PLATE_3: {
+        if( SerialPort.available() ){
+            int received = SerialPort.parseInt();
+            //wait for response to move to serving station
+            if (received == 5){
+                currentState = TRANSITION_TO_SERVE;
+            }
         }
-        //wait for response to move to serving station
-        if (received == 5){
-            currentState = TRANSITION_TO_SERVE;
-        }
-        
-    }
     }
     break;
 
@@ -303,31 +383,30 @@ case MOVE_ELEVATOR: {
         break;
 
 
-    case PROCESS_STATION_SERVE: {
+    case PROCESS_STATION_SERVE: { 
 
-//wait for esp to move ls & arm
+    //wait for esp to move ls & arm
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
             if(receivedVal = 1){
-                while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT) >= ERROR_THRESHOLD){
-                    ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT);
-                }
-                SerialPort.println(2);   
+                currentState = MOVE_ELEVATOR_FORKLIFT_2; 
             }
+        } 
+    } break;
+
+    case PROCESS_STATION_SERVE_2: {
 
         //move elevator down
 
         //tell esp done 
 
         //esp retracts arms
-
+        if(SerialPort.available()){
+            int receivedVal = SerialPort.parseInt();
         //waits for signal from esp to move elevator
             if(receivedVal = 3){
-                while(abs(elevatorEncoder.getIncrements()-FORKLIFT_COUNTER_HEIGHT + 40) >= ERROR_THRESHOLD){
-                    ElevatorSystem.updatePID(FORKLIFT_COUNTER_HEIGHT + 40);
-                }   
-                currentState = IDLE; 
-            }
+            currentState = MOVE_ELEVATOR_LIFTED_2; 
+        }
         }
     }
         //go from serving back to cheese station
@@ -359,29 +438,27 @@ case MOVE_ELEVATOR: {
             int receivedVal = SerialPort.parseInt();
 
             if(receivedVal == 1){
-                int eqmCount = 0;
-                while( eqmCount <= 50 ){
-                
-                if ( abs( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT) )<= 10){
-                    eqmCount++;
-                }
-            }
-            SerialPort.println(2);
+                currentState = MOVE_ELEVATOR_COUNTER_1;
+            } 
         }
+    } break;
 
+
+    case PROCESS_STATION_CHEESE_2: {        
+
+            SerialPort.println(2);
+            int receivedVal = SerialPort.parseInt();
             if(receivedVal == 3){
                 //move elevator up
-                int eqmCount = 0;
-                while( eqmCount <= 50 ){
-                
-                    if ( abs( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT + 40) )<= 10){
-                        eqmCount++;
-                    }
-                }
-
-            SerialPort.println(4);
+                currentState = MOVE_ELEVATOR_LIFTED_1;
             }
 
+    } break;
+
+    case PROCESS_STATION_CHEESE_3: {
+
+        if(SerialPort.available()) {
+            int receivedVal = SerialPort.parseInt();
             if(receivedVal == 5){
                 currentState = TRANSITION_TO_PLATE;
             }
