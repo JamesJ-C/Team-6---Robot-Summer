@@ -143,8 +143,6 @@ void setup() {
     pinMode(linearArmSystem.getLimit1(), INPUT);
     pinMode(linearArmSystem.getLimit2(), INPUT);
 
-    // pinMode(37, INPUT_PULLUP);
-
 
     /*  Interrupts  */
     attachInterrupt(lazySusanEncoder.getPinA(), isrUpdateLazySusanEncoder, CHANGE);
@@ -173,6 +171,7 @@ void setup() {
 int updatePIDCount = 0;
 
 void loop() {
+
     switch (currentState) {
     
     case IDLE: {
@@ -218,29 +217,6 @@ void loop() {
 
             }
             lazySusanMotor.off();
-
-
-            display.clearDisplay();
-            display.setTextSize(1);
-            display.setTextColor(SSD1306_WHITE);
-            display.setCursor(0,0);
-            display.print("post ls, pre arm");                
-            display.display();
-
-            // eqmCount = 0;
-            // while( eqmCount <= 50 ){
-                
-            //     if ( abs( linearArmSystem.updatePID(CLAW_FORWARD) )<= 10){
-            //         eqmCount++;
-            //     }
-            //     display.clearDisplay();
-            //     display.setTextSize(1);
-            //     display.setTextColor(SSD1306_WHITE);
-            //     display.setCursor(0,0);
-            //     display.print("arm");   
-            //     display.println(linearArmEncoder.getIncrements());             
-            //     display.display();
-            // }
 
             //extending arm
             while (digitalRead(LINEAR_ARM_LIMIT_SWITCH_A)){
@@ -315,14 +291,7 @@ void loop() {
 
 
                     SerialPort.println(5); //communicates to bp that lineararm has finished moving
-                    currentState = IDLE;
-                    display.clearDisplay();
-                    display.setTextSize(1);
-                    display.setTextColor(SSD1306_WHITE);
-                    display.setCursor(0,0);
-                    display.println("currentState = IDLE");              
-                    display.display();
-                    delay(1000000);
+
                 }
             }
         } break;
