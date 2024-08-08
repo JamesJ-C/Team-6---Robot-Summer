@@ -49,43 +49,21 @@ driveSystem(TAPE_SENSOR_FORWARD_2, TAPE_SENSOR_FORWARD_1, TAPE_SENSOR_BACKWARD_1
 
 enum State{ 
     START, 
+
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
-    PROCESS_STATION_CHEESE,
-    PROCESS_STATION_CHEESE_1, 
-    PROCESS_STATION_CHEESE_2, 
-    PROCESS_STATION_CHEESE_3, 
-    PROCESS_STATION_CHEESE_4, 
-    PROCESS_STATION_CHEESE_5, 
 
     TRANSITION_TO_SERVE,
     PROCESS_STATION_SERVE,
-    TRANSITION_TO_CHEESE,
-    TRANSITION_TO_SERVE2,
-    PROCESS_STATION_SERVE_2,
+
     IDLE,
     FINISHED,
-    MOVE_ELEVATOR,
-    MOVE_ARM,
-    MOVE_ELEVATOR_FORKLIFT,
-    MOVE_ELEVATOR_LIFTED,
-    MOVE_ELEVATOR_COUNTER, 
-    MOVE_ELEVATOR_COUNTER_1,
-    MOVE_ELEVATOR_COUNTER_2,
-    MOVE_ELEVATOR_COUNTER_3, 
-    PROCESS_STATION_PLATE_1,
-    PROCESS_STATION_PLATE_2,
-    PROCESS_STATION_PLATE_3,
-    PROCESS_STATION_PLATE_4,
-    MOVE_ELEVATOR_FORKLIFT_1,
-    MOVE_ELEVATOR_FORKLIFT_2,
-    MOVE_ELEVATOR_FORKLIFT_3,
-    MOVE_ELEVATOR_LIFTED_1,
-    MOVE_ELEVATOR_LIFTED_2,
-    MOVE_ELEVATOR_LIFTED_3,
+
+    LIFT_PLATE,
+    PLATE_DOWN
 
 };
-State currentState = MOVE_ELEVATOR_COUNTER;
+State currentState = START;
 
 /*  Tape debouncing vars  */
 bool prevLeftState = false;
@@ -102,10 +80,6 @@ unsigned long r_currentTime = 0;
 
 unsigned long l_lastTime = 0;
 unsigned long l_currentTime = 0;
-
-
-volatile bool STARTED = false;
-
 
 
 void setup() {
@@ -159,78 +133,10 @@ void loop(){
 
     switch (currentState){
 
-case MOVE_ELEVATOR_COUNTER_1: {
-
-    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT) == 0){
-        countTimes++;
-    }
-    if (countTimes >= 30){
-        currentState = PROCESS_STATION_CHEESE_2;
-        SerialPort.println(2);
-        countTimes = 0;
-    }
-
-} break;
-
-
-case MOVE_ELEVATOR_LIFTED_1: {
-    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
-        countTimes++;
-    }
-    if (countTimes >= 30){
-        currentState = PROCESS_STATION_CHEESE_3;
-        SerialPort.println(4);
-        countTimes = 0;
-    }
-} break;
-
-case MOVE_ELEVATOR_LIFTED_2: {
-    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
-        countTimes++;
-    }
-    if (countTimes >= 30){
-        currentState = IDLE;
-        countTimes = 0;
-    }
-} break;
-
-case MOVE_ELEVATOR_LIFTED_3: {
-    if ( ElevatorSystem.updatePID(ELEVATOR_CLAW_AT_COUNTER_HEIGHT - 40) == 0){
-        countTimes++;
-    }
-    if (countTimes >= 30){
-        currentState = PROCESS_STATION_PLATE_3;
-        countTimes = 0;
-        SerialPort.println(4);
-    }
-} break;
-
-case MOVE_ELEVATOR_FORKLIFT: {
-    if ( ELEVATOR_LIMIT_BOTTOM){
-        ElevatorMotor.backward(2700);
-    }
-    if ( !ELEVATOR_LIMIT_BOTTOM) {
-        currentState = PROCESS_STATION_PLATE_3;
-        SerialPort.println(4);
-    }
-} break;
-
-case MOVE_ELEVATOR_FORKLIFT_2: {
-    if ( ELEVATOR_LIMIT_BOTTOM){
-        ElevatorMotor.backward(2700);
-    }
-    if ( !ELEVATOR_LIMIT_BOTTOM) {
-        currentState = PROCESS_STATION_PLATE_2;
-        SerialPort.println(2);
-    }
-} break;
-
-
     case START: {
         delay(1000); 
-        currentState = PROCESS_STATION_CHEESE;
-    }
-        break;
+        currentState = TRANSITION_TO_PLATE;
+    } break;
 
     case TRANSITION_TO_PLATE: {
 
@@ -245,51 +151,34 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
         SerialPort.println(1);
 
         currentState = PROCESS_STATION_PLATE;
-    }
-        break; 
+    } break; 
 
     case PROCESS_STATION_PLATE: {
-        if( SerialPort.available() ){
-            //wait for lazySusan & arm & claw to move
-            int received = SerialPort.parseInt();
-            if (received == 1){
-                currentState = MOVE_ELEVATOR_FORKLIFT_2;
+
+            if (ELEVATOR_LIMIT_BOTTOM == HIGH){
+                ElevatorMotor.backward(3000);
+            } else {
+                ElevatorMotor.off();
             }
-        } 
+
+            if( SerialPort.available() ){
+                //wait for lazySusan & arm & claw to move
+                int received = SerialPort.parseInt();
+                if (received == 1){
+                    currentState = LIFT_PLATE;
+                }
+            } 
     } break;
 
-        //move elevator to height just above plate 
-
-        //send done response 
-
-        //esp will retract, move forklift down
-
-        //wait for response to move elevaotr to bottom 
-
-        //send done response 
-
-        //esp will extend arm
-
-    case PROCESS_STATION_PLATE_2: {
-        if( SerialPort.available() ){
-            //wait for lazySusan & arm & claw to move
-            int received = SerialPort.parseInt();
-            if (received == 3){
-                currentState = MOVE_ELEVATOR_LIFTED_3;
-            }
-        } 
-    } break;
-
-    case PROCESS_STATION_PLATE_3: {
-        if( SerialPort.available() ){
-            int received = SerialPort.parseInt();
-            //wait for response to move to serving station
-            if (received == 5){
+    case LIFT_PLATE: {
+            if (ELEVATOR_LIMIT_TOP == HIGH){
+                ElevatorMotor.forward(3800);
+            } else {
+                ElevatorMotor.off();
+                Serial.println(1);
                 currentState = TRANSITION_TO_SERVE;
             }
-        }
-    }
-    break;
+    } break;
 
     case TRANSITION_TO_SERVE: {
         unsigned long serveStartTime = millis();
@@ -306,9 +195,7 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
                 currentState = PROCESS_STATION_SERVE; 
             }
         }
-    }
-        break;
-
+    } break;
 
     case PROCESS_STATION_SERVE: { 
 
@@ -316,114 +203,26 @@ case MOVE_ELEVATOR_FORKLIFT_2: {
         if(SerialPort.available()){
             int receivedVal = SerialPort.parseInt();
             if(receivedVal = 1){
-                currentState = MOVE_ELEVATOR_FORKLIFT_2; 
+                currentState = PLATE_DOWN; 
             }
         } 
     } break;
 
-    case PROCESS_STATION_SERVE_2: {
+    case PLATE_DOWN: {
 
-        //move elevator down
-
-        //tell esp done 
-
-        //esp retracts arms
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt();
-        //waits for signal from esp to move elevator
-            if(receivedVal = 3){
-            currentState = MOVE_ELEVATOR_LIFTED_2; 
+        if (digitalRead(ELEVATOR_LIMIT_BOTTOM == HIGH)){
+            ElevatorMotor.backward(2800);
+        } else{
+            ElevatorMotor.off();
+            SerialPort.println(1);
         }
-        }
-    }
-        //go from serving back to cheese station
-        break;
-
-    case TRANSITION_TO_CHEESE: {
-
-        while( rightLineCount < 1){
-            updateLineCounts();
-            driveSystem.updateForwardDrivePID();
-            //pidDriving(); //to the left
-        }
-        motorL.stop();
-        motorR.stop(); 
-        SerialPort.println(1);
-
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 2){
-                currentState = PROCESS_STATION_CHEESE;
-            }
-        }
-    }
-    break;
-
-    case PROCESS_STATION_CHEESE: {
-    //wait for lazySusan to turn & arm to come out & claw to open
-        if(SerialPort.available()) {
-            int receivedVal = SerialPort.parseInt();
-
-            if(receivedVal == 1){
-                currentState = MOVE_ELEVATOR_COUNTER_1;
-            }
-        }
-    } break;
-
-
-    case PROCESS_STATION_CHEESE_2: {        
-
-            SerialPort.println(2);
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 3){
-                //move elevator up
-                currentState = MOVE_ELEVATOR_LIFTED_1;
-            }
 
     } break;
 
-    case PROCESS_STATION_CHEESE_3: {
+case FINISHED: {
+        
+    } break;
 
-        if(SerialPort.available()) {
-            int receivedVal = SerialPort.parseInt();
-            if(receivedVal == 5){
-                currentState = TRANSITION_TO_PLATE;
-            }
-        }
-    }
-    break;
-
-    case TRANSITION_TO_SERVE2: {
-        
-        
-        driveSystem.updateForwardDrivePID();
-        //pidDriving(); //to the right
-        updateLineCounts();//run in drving while loop 
-        //stopping at Serving area; 
-        //once stopped Serial.println(1);
-        if(SerialPort.available()){
-            int receivedVal = SerialPort.parseInt(); 
-            if(receivedVal == 6)
-            currentState = FINISHED; 
-        }
-    }
-        break;
-    case FINISHED: {//aka transition to 4.2 
-        
-        while(!stopConditionsMet()){
-            //pidDriving();
-            updateLineCounts();
-            driveSystem.updateForwardDrivePID(); 
-        }
-        motorL.stop();
-        motorR.stop(); 
-        SerialPort.println(1);
-        currentState = PROCESS_STATION_PLATE; 
-    }
-        break;
-        
-        default:
-            break;
     }
 
 }
