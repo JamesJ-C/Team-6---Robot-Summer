@@ -35,7 +35,7 @@ Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 encoder::RotaryEncoder lazySusanEncoder(LAZY_SUSAN_ROTARY_ENCODER_PB, LAZY_SUSAN_ROTARY_ENCODER_PA);
 movement::EncodedMotor lazySusanMotor(LAZY_SUSAN_P1, LAZY_SUSAN_P2, &lazySusanEncoder);
-robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -1.0, 160);//-1.0);
+robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMotor, 2.6, 0.68, 1.8, -0.7, 160);//-1.0);
 //backwards is rotation towards limit switch. coupled with increasing encoder value
 //tuning will need to have loop gain < 0.
 //forward 172
@@ -48,7 +48,7 @@ robot::RobotSubSystem lazySusanSystem(LAZY_SUSAN_LIMIT_SWITCH, -1, &lazySusanMot
 encoder::RotaryEncoder linearArmEncoder(LINEAR_ARM_ROTARY_ENCODER_PB, LINEAR_ARM_ROTARY_ENCODER_PA);
 movement::EncodedMotor linearArmMotor(LINEAR_ARM_P2, LINEAR_ARM_P1, &linearArmEncoder);//
 robot::RobotSubSystem linearArmSystem(LINEAR_ARM_LIMIT_SWITCH_A, LINEAR_ARM_LIMIT_SWITCH_B, &linearArmMotor,
-1.8, 0.7, 1.8, -0.8, 95.0);//0.8);
+1.8, 0.7, 1.8, -0.8, 140.0);//0.8); //95!!!
 //forward is positive encoder values: -70 to 28, range of 98 ~100
 //extended ~100
 //retracted 0
@@ -70,7 +70,8 @@ enum State{
     TRANSITION_TO_PLATE,
     PROCESS_STATION_PLATE,
     TRANSITION_TO_CHEESE,
-    PROCESS_STATION_CHEESE, 
+    PROCESS_STATION_CHEESE_A,
+    PROCESS_STATION_CHEESE_B, 
     TRANSITION_TO_SERVE,
     PROCESS_STATION_SERVE,
     IDLE,
@@ -80,7 +81,7 @@ enum State{
     START_1, 
     MOVE_LS
 };
-State currentState = START_1; 
+State currentState = PROCESS_STATION_CHEESE_A; 
 
 enum uartSignal {
     sendingSignal,
@@ -116,10 +117,13 @@ void setup() {
   display.display();
 
     /*  Servos  */
-    clawServo.attach(CLAW_SERVO_PIN);
-    forkliftServo.attach(FORKLIFT_SERVO_PIN);
-    pinMode(CLAW_SERVO_PIN, OUTPUT);
-    pinMode(FORKLIFT_SERVO_PIN, OUTPUT);
+    clawServo.attach(CLAW_SERVO_PIN, 500, 2400);
+    forkliftServo.attach(FORKLIFT_SERVO_PIN, 500, 2400);
+    // pinMode(CLAW_SERVO_PIN, OUTPUT);
+    // pinMode(FORKLIFT_SERVO_PIN, OUTPUT);
+
+    // myServo.attach(25, 500, 2400);
+    // myServo2.attach(26, 500, 2400);
 
     /*  Encoders  */
     pinMode(lazySusanEncoder.getPinA(), INPUT_PULLUP);
@@ -139,7 +143,7 @@ void setup() {
     pinMode(linearArmSystem.getLimit1(), INPUT);
     pinMode(linearArmSystem.getLimit2(), INPUT);
 
-    pinMode(37, INPUT_PULLUP);
+    // pinMode(37, INPUT_PULLUP);
 
 
     /*  Interrupts  */
@@ -172,12 +176,19 @@ void setup() {
     // display.println(linearArmEncoder.getMaxIncrement());
     // display.display();
 
-    while (abs (linearArmSystem.updatePID(30)) <= 30){
-
+    while ( !( abs (linearArmSystem.updatePID(25)) <= 20 ) ){
+                display.clearDisplay();
+                display.setTextSize(1);
+                display.setTextColor(SSD1306_WHITE);
+                display.setCursor(0,0);
+                display.print("arm0: ");
+                display.println(linearArmEncoder.getIncrements());             
+                display.display();
+                // delay(500);
     }
     linearArmMotor.off();
     lazySusanMotor.off();
-    //delay(2000);
+    delay(5000);
 
         display.clearDisplay();
             display.setTextSize(1);
@@ -186,7 +197,11 @@ void setup() {
             display.print("finished lcze");                
             display.display();
 
-    // SerialPort.println(1);
+delay(2000);
+
+while (LAZY_SUSAN_LIMIT_SWITCH == HIGH){}
+
+    SerialPort.println(1);
     unsigned long startTime = millis();
     while (true){
         if ( SerialPort.parseInt() == 1){
@@ -217,10 +232,10 @@ void setup() {
             display.display();
             delay(1000);
         }
-        if (millis() - startTime > 3000 && digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == LOW ){
-            SerialPort.println(1);
-            startTime = millis();
-        }
+        // if (millis() - startTime > 3000 ){//&& digitalRead(LAZY_SUSAN_LIMIT_SWITCH) == LOW 
+        //     SerialPort.println(1);
+        //     startTime = millis();
+        // }
     }
 
 }
@@ -228,27 +243,68 @@ void setup() {
 int val = 0;
 int loopCount = 0;
 int g = 0;
+
+int updatePIDCount = 0;
+
 void loop() {
 
 
     switch (currentState) {
     case START: {
-        //forkliftServo.write(FORKLIFTSERVO_READY_POS);
+        forkliftServo.write(FORKLIFTSERVO_READY_POS);
         delay(1000); 
-        currentState = TRANSITION_TO_CHEESE;
+        currentState = PROCESS_STATION_CHEESE_A;
         
     } break;
 
-    case PROCESS_STATION_CHEESE: {
+    case PROCESS_STATION_CHEESE_A: {
             //rotating lazy susan tto 270 degrees
+            display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("pre ls");                
+            display.display();
             while(abs(lazySusanEncoder.getIncrements()-TWO_SEVENTY_LAZYSUSAN) >= ERROR_THRESHOLD){
                 lazySusanSystem.updatePID(TWO_SEVENTY_LAZYSUSAN);
+                display.clearDisplay();
+                display.setTextSize(1);
+                display.setTextColor(SSD1306_WHITE);
+                display.setCursor(0,0);
+                display.print("ls");   
+                display.println(lazySusanEncoder.getIncrements());             
+                display.display();
             }
+            lazySusanMotor.off();
+            //delay(1000);
+
+            display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("post ls, pre arm");                
+            display.display();
 
             //claw arm reaches forward
             while(abs(linearArmEncoder.getIncrements()-CLAW_FORWARD) >= ERROR_THRESHOLD){
                 linearArmSystem.updatePID(CLAW_FORWARD);
+                display.clearDisplay();
+                display.setTextSize(1);
+                display.setTextColor(SSD1306_WHITE);
+                display.setCursor(0,0);
+                display.print("arm");   
+                display.println(linearArmEncoder.getIncrements());             
+                display.display();
             }
+            linearArmMotor.off();
+
+            //delay(1000);
+            display.clearDisplay();
+            display.setTextSize(1);
+            display.setTextColor(SSD1306_WHITE);
+            display.setCursor(0,0);
+            display.print("post arm");                
+            display.display();
             //claw opens 
             for (int pos = CLAWSERVO_CLOSED_POS; pos <= CLAWSERVO_OPEN_POS; pos++)
             {
@@ -257,9 +313,28 @@ void loop() {
             }
             
             SerialPort.println(1); // communicating to BP that LA and Elevator has finished moving 
+            //if (updatePIDCount > 1){
+                currentState = PROCESS_STATION_CHEESE_B;
+            // }
+            // updatePIDCount++;
+        }break;
 
-            if(SerialPort.available()){ //waiting for BPs signal 
+    case PROCESS_STATION_CHEESE_B: {
+
+            if(true){ //waiting for BPs signal 
                 int receivedVal = SerialPort.parseInt();
+
+
+                display.clearDisplay();
+                display.setTextSize(1);
+                display.setTextColor(SSD1306_WHITE);
+                display.setCursor(0,0);
+                display.print("parsing int");   
+                display.println(receivedVal);           
+                display.display();
+
+
+
                 if(receivedVal == 2){
                     //closing the claw 
                     for(int pos = CLAWSERVO_OPEN_POS; pos <= CLAWSERVO_CLOSED_POS; pos--){
@@ -276,7 +351,7 @@ void loop() {
                         linearArmSystem.updatePID(CLAW_NEUTRAL);
                     }
                     SerialPort.println(5); //communicates to bp that lineararm has finished moving
-                    currentState = TRANSITION_TO_PLATE;
+                    currentState = IDLE;
                 }
             }
         } break;
@@ -380,7 +455,7 @@ void loop() {
         if( SerialPort.available() ) {
             int receivedVal = SerialPort.parseInt(); 
             if( receivedVal == 1 ){
-                currentState = PROCESS_STATION_CHEESE; 
+                currentState = PROCESS_STATION_CHEESE_A; 
             }
             SerialPort.println(2);
         }

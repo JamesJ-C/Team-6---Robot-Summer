@@ -46,7 +46,7 @@ robot::RobotSubSystem ElevatorSystem(ELEVATOR_LIMIT_BOTTOM, ELEVATOR_LIMIT_TOP, 
 //up is forward
 //down is backward
 
-#define ELEVATOR_CLAW_AT_COUNTER_HEIGHT 250
+#define ELEVATOR_CLAW_AT_COUNTER_HEIGHT -150
 #define FORKLIFT_COUNTER_HEIGHT 0 
 
 
@@ -70,7 +70,7 @@ enum State{
     MOVE_ELEVATOR,
     MOVE_ARM
 };
-State currentState = START;
+State currentState = PROCESS_STATION_CHEESE;
 
 
 
@@ -148,13 +148,20 @@ void setup() {
 
     delay(10000);
     ElevatorSystem.localize(4000, 3500);
+    // while (ElevatorSystem.updatePID(-100) >= 30) {
+        
+    // }
 
     while (true){
 
             if ( SerialPort.available()){
                 if (SerialPort.parseInt() == 1){
+                    
+                    // while (SerialPort.available()){
+                    //     int i = SerialPort.parseInt();
+                    // }
                     SerialPort.println(1);
-                    SerialPort.flush();
+                    //SerialPort.flush();
                     break;
                 }
             }
@@ -167,7 +174,7 @@ void loop(){
     switch (currentState){
     case START: {
         delay(1000); 
-        currentState = TRANSITION_TO_CHEESE; \
+        currentState = TRANSITION_TO_CHEESE;
     }
         break;
 
