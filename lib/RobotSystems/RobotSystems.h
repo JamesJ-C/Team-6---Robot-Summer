@@ -132,7 +132,7 @@ private:
         double backward_g;
         double backwardLastError;
 
-        const int backwardMidMotorSpeed = 3900;//33
+        const int backwardMidMotorSpeed = 3950;//33
         const double BACKWARD_LOOP_GAIN = 0.7;
         const double BACKWARD_P_GAIN = 0.9;
         const double BACKWARD_I_GAIN = 0.0;
